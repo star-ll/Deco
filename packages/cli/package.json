@@ -1,0 +1,19 @@
+{
+  "name": "@deco/cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {},
+  "private": true,
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "commander": "^12.1.0",
+    "cross-env": "^7.0.3",
+    "figlet": "^1.7.0",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^9.2.23",
+    "ora": "^8.0.1",
+    "picocolors": "^1.0.1"
+  }
+}
