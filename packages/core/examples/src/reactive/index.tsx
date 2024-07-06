@@ -1,3 +1,4 @@
+import { WebComponent } from '../../../index';
 import { Component, Host, Prop, Ref, State, Watch, nextTick } from '@deco/core/index';
 
 const isObject = (target: unknown) => typeof target === 'object' && target !== null;
@@ -5,7 +6,7 @@ const isObject = (target: unknown) => typeof target === 'object' && target !== n
 @Component({
 	tag: 'test-reactive',
 })
-export class TestReactiveElement extends HTMLElement {
+export class TestReactiveElement extends WebComponent {
 	@State() data: any = 1;
 	@State() age = 1;
 	@State() person = {
@@ -90,7 +91,7 @@ export class TestReactiveElement extends HTMLElement {
 @Component({
 	tag: 'test-prop-reactive',
 })
-export class TestPropElement extends HTMLElement {
+export class TestPropElement extends WebComponent {
 	@Prop() num = 1;
 
 	@Ref() buttonEl?: any;

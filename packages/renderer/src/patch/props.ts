@@ -82,8 +82,8 @@ export function patchProps(element: HTMLElement, props: Props, oldProps: Props) 
 	patchEvents(element, props, oldProps);
 
 	for (const propName of Object.keys(props)) {
-		if (props.hasOwnProperty(propName) && !['key', 'children'].includes(propName)) {
-			let value = props[propName];
+		if (Object.prototype.hasOwnProperty.call(props, propName) && !['key', 'children'].includes(propName)) {
+			const value = props[propName];
 
 			if (value == null) continue;
 

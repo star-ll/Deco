@@ -97,3 +97,7 @@ export function isEmpty(value: unknown): boolean {
 
 	throw new Error('Unsupported type');
 }
+
+export function isPromise(value: unknown): value is Promise<unknown> {
+	return value instanceof Promise;
+}

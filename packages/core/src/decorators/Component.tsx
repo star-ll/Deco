@@ -2,10 +2,11 @@ import { flagComponent, parseElementAttribute } from '../utils/element';
 import { Fragment, render } from '@deco/renderer/dist/index.js';
 // import { createRoot } from 'react-dom/client';
 import { escapePropSet, observe, StatePool } from '../reactive/observe';
-import { Dep } from '../reactive/effect';
+import { Effect } from '../reactive/effect';
 import { DecoratorContextObject, DecoratorMetadata } from '../types';
 import { expToPath } from '../utils/share';
 import { isDevelopment } from '../utils/is';
+import { callLifecycle, LifecycleCallback, LifeCycleList } from '../runtime/lifecycle';
 
 export type ComponentOptions = {
 	// tag name
@@ -37,40 +38,49 @@ export default function Component(options: ComponentOptions): any {
 		if (target.observedAttributes) {
 			throw new Error(`${String(tag)} already has observedAttributes. Please delete observedAttributes filed.`);
 		}
-		let observedAttributes = context.metadata?.props || [];
+		const observedAttributes = context.metadata?.props || [];
 
 		metadata.statePool = new StatePool();
 
 		customElements.define(
 			String(tag),
 			class WebComponent extends target {
-				static observedAttributes = observedAttributes;
+				uid = ++uid;
+
 				__updateComponent: () => void;
+				__mounted = false;
+
+				componentWillMount: LifecycleCallback[] = [];
+				componentDidMount: LifecycleCallback[] = [];
+				componentWillUpdate: LifecycleCallback[] = [];
+				componentDidUpdate: LifecycleCallback[] = [];
+				static observedAttributes = observedAttributes;
 
 				constructor() {
 					super();
+					this.attachShadow({ mode: 'open' });
 
-					this.uid = ++uid;
-					const shadowRoot = this.attachShadow({ mode: 'open' });
-					// this.root = createRoot(shadowRoot);
-
-					// this.__updateComponent = this.domUpdate.bind(this);
-					const componentUpdateEffect = new Dep();
+					const componentUpdateEffect = new Effect();
 					function __updateComponent(this: WebComponent) {
-						componentUpdateEffect.setEffect(this.__updateComponent);
-						Dep.target = componentUpdateEffect;
-						Dep.target.targetElement = this;
-						this.domUpdate();
-						Dep.target = null;
+						if (this.__mounted) {
+							const updateCallbackResult = callLifecycle(this, LifeCycleList.COMPONENT_WILL_UPDATE);
+							if (updateCallbackResult && updateCallbackResult.stop === true) {
+								return;
+							}
+						}
+
+						{
+							componentUpdateEffect.setEffect(this.__updateComponent);
+							Effect.target = componentUpdateEffect;
+							Effect.target.targetElement = this;
+							this.domUpdate();
+							Effect.target = null;
+						}
+
+						callLifecycle(this, LifeCycleList.COMPONENT_DID_UPDATE);
 					}
 					this.__updateComponent = __updateComponent.bind(this);
 					flagComponent(this);
-
-					//  add forceUpdate method in super class
-					// if (this.forceUpdate) {
-					// 	console.warn(`${tag} forceUpdate is deprecated, please use render() instead.`);
-					// }
-					// super.forceUpdate = this.__updateComponent;
 
 					this.validateStateAndPropKeys();
 					this.initState();
@@ -81,7 +91,10 @@ export default function Component(options: ComponentOptions): any {
 						this.__component_metadata = context.metadata;
 					}
 
+					callLifecycle(this, LifeCycleList.COMPONENT_WILL_MOUNT);
 					this.__updateComponent();
+					this.__mounted = true;
+					callLifecycle(this, LifeCycleList.COMPONENT_WILL_MOUNT);
 				}
 
 				validateStateAndPropKeys() {
@@ -154,7 +167,7 @@ export default function Component(options: ComponentOptions): any {
 							const { ctx, property } = expToPath(watchKey, this);
 							console.log('watch', (ctx as any).person, property);
 
-							const watchDep = new Dep((options: any) => {
+							const watchDep = new Effect((options: any) => {
 								const { newValue, value } = options;
 
 								target.call(this, newValue, value, () => {
@@ -201,19 +214,9 @@ export default function Component(options: ComponentOptions): any {
 					}
 					// this[name] = parseElementAttribute(newValue);
 					escapePropSet(this, name, parseElementAttribute(newValue));
-
-					// depared diff-html
-					// const host = this.shadowRoot.querySelector('host');
-					// const diffResult = diffParse.diff(host, this.hostHTML);
-					// const result = diffParse.apply(host, diffResult);
-					// if (!result) {
-					// 	throw new Error(
-					// 		`diff error in ${tag}, filed=${name} newValue=${newValue} oldValue=${oldValue}`,
-					// 	);
-					// }
-
-					// this.domUpdate();
 				}
+
+				initLifecycle() {}
 			} as any,
 		);
 	};

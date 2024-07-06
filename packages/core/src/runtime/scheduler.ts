@@ -1,6 +1,6 @@
-import { Dep } from '../reactive/effect';
+import { Effect } from '../reactive/effect';
 
-const callbacks: Array<Dep> = [];
+const callbacks: Array<Effect> = [];
 let pending = false;
 
 function flushCallbacks() {
@@ -11,13 +11,13 @@ function flushCallbacks() {
 
 	// deduplicating
 	for (let i = depEffectQueue.length - 1; i >= 0; i--) {
-		const dep = depEffectQueue[i];
-		const id = dep.id;
+		const Effect = depEffectQueue[i];
+		const id = Effect.id;
 		if (callbackIdMap.has(id)) {
 			continue;
 		}
 		callbackIdMap.set(id, true);
-		copies.unshift(dep);
+		copies.unshift(Effect);
 	}
 
 	callbacks.length = 0;
@@ -26,23 +26,23 @@ function flushCallbacks() {
 	}
 }
 
-export function nextTick(dep?: Dep, ctx?: object) {
+export function nextTick(effect?: Effect, ctx?: object) {
 	let _resolve: (arg0: object | undefined) => void;
 
-	if (dep) {
-		callbacks.push(dep);
+	if (effect) {
+		callbacks.push(effect);
 	} else {
-		const dep = new Dep(() => {
+		const effect = new Effect(() => {
 			_resolve(ctx);
 		});
-		callbacks.push(dep);
+		callbacks.push(effect);
 	}
 	if (!pending) {
 		pending = true;
 		Promise.resolve().then(flushCallbacks);
 	}
 	// $flow-disable-line
-	if (!dep && typeof Promise !== 'undefined') {
+	if (!Effect && typeof Promise !== 'undefined') {
 		return new Promise((resolve) => {
 			_resolve = resolve;
 		});

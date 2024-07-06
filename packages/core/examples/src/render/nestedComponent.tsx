@@ -1,7 +1,8 @@
 import { Component, Prop, State } from '@deco/core/index';
+import { WebComponent } from '../../../index';
 
 @Component({ tag: 'm-button' })
-export class Button extends HTMLElement {
+export class Button extends WebComponent {
 	@Prop() color!: string;
 
 	render() {
@@ -15,7 +16,7 @@ export class Button extends HTMLElement {
 }
 
 @Component({ tag: 'nested-component' })
-export class nestedComponent extends HTMLElement {
+export class nestedComponent extends WebComponent {
 	@State() clickState = false;
 	render() {
 		const onClick = () => {

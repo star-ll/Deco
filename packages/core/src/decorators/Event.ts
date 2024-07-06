@@ -2,7 +2,7 @@ import { isFunction } from '../utils/is';
 
 export function Event(eventInit: EventInit = { composed: true }) {
 	return function eventEmit(value: unknown, context: DecoratorContext) {
-		return function (this: HTMLElement) {
+		return function (this: any) {
 			return new EventEmitter(this, { ...eventInit });
 		};
 	};

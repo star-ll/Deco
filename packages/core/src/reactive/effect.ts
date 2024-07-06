@@ -1,20 +1,20 @@
-export type DepEffectOptions = {
+export type EffectOptions = {
 	value?: any;
 	oldValue?: any;
 	clear?: Function;
 };
-export type DepEffect = ((value: unknown, oldValue?: unknown, clear?: Function) => any) | Function;
+export type EffectTarget = ((value: unknown, oldValue?: unknown, clear?: Function) => any) | Function;
 
 let uid = 1;
 
-export class Dep {
+export class Effect {
 	static target: any | null = null;
 
 	id = uid++;
-	#effect: DepEffect = (...args: any[]) => {};
-	#options: DepEffectOptions = {};
+	#effect: EffectTarget = (...args: any[]) => {};
+	#options: EffectOptions = {};
 
-	constructor(effect?: DepEffect | Function, options: DepEffectOptions = {}) {
+	constructor(effect?: EffectTarget | Function, options: EffectOptions = {}) {
 		this.#effect = effect || this.#effect;
 		this.#options = options || this.#options;
 	}
@@ -23,7 +23,7 @@ export class Dep {
 		const { value, oldValue, clear } = this.#options;
 		this.#effect(value, oldValue, clear);
 	}
-	setOption(options: DepEffectOptions) {
+	setOption(options: EffectOptions) {
 		this.#options = options;
 	}
 	getOption() {

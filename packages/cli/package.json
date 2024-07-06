@@ -5,6 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {},
+  "bin": {
+    "deco": "index.js"
+  },
   "private": true,
   "devDependencies": {
     "@types/node": "^20.11.30",

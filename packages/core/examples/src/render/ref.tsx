@@ -1,7 +1,8 @@
 import { Component, Host, Ref, RefType } from '@deco/core/index';
+import { WebComponent } from '../../../index';
 
 @Component({ tag: 'test-ref' })
-export class TestRef extends HTMLElement {
+export class TestRef extends WebComponent {
 	@Ref() containerRef: RefType = { current: null };
 	@Host() hostElement!: RefType;
 	render() {

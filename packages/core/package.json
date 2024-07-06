@@ -10,7 +10,7 @@
     "example": "webpack server ./examples/index.ts --config ./examples/webpack.config.js -o ./examples/dist"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "files": ["index.ts", "dist", "jsx.d.ts"],
   "dependencies": {
     "@deco/renderer": "workspace:*"

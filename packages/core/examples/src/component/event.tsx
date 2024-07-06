@@ -1,9 +1,10 @@
+import { WebComponent } from '../../../index';
 import { Component, Event, Listen, type EventEmitter } from '../../../src/decorators';
 
 @Component({
 	tag: 'test-event',
 })
-export class TestEvent extends HTMLElement {
+export class TestEvent extends WebComponent {
 	@Listen('test-event')
 	listenTestEvent(e: CustomEvent) {
 		console.log('listen test event', e);
@@ -22,7 +23,7 @@ export class TestEvent extends HTMLElement {
 @Component({
 	tag: 'test-event-emit',
 })
-export class TestEventEmit extends HTMLElement {
+export class TestEventEmit extends WebComponent {
 	@Event() event: EventEmitter;
 
 	render() {

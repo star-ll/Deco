@@ -1,7 +1,7 @@
 import { nextTick } from '../runtime/scheduler';
 import { DecoratorMetadata, ObserverOptions } from '../types';
 import { isArray, isObject, isPlainObject } from '../utils/is';
-import { Dep, DepEffect } from './effect';
+import { Effect, EffectTarget } from './effect';
 
 const proxyMap = new WeakMap<object, object>();
 
@@ -22,8 +22,8 @@ export function createReactive(
 
 	const proxyTarget = new Proxy(target, {
 		get(target, key, receiver) {
-			if (Dep.target && Dep.target.targetElement === targetElement) {
-				metadata.statePool.set(target, key, Dep.target);
+			if (Effect.target && Effect.target.targetElement === targetElement) {
+				metadata.statePool.set(target, key, Effect.target);
 			}
 
 			return Reflect.get(target, key, receiver);
@@ -96,8 +96,8 @@ export function observe(
 	return Object.defineProperties(target, {
 		[name]: {
 			get() {
-				if (Dep.target && Dep.target.targetElement === target) {
-					metadata.statePool.set(target, name, Dep.target);
+				if (Effect.target && Effect.target.targetElement === target) {
+					metadata.statePool.set(target, name, Effect.target);
 				}
 
 				return value;
@@ -124,7 +124,7 @@ export function observe(
 
 export class StatePool {
 	private isInitState: boolean = false;
-	private statePool: WeakMap<object, Map<string | symbol, Set<Dep>>> = new WeakMap();
+	private statePool: WeakMap<object, Map<string | symbol, Set<Effect>>> = new WeakMap();
 
 	constructor() {}
 
@@ -144,7 +144,7 @@ export class StatePool {
 		// this.isInitState = true;
 	}
 
-	set(target: object, name: string | symbol, dep?: Dep) {
+	set(target: object, name: string | symbol, Effect?: Effect) {
 		if (proxyMap.has(target)) {
 			// target is a proxy
 			target = proxyMap.get(target)!;
@@ -155,19 +155,19 @@ export class StatePool {
 
 		const depKeyMap = this.statePool.get(target) || this.statePool.set(target, new Map()).get(target);
 		const deps = depKeyMap!.get(name) || depKeyMap!.set(name, new Set()).get(name);
-		if (dep) {
-			deps?.add(dep);
+		if (Effect) {
+			deps?.add(Effect);
 		}
 	}
 
-	setAll(target: object, dep: Dep) {
+	setAll(target: object, Effect: Effect) {
 		const depKeyMap = this.statePool.get(target) || this.statePool.set(target, new Map()).get(target);
 		depKeyMap?.forEach((deps) => {
-			deps.add(dep);
+			deps.add(Effect);
 		});
 	}
 
-	delete(target: object, name: string | symbol, dep?: Dep) {
+	delete(target: object, name: string | symbol, Effect?: Effect) {
 		const depKeyMap = this.statePool.get(target);
 		if (!depKeyMap) {
 			throw new Error(`${target} has no state ${String(name)}`);
@@ -176,22 +176,22 @@ export class StatePool {
 		if (!deps) {
 			return;
 		}
-		if (!dep) {
+		if (!Effect) {
 			deps.clear();
 			return;
 		}
-		deps.delete(dep);
+		deps.delete(Effect);
 	}
 
 	notify(target: object, name: string | symbol, options?: { value: unknown; oldValue: unknown }) {
 		const depKeyMap = this.statePool.get(target) || this.statePool.set(target, new Map()).get(target);
 		const deps = depKeyMap!.get(name) || depKeyMap!.set(name, new Set()).get(name);
-		deps?.forEach((dep: Dep) => {
+		deps?.forEach((Effect: Effect) => {
 			if (options) {
-				dep.setOption(options);
+				Effect.setOption(options);
 			}
 
-			nextTick(dep);
+			nextTick(Effect);
 		});
 	}
 }

@@ -1,15 +1,15 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "rootDir": "./",
-    "baseUrl": "./",
-    "declaration": true,
-    "declarationMap": true,
-    "composite": true,
-    "outDir": "./dist",
-    "paths": {
-      "@deco/renderer/*": ["../renderer/*"]
-    }
-  },
-  "include": ["./src/**/*.ts", "./src/**/*.tsx", "index.ts"]
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"rootDir": "./",
+		"baseUrl": "./",
+		"declaration": true,
+		"declarationMap": true,
+		"composite": true,
+		"outDir": "./dist",
+		"paths": {
+			"@deco/renderer/*": ["../renderer/*"]
+		}
+	},
+	"include": ["./src/**/*.ts", "./src/**/*.tsx", "index.ts", "./jsx.d.ts"]
 }
