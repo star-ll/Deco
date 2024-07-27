@@ -1,5 +1,4 @@
-import { WebComponent } from '../../../index';
-import { Component, Host, Prop, Ref, State, Watch, nextTick } from '@deco/core/index';
+import { Component, Host, Prop, Ref, State, WebComponent } from '@deco/core';
 
 const isObject = (target: unknown) => typeof target === 'object' && target !== null;
 

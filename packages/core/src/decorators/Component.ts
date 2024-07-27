@@ -1,5 +1,5 @@
 import { flagComponent, parseElementAttribute } from '../utils/element';
-import { Fragment, render } from '@deco/renderer/dist/index.js';
+import { Fragment, render } from '@deco/renderer';
 // import { createRoot } from 'react-dom/client';
 import { escapePropSet, observe, StatePool } from '../reactive/observe';
 import { Effect } from '../reactive/effect';
@@ -38,7 +38,7 @@ export default function Component(options: ComponentOptions): any {
 		if (target.observedAttributes) {
 			throw new Error(`${String(tag)} already has observedAttributes. Please delete observedAttributes filed.`);
 		}
-		const observedAttributes = context.metadata?.props || [];
+		const observedAttributes = context.metadata?.props || new Set();
 
 		metadata.statePool = new StatePool();
 

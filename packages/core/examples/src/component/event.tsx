@@ -1,5 +1,4 @@
-import { WebComponent } from '../../../index';
-import { Component, Event, Listen, type EventEmitter } from '../../../src/decorators';
+import { Component, Event, Listen, type EventEmitter, WebComponent } from '@deco/core';
 
 @Component({
 	tag: 'test-event',

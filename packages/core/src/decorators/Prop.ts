@@ -8,7 +8,7 @@ export default function Prop() {
 		if (!metadata || context.kind !== 'field') {
 			throw new Error('@Prop decorator must be used on a class property');
 		}
-		const props: Set<string | symbol> = (metadata?.props as Set<string | symbol>) || (metadata.props = new Set());
+		const props= (metadata?.props as Set<string | symbol>) || (metadata.props = new Set());
 		props.add(context.name);
 	};
 }

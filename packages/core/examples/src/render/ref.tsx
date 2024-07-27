@@ -1,5 +1,4 @@
-import { Component, Host, Ref, RefType } from '@deco/core/index';
-import { WebComponent } from '../../../index';
+import { Component, Host, Ref, RefType, WebComponent } from '@deco/core';
 
 @Component({ tag: 'test-ref' })
 export class TestRef extends WebComponent {

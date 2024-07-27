@@ -1,6 +1,6 @@
 import { addNode, createElement, createNode, createTextNode, removeNode } from '../htmldom';
 import { isElementNode } from '../is';
-import { DocumentFragmentVnode, ElementVnode, jsxElementToVnode, NodeType, TextVnode, type Vnode } from '../vnode';
+import { DocumentFragmentVnode, ElementVnode, NodeType, TextVnode, type Vnode } from '../vnode';
 import { patchProps } from './props';
 
 export const vnodeFlag = Symbol.for('deco:vnode');
@@ -42,7 +42,7 @@ export function mountVnode(vnode: Vnode, container: HTMLElement) {
 		// 	mountDocument(vnode, container);
 		// 	break;
 		default:
-			console.error(new Error('not support type:', (vnode as any).type));
+			console.error(new Error('not support type:' + (vnode as any).type));
 	}
 }
 

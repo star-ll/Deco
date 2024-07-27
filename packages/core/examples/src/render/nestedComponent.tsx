@@ -1,5 +1,4 @@
-import { Component, Prop, State } from '@deco/core/index';
-import { WebComponent } from '../../../index';
+import { Component, Prop, State, WebComponent } from '@deco/core';
 
 @Component({ tag: 'm-button' })
 export class Button extends WebComponent {
