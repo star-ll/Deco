@@ -1,7 +1,7 @@
 import { DecoratorContextObject } from '../types';
 
 export default function State() {
-	return function (value: any, context: DecoratorContext) {
+	return function (value: unknown, context: DecoratorContext) {
 		if ((context as DecoratorContextObject).static) {
 			throw new Error('@State decorator must be used on a instance property');
 		}

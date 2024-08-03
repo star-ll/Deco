@@ -165,7 +165,6 @@ export default function Component(options: ComponentOptions): any {
 						const { watchKeys, target } = item;
 						watchKeys.forEach((watchKey) => {
 							const { ctx, property } = expToPath(watchKey, this);
-							console.log('watch', (ctx as any).person, property);
 
 							const watchDep = new Effect((options: any) => {
 								const { newValue, value } = options;

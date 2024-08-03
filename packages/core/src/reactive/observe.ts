@@ -1,7 +1,7 @@
 import { nextTick } from '../runtime/scheduler';
 import { DecoratorMetadata, ObserverOptions } from '../types';
 import { isArray, isObject, isPlainObject } from '../utils/is';
-import { Effect, EffectTarget } from './effect';
+import { Effect } from './effect';
 
 const proxyMap = new WeakMap<object, object>();
 
@@ -11,7 +11,7 @@ export function createReactive(
 	metadata: DecoratorMetadata,
 	options: ObserverOptions = {},
 ) {
-	const { lazy, deep, autoDeepReative = true } = options;
+	const { lazy, deep, autoDeepReactive = true } = options;
 	const statePool = metadata.statePool;
 
 	if (!isObject(target)) {
@@ -37,7 +37,7 @@ export function createReactive(
 			Reflect.set(
 				target,
 				key,
-				autoDeepReative ? createReactive(targetElement, value, metadata) : value,
+				autoDeepReactive ? createReactive(targetElement, value, metadata) : value,
 				receiver,
 			);
 
@@ -59,9 +59,11 @@ export function createReactive(
 	proxyMap.set(proxyTarget, target);
 
 	if (deep) {
-		Object.keys(target).forEach((key) => {
-			const value = (target as any)[key];
-			(target as any)[key] = createReactive(targetElement, value, metadata, options);
+		const targetKeys = Object.keys(target)
+		const targetObject = target as Record<string | symbol, unknown>
+		targetKeys.forEach((key) => {
+			const value = targetObject[key];
+			targetObject[key] = createReactive(targetElement, value, metadata, options);
 		});
 	}
 
@@ -86,7 +88,7 @@ export function observe(
 	options: ObserverOptions = { deep: true },
 ) {
 	let value = originValue;
-	const { lazy, deep, isProp, autoDeepReative = true } = options;
+	const { lazy, deep, isProp, autoDeepReactive = true } = options;
 
 	if (isPlainObject(value) || (isArray(value) && deep)) {
 		target[name] = deep ? createReactive(target, value, metadata, options) : value;
@@ -113,7 +115,7 @@ export function observe(
 				}
 
 				const oldValue = value;
-				value = autoDeepReative ? createReactive(target, newValue, metadata, options) : newValue;
+				value = autoDeepReactive ? createReactive(target, newValue, metadata, options) : newValue;
 
 				metadata.statePool.notify(target, name, { value, oldValue });
 				return true;

@@ -5,7 +5,7 @@ import { Component, Event, Listen, type EventEmitter, WebComponent } from '@deco
 })
 export class TestEvent extends WebComponent {
 	@Listen('test-event')
-	listenTestEvent(e: CustomEvent) {
+	listenTestEvent(e: Event) {
 		console.log('listen test event', e);
 	}
 

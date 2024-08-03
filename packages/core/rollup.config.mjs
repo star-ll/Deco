@@ -10,61 +10,91 @@ const useThrowOnError = true; // On error throw and exception
 const useSourceMap = true; // Generate source map files
 // const useEsbuild = true // `true` -> use esbuild, `false` use tsc
 
-export default [
-	{
-		// .d.ts build
-		input: 'index.ts',
-		output: {
-			file: 'dist/index.d.ts',
-			format: 'es',
-		},
-		plugins: [externals(), dts()],
-	},
-	{
-		// CJS build
-		input: 'index.ts',
-		output: {
-			dir: 'dist/umd',
-			name: 'decoRenderer',
-			format: 'umd',
-			generatedCode: {
-				constBindings: usePreferConst,
+const isDev = process.env.DEV;
+export default isDev
+	? [
+			{
+				// .d.ts build
+				input: 'index.ts',
+				output: {
+					file: 'dist/index.d.ts',
+					format: 'es',
+				},
+				plugins: [externals(), dts()],
 			},
-			preserveModules: false,
-			strict: useStrict,
-			entryFileNames: '[name].js',
-			sourcemap: useSourceMap,
-		},
-		plugins: [
-			externals(),
-			typescript({
-				noEmitOnError: useThrowOnError,
-				outDir: 'dist/umd',
-				removeComments: true,
-			}),
-		],
-	},
-	{
-		// ESM builds
-		input: 'index.ts',
-		output: {
-			dir: 'dist/esm',
-			format: 'es',
-			generatedCode: {
-				constBindings: usePreferConst,
+			{
+				// ESM builds
+				input: 'index.ts',
+				output: {
+					dir: 'dist/esm',
+					format: 'es',
+					preserveModules: usePreserveModules,
+					strict: useStrict,
+					entryFileNames: '[name].js',
+				},
+				plugins: [
+					externals(),
+					typescript({
+						outDir: 'dist/esm',
+					}),
+				],
 			},
-			preserveModules: usePreserveModules,
-			strict: useStrict,
-			entryFileNames: '[name].js',
-			sourcemap: useSourceMap,
-		},
-		plugins: [
-			externals(),
-			typescript({
-				noEmitOnError: useThrowOnError,
-				outDir: 'dist/esm',
-				removeComments: true,
-			}),
-		],
-	},
-];
+		]
+	: [
+			{
+				// .d.ts build
+				input: 'index.ts',
+				output: {
+					file: 'dist/index.d.ts',
+					format: 'es',
+				},
+				plugins: [externals(), dts()],
+			},
+			{
+				// CJS build
+				input: 'index.ts',
+				output: {
+					dir: 'dist/umd',
+					name: 'decoRenderer',
+					format: 'umd',
+					generatedCode: {
+						constBindings: usePreferConst,
+					},
+					preserveModules: false,
+					strict: useStrict,
+					entryFileNames: '[name].js',
+					sourcemap: useSourceMap,
+				},
+				plugins: [
+					externals(),
+					typescript({
+						noEmitOnError: useThrowOnError,
+						outDir: 'dist/umd',
+						removeComments: true,
+					}),
+				],
+			},
+			{
+				// ESM builds
+				input: 'index.ts',
+				output: {
+					dir: 'dist/esm',
+					format: 'es',
+					generatedCode: {
+						constBindings: usePreferConst,
+					},
+					preserveModules: usePreserveModules,
+					strict: useStrict,
+					entryFileNames: '[name].js',
+					sourcemap: useSourceMap,
+				},
+				plugins: [
+					externals(),
+					typescript({
+						noEmitOnError: useThrowOnError,
+						outDir: 'dist/esm',
+						removeComments: true,
+					}),
+				],
+			},
+		];

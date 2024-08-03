@@ -3,18 +3,18 @@
  */
 
 const typeEnum = [
-	'feature',
-	'fix',
-	'cli',
-	'share',
-	'docs',
-	'renderer',
-	'perf',
-	'refactor',
-	'perf',
-	'revert',
-	'test',
-	'chore',
+	'feature', // new feature
+	'fix', // bug fix
+	'core', // @deco/core
+	'cli', // @deco/cli
+	'share', // @deco/share
+	'docs', // @deco/docs
+	'renderer', // @deco/docs
+	'refactor', // code refactor
+	'perf', // performance improvement
+	'revert', // revert commit
+	'test', // new test code
+	'chore', // change config file etc.
 ];
 
 export default {

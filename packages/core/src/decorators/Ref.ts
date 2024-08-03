@@ -5,13 +5,13 @@ export default function Ref() {
 		}
 
 		context.addInitializer(function (this: any) {
-			(this[context.name] as RefType) = {
+			(this[context.name] as RefType<HTMLElement | undefined>) = {
 				current: undefined,
 			};
 		});
 	};
 }
 
-export type RefType<T = any> = {
+export type RefType<T = unknown> = {
 	current: T;
 };

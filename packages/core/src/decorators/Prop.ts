@@ -1,5 +1,5 @@
 export default function Prop() {
-	return function (value: any, context: DecoratorContext) {
+	return function (value: unknown, context: DecoratorContext) {
 		if ((context as any).stitic) {
 			throw new Error('@Prop decorator must be used on a instance property');
 		}

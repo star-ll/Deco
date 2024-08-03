@@ -2,7 +2,7 @@ import { isFunction } from '../utils/is';
 
 export function Event(eventInit: EventInit = { composed: true }) {
 	return function eventEmit(value: unknown, context: DecoratorContext) {
-		return function (this: any) {
+		return function (this: HTMLElement) {
 			return new EventEmitter(this, { ...eventInit });
 		};
 	};
@@ -13,14 +13,14 @@ export interface ListenOptions extends AddEventListenerOptions {
 }
 
 export function Listen(eventName: string, listenOptions: ListenOptions = {}) {
-	return function listen(this: any, value: Function, context: DecoratorContext) {
+	return function listen(this: any, value: EventListenerOrEventListenerObject, context: DecoratorContext) {
 		context.addInitializer(function (this: unknown) {
 			if (!isFunction(value)) {
 				throw new Error(`@Listen: ${value} is not a function.`);
 			}
 
 			const { once, passive, capture, signal, target } = listenOptions;
-			let listenTarget: any;
+			let listenTarget: Document | Window | HTMLElement;
 			switch (target) {
 				case 'body': {
 					listenTarget = document.body;
@@ -35,7 +35,7 @@ export function Listen(eventName: string, listenOptions: ListenOptions = {}) {
 					break;
 				}
 				default: {
-					listenTarget = this;
+					listenTarget = this as HTMLElement;
 				}
 			}
 			listenTarget.addEventListener(eventName, value, { once, passive, signal, capture });
@@ -43,7 +43,7 @@ export function Listen(eventName: string, listenOptions: ListenOptions = {}) {
 	};
 }
 
-export class EventEmitter<T extends { ev: string; value: any } = { ev: string; value: unknown }> {
+export class EventEmitter<T extends { ev: string; value: unknown } = { ev: string; value: unknown }> {
 	eventInit: EventInit;
 	customElement: HTMLElement;
 	constructor(customElement: HTMLElement, eventInit: EventInit = {}) {

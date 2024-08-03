@@ -30,17 +30,10 @@ export type DecoratorContextObject = DecoratorContext & {
 // 	name: string;
 // } & ClassDecoratorContext
 
-// export type StatePool = WeakMap<unknown, Map<string | symbol, Set<Function>>>;
-
-export type WebElement = HTMLElement & {
-	connectedCallback: () => void;
-	disconnectedCallback: () => void;
-};
-
 export type ObserverOptions = {
 	lazy?: boolean;
 	deep?: boolean;
-	autoDeepReative?: boolean; // Automatic implementation of deep reative
+	autoDeepReactive?: boolean; // Automatic implementation of deep reactive
 	isProp?: boolean;
 };
 

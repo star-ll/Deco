@@ -1,15 +1,13 @@
-import { DecoratorMetadata, RefType } from '../types';
+import { RefType } from '../types';
 
 export default function Host() {
-	return function (target: any, context: any) {
+	return function (target: unknown, context: any) {
 		if (context.static) {
 			throw new Error('@Host can not be used in static context');
 		}
 
-		const metadata: DecoratorMetadata = context.metadata;
-
 		return function (this: any) {
-			return { current: this } as RefType<HTMLElement>;
+			return { current: this } as RefType<HTMLElement | undefined>;
 		};
 	};
 }
