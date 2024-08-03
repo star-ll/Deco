@@ -6,7 +6,10 @@
 		"baseUrl": "./",
 		"outDir": "./dist",
 		"moduleResolution": "Bundler",
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		"jsx": "react",
+		"jsxFactory": "Deco.h",
+		"jsxFragmentFactory": "Deco.Fragment"
 	},
 	"include": ["./src/**/*.ts", "./src/**/*.tsx", "index.ts", "./jsx.d.ts"]
 }

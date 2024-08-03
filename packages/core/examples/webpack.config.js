@@ -1,4 +1,3 @@
-
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -12,13 +11,13 @@ module.exports = {
 	},
 	devServer: {
 		port: 8000,
-		open: true
+		open: true,
 	},
 	resolve: {
 		extensions: ['.ts', '.tsx', '.js', '.json'],
 		alias: {
-			"@deco/core": path.join(__dirname, "../dist/esm/index.js")
-		}
+			'@deco/core': path.join(__dirname, '../dist/esm/index.js'),
+		},
 	},
 	module: {
 		rules: [
@@ -40,19 +39,17 @@ module.exports = {
 				use: {
 					loader: 'babel-loader',
 					options: {
-						presets: [
-							['@babel/preset-env', { }],
-						],
+						presets: [['@babel/preset-env', {}]],
 						plugins: [
-							["@babel/plugin-proposal-decorators", { "version": "2023-11" }],
+							['@babel/plugin-proposal-decorators', { version: '2023-11' }],
 							[
-								"@babel/plugin-transform-react-jsx",
-								{
-									"pragma": "__deco_h_",
-									"pragmaFrag": "__deco_Fragment"
-								}
-							]
-						]
+								'@babel/plugin-transform-react-jsx',
+								// {
+								// 	"pragma": "__deco_h_",
+								// 	"pragmaFrag": "__deco_Fragment"
+								// }
+							],
+						],
 					},
 				},
 			},

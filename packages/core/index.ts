@@ -1,3 +1,5 @@
+import { jsx as h, Fragment } from '@deco/renderer';
+
 export * from './src/decorators/index';
 import { Effect } from './src/reactive/effect';
 import { nextTick } from './src/runtime/scheduler';
@@ -25,4 +27,22 @@ export abstract class WebComponent extends HTMLElement {
 	attributeChangedCallback?(): void;
 
 	abstract render(): JSX.Element;
+}
+
+export class DecoElement extends HTMLElement {
+	static h = h;
+	static Fragment = Fragment;
+
+	componentWillMount?(): void;
+	componentDidMount?(): void;
+	componentWillUpdate?(): boolean | void;
+	componentDidUpdate?(): void;
+	connectedCallback?(): void;
+	disconnectedCallback?(): void;
+	adoptedCallback?(): void;
+	attributeChangedCallback?(): void;
+
+	render() {
+		// return h(Fragment, {});
+	}
 }

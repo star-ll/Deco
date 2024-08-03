@@ -6,9 +6,9 @@
 		"baseUrl": "./",
 		"outDir": "./dist",
 		"moduleResolution": "Node",
-		"jsx": "preserve",
-		"jsxFactory": "__deco_h_",
-		"jsxFragmentFactory": "__deco_Fragment",
+		"jsx": "react",
+		"jsxFactory": "DecoElement.h",
+		"jsxFragmentFactory": "DecoElement.Fragment",
 		"types": ["../dist/index.d.ts"],
 		"paths": {
 			"@deco/core": ["../dist/index.d.ts"]

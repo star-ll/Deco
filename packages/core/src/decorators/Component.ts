@@ -7,6 +7,7 @@ import { DecoratorContextObject, DecoratorMetadata } from '../types';
 import { expToPath } from '../utils/share';
 import { isDevelopment } from '../utils/is';
 import { callLifecycle, LifecycleCallback, LifeCycleList } from '../runtime/lifecycle';
+import { DecoElement } from '../../index';
 
 export type ComponentOptions = {
 	// tag name
@@ -189,17 +190,16 @@ export default function Component(options: ComponentOptions): any {
 					// 	</>,
 					// );
 
-					const { __deco_h_: h } = globalThis as any;
 					const vndoes = [this.render()];
 
 					//  style
 					if (style instanceof StyleSheet) {
 						this.shadowRoot.adoptedStyleSheets = [style];
 					} else if (typeof style === 'string') {
-						vndoes.unshift(h('style', {}, style));
+						vndoes.unshift(DecoElement.h('style', {}, style));
 					}
 
-					const fragment = h(Fragment, {}, ...vndoes);
+					const fragment = DecoElement.h(DecoElement.Fragment, {}, ...vndoes);
 					render(fragment, this.shadowRoot);
 				}
 
