@@ -5,7 +5,8 @@
 		"rootDir": "./",
 		"baseUrl": "./",
 		"outDir": "./dist",
-		"moduleResolution": "Node"
+		"moduleResolution": "Bundler",
+		"esModuleInterop": true
 	},
 	"include": ["./src/**/*.ts", "./src/**/*.tsx", "index.ts", "./jsx.d.ts"]
 }

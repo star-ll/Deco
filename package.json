@@ -1,34 +1,35 @@
 {
-  "name": "deco",
-  "version": "1.0.0",
-  "private": true,
-  "description": "",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "prepare": "husky",
-    "test": "echo 'test ok'"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "@babel/core": "^7.24.3",
-    "@babel/preset-env": "^7.24.3",
-    "@babel/preset-react": "^7.24.1",
-    "@commitlint/cli": "^19.3.0",
-    "@commitlint/config-conventional": "^19.2.2",
-    "@types/node": "^20.11.30",
-    "@types/react": "^18.2.70",
-    "@typescript-eslint/eslint-plugin": "^7.3.1",
-    "@typescript-eslint/parser": "^7.3.1",
-    "babel-loader": "^9.1.3",
-    "css-loader": "^6.10.0",
-    "eslint": "^8.57.0",
-    "husky": "^9.0.11",
-    "lerna": "^8.1.2",
-    "prettier": "^3.2.5",
-    "ts-loader": "^9.5.1",
-    "typescript": "^5.4.3"
-  }
+	"name": "deco",
+	"version": "1.0.0",
+	"private": true,
+	"description": "",
+	"main": "index.js",
+	"type": "module",
+	"packageManager": "pnpm@8.7.0",
+	"scripts": {
+		"prepare": "husky",
+		"test": "echo 'test ok'"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "MIT",
+	"devDependencies": {
+		"@babel/core": "^7.24.3",
+		"@babel/preset-env": "^7.24.3",
+		"@babel/preset-react": "^7.24.1",
+		"@commitlint/cli": "^19.3.0",
+		"@commitlint/config-conventional": "^19.2.2",
+		"@types/node": "^20.11.30",
+		"@types/react": "^18.2.70",
+		"@typescript-eslint/eslint-plugin": "^7.3.1",
+		"@typescript-eslint/parser": "^7.3.1",
+		"babel-loader": "^9.1.3",
+		"css-loader": "^6.10.0",
+		"eslint": "^8.57.0",
+		"husky": "^9.0.11",
+		"lerna": "^8.1.2",
+		"prettier": "^3.2.5",
+		"ts-loader": "^9.5.1",
+		"typescript": "^5.4.3"
+	}
 }
