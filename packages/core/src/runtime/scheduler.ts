@@ -1,9 +1,10 @@
+import { warn } from 'src/utils/error';
 import { Effect } from '../reactive/effect';
 
 const callbacks: Array<Effect> = [];
 let pending = false;
 
-function flushCallbacks() {
+function flushCallbacks(cycles = 0) {
 	pending = false;
 	const depEffectQueue = callbacks.slice();
 	const copies = [];
@@ -24,6 +25,24 @@ function flushCallbacks() {
 	for (let i = 0; i < copies.length; i++) {
 		copies[i].run();
 	}
+
+	if (callbacks.length) {
+		if (cycles >= 100) {
+			warn(`The number of scheduler callbacks exceeds the maximum limit of 100, please check the code.`);
+			return;
+		}
+		flushCallbacks(cycles + 1);
+	}
+}
+
+let scheduler: (callback: typeof flushCallbacks) => void;
+if (typeof window.queueMicrotask === 'function') {
+	scheduler = queueMicrotask;
+} else if (Promise && typeof Promise.resolve === 'function') {
+	scheduler = (callback: typeof flushCallbacks) => Promise.resolve(0).then(callback);
+} else {
+	warn(`Your browser does not support queueMicrotask and Promise!!`);
+	scheduler = (callback: typeof flushCallbacks) => setTimeout(callback, 0);
 }
 
 export function nextTick(effect?: Effect, ctx?: object) {
@@ -39,9 +58,8 @@ export function nextTick(effect?: Effect, ctx?: object) {
 	}
 	if (!pending) {
 		pending = true;
-		Promise.resolve().then(flushCallbacks);
+		scheduler(flushCallbacks);
 	}
-	// $flow-disable-line
 	if (!Effect && typeof Promise !== 'undefined') {
 		return new Promise((resolve) => {
 			_resolve = resolve;
