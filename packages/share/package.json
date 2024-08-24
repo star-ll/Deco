@@ -1,16 +1,13 @@
 {
-    "name": "@deco/share",
-    "version": "1.0.0",
-    "description": "",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "scripts": {
-      "build": "tsc"
-    },
-    "dependencies": {
-    },
-    "keywords": [],
-    "author": "",
-    "license": "MIT"
-  }
-  
+	"name": "@deco/share",
+	"version": "0.2.0",
+	"description": "",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"scripts": {
+		"build": "tsc"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "MIT"
+}
