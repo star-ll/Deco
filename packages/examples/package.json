@@ -1,0 +1,14 @@
+{
+	"name": "@deco/framork-example",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"author": "",
+	"license": "MIT",
+	"scripts": {
+		"dev": "vite"
+	},
+	"devDependencies": {
+		"vite": "^5.4.1"
+	}
+}

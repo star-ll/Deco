@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { jsx as h, Fragment } from '@deco/renderer';
 
 export * from './src/decorators/index';
@@ -16,18 +17,18 @@ function nextTickApi(this: any, callback: Function, ctx?: object) {
 }
 export { nextTickApi as nextTick };
 
-export abstract class WebComponent extends HTMLElement {
-	componentWillMount?(): void;
-	componentDidMount?(): void;
-	componentWillUpdate?(): boolean | void;
-	componentDidUpdate?(): void;
-	connectedCallback?(): void;
-	disconnectedCallback?(): void;
-	adoptedCallback?(): void;
-	attributeChangedCallback?(): void;
+// export abstract class WebComponent extends HTMLElement {
+// 	componentWillMount?(): void;
+// 	componentDidMount?(): void;
+// 	componentWillUpdate?(): boolean | void;
+// 	componentDidUpdate?(): void;
+// 	connectedCallback?(): void;
+// 	disconnectedCallback?(): void;
+// 	adoptedCallback?(): void;
+// 	attributeChangedCallback?(): void;
 
-	abstract render(): JSX.Element;
-}
+// 	abstract render(): JSX.Element;
+// }
 
 export class DecoElement extends HTMLElement {
 	static h = h;
@@ -40,9 +41,19 @@ export class DecoElement extends HTMLElement {
 	connectedCallback?(): void;
 	disconnectedCallback?(): void;
 	adoptedCallback?(): void;
-	attributeChangedCallback?(): void;
+	attributeChangedCallback?(name: string, oldValue: any, newValue: any): void;
 
 	render() {
 		// return h(Fragment, {});
+	}
+}
+
+declare global {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
+	namespace JSX {
+		interface IntrinsicElements {
+			// 'test-event-emit': any; // 初始可以先用any，后续根据需要细化类型
+			[key: string]: any;
+		}
 	}
 }

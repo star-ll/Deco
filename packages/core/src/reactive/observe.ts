@@ -1,18 +1,13 @@
 import { nextTick } from '../runtime/scheduler';
-import { DecoratorMetadata, ObserverOptions } from '../types';
+import { ObserverOptions } from '../types';
 import { isArray, isObject, isPlainObject } from '../utils/is';
 import { Effect } from './effect';
 
 const proxyMap = new WeakMap<object, object>();
 
-export function createReactive(
-	targetElement: any,
-	target: unknown,
-	metadata: DecoratorMetadata,
-	options: ObserverOptions = {},
-) {
+export function createReactive(targetElement: any, target: unknown, options: ObserverOptions = {}) {
 	const { lazy, deep, autoDeepReactive = true } = options;
-	const statePool = metadata.statePool;
+	const statePool = Reflect.getMetadata('statePool', targetElement as any);
 
 	if (!isObject(target)) {
 		return target;
@@ -23,7 +18,7 @@ export function createReactive(
 	const proxyTarget = new Proxy(target, {
 		get(target, key, receiver) {
 			if (Effect.target && Effect.target.targetElement === targetElement) {
-				metadata.statePool.set(target, key, Effect.target);
+				statePool.set(target, key, Effect.target);
 			}
 
 			return Reflect.get(target, key, receiver);
@@ -34,23 +29,18 @@ export function createReactive(
 			// metadata.statePool.set(target, key);
 
 			const oldValue = Reflect.get(target, key, receiver);
-			Reflect.set(
-				target,
-				key,
-				autoDeepReactive ? createReactive(targetElement, value, metadata) : value,
-				receiver,
-			);
+			Reflect.set(target, key, autoDeepReactive ? createReactive(targetElement, value) : value, receiver);
 
 			// isNewProperty ? metadata.statePool.notify(target) : metadata.statePool.notify(target, key);
 
-			metadata.statePool.notify(target, key, { value, oldValue });
+			statePool.notify(target, key, { value, oldValue });
 
 			return true;
 		},
 
 		deleteProperty(target, key) {
 			Reflect.deleteProperty(target, key);
-			metadata.statePool.delete(target, key);
+			statePool.delete(target, key);
 
 			return true;
 		},
@@ -59,11 +49,11 @@ export function createReactive(
 	proxyMap.set(proxyTarget, target);
 
 	if (deep) {
-		const targetKeys = Object.keys(target)
-		const targetObject = target as Record<string | symbol, unknown>
+		const targetKeys = Object.keys(target);
+		const targetObject = target as Record<string | symbol, unknown>;
 		targetKeys.forEach((key) => {
 			const value = targetObject[key];
-			targetObject[key] = createReactive(targetElement, value, metadata, options);
+			targetObject[key] = createReactive(targetElement, value, options);
 		});
 	}
 
@@ -84,14 +74,14 @@ export function observe(
 	target: any,
 	name: string | symbol,
 	originValue: any,
-	metadata: DecoratorMetadata,
 	options: ObserverOptions = { deep: true },
 ) {
 	let value = originValue;
 	const { lazy, deep, isProp, autoDeepReactive = true } = options;
+	const statePool = Reflect.getMetadata('statePool', target as any);
 
 	if (isPlainObject(value) || (isArray(value) && deep)) {
-		target[name] = deep ? createReactive(target, value, metadata, options) : value;
+		target[name] = deep ? createReactive(target, value, options) : value;
 		return;
 	}
 
@@ -99,7 +89,7 @@ export function observe(
 		[name]: {
 			get() {
 				if (Effect.target && Effect.target.targetElement === target) {
-					metadata.statePool.set(target, name, Effect.target);
+					statePool.set(target, name, Effect.target);
 				}
 
 				return value;
@@ -115,9 +105,9 @@ export function observe(
 				}
 
 				const oldValue = value;
-				value = autoDeepReactive ? createReactive(target, newValue, metadata, options) : newValue;
+				value = autoDeepReactive ? createReactive(target, newValue, options) : newValue;
 
-				metadata.statePool.notify(target, name, { value, oldValue });
+				statePool.notify(target, name, { value, oldValue });
 				return true;
 			},
 		},

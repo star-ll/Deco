@@ -9,10 +9,8 @@
 		"jsx": "react",
 		"jsxFactory": "DecoElement.h",
 		"jsxFragmentFactory": "DecoElement.Fragment",
-		"types": ["../dist/index.d.ts"],
-		"paths": {
-			"@deco/core": ["../dist/index.d.ts"]
-		}
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true
 	},
-	"include": ["./src/**/*.ts", "./src/**/*.tsx", "../jsx.d.ts"]
+	"include": ["./src/**/*.ts", "./src/**/*.tsx"]
 }

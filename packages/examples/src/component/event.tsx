@@ -1,9 +1,9 @@
-import { Component, Event, Listen, type EventEmitter, WebComponent } from '@deco/core';
+import { Component, Event, Listen, type EventEmitter, DecoElement } from '@deco/core';
 
 @Component({
 	tag: 'test-event',
 })
-export class TestEvent extends WebComponent {
+export class TestEvent extends DecoElement {
 	@Listen('test-event')
 	listenTestEvent(e: Event) {
 		console.log('listen test event', e);
@@ -22,11 +22,13 @@ export class TestEvent extends WebComponent {
 @Component({
 	tag: 'test-event-emit',
 })
-export class TestEventEmit extends WebComponent {
+export class TestEventEmit extends DecoElement {
 	@Event() event: EventEmitter;
 
 	render() {
 		const emitEvent = () => {
+			console.log('emit event', this.event);
+
 			this.event!.emit('test-event', 'test');
 		};
 

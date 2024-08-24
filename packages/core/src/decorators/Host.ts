@@ -1,13 +1,12 @@
 import { RefType } from '../types';
 
-export default function Host() {
-	return function (target: unknown, context: any) {
-		if (context.static) {
-			throw new Error('@Host can not be used in static context');
-		}
+export default function Host(this: any) {
+	return function (target: any, propertyKey: string) {
+		// return function (this: any) {
+		// 	return { current: this } as RefType<HTMLElement | undefined>;
+		// };
+		console.log('host', target, propertyKey);
 
-		return function (this: any) {
-			return { current: this } as RefType<HTMLElement | undefined>;
-		};
+		target[propertyKey] = { current: target } as RefType<HTMLElement>;
 	};
 }

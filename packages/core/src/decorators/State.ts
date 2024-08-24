@@ -1,20 +1,17 @@
-import { DecoratorContextObject } from '../types';
-
 export default function State() {
-	return function (value: unknown, context: DecoratorContext) {
-		if ((context as DecoratorContextObject).static) {
-			throw new Error('@State decorator must be used on a instance property');
-		}
+	return function (target: any, value: unknown) {
+		// if ((context as DecoratorContextObject).static) {
+		// 	throw new Error('@State decorator must be used on a instance property');
+		// }
 
-		const metadata = context.metadata;
-		if (!metadata) {
-			throw new Error('no metadata');
-		}
-		if (context.kind !== 'field') {
-			throw new Error('@Prop decorator must be used on a field property');
-		}
+		// const metadata = context.metadata;
+		// const stateKeys: Set<unknown> = (metadata?.stateKeys as Set<unknown>) || (metadata.stateKeys = new Set());
+		// stateKeys.add(context.name);
 
-		const stateKeys: Set<unknown> = (metadata?.stateKeys as Set<unknown>) || (metadata.stateKeys = new Set());
-		stateKeys.add(context.name);
+		console.log('state', target, value);
+
+		const stateKeys = Reflect.getMetadata('stateKeys', target) || new Set();
+		stateKeys.add(value);
+		Reflect.defineMetadata('stateKeys', stateKeys, target);
 	};
 }

@@ -1,11 +1,11 @@
-import { Component, Host, Prop, Ref, State, WebComponent } from '@deco/core';
+import { Component, Prop, Ref, State, DecoElement } from '@deco/core';
 
 const isObject = (target: unknown) => typeof target === 'object' && target !== null;
 
 @Component({
 	tag: 'test-reactive',
 })
-export class TestReactiveElement extends WebComponent {
+export class TestReactiveElement extends DecoElement {
 	@State() data: any = 1;
 	@State() age = 1;
 	@State() person = {
@@ -90,15 +90,12 @@ export class TestReactiveElement extends WebComponent {
 @Component({
 	tag: 'test-prop-reactive',
 })
-export class TestPropElement extends WebComponent {
+export class TestPropElement extends DecoElement {
 	@Prop() num = 1;
 
 	@Ref() buttonEl?: any;
-	@Host() host?: any;
 
 	render() {
-		console.log(1, this.host);
-
 		return (
 			<div>
 				<div>
@@ -106,7 +103,7 @@ export class TestPropElement extends WebComponent {
 					<div>
 						<i>prop is only allowed to be changed externally</i>
 					</div>
-					<div>loading: {this.num.toString()}</div>
+					<div>num: {this.num.toString()}</div>
 					<div>
 						<button
 							onClick={() => {
@@ -117,17 +114,7 @@ export class TestPropElement extends WebComponent {
 						</button>
 						<button
 							onClick={() => {
-								this.host.current.num++;
-							}}
-						>
-							this.host.num++;
-						</button>
-						<button
-							onClick={() => {
-								this.host.current.setAttribute(
-									'num',
-									Number(this.host.current.getAttribute('num')) + 1,
-								);
+								this.setAttribute('num', (this.getAttribute('num') || '0') + 1);
 							}}
 						>
 							this.host.current.setAttribute('num', Number(this.host.current.getAttribute('num')) + 1);

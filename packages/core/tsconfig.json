@@ -8,8 +8,10 @@
 		"moduleResolution": "Bundler",
 		"esModuleInterop": true,
 		"jsx": "react",
-		"jsxFactory": "Deco.h",
-		"jsxFragmentFactory": "Deco.Fragment"
+		"jsxFactory": "DecoElement.h",
+		"jsxFragmentFactory": "DecoElement.Fragment",
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true
 	},
-	"include": ["./src/**/*.ts", "./src/**/*.tsx", "index.ts", "./jsx.d.ts"]
+	"include": ["./src/**/*.(ts|tsx)", "index.ts"]
 }

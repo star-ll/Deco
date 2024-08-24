@@ -27,7 +27,8 @@
 		"node": ">=16.0.0"
 	},
 	"dependencies": {
-		"@deco/renderer": "workspace:*"
+		"@deco/renderer": "workspace:*",
+		"reflect-metadata": "^0.2.2"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.24.3",

@@ -1,10 +1,10 @@
 import { isFunction } from '../utils/is';
 
 export function Event(eventInit: EventInit = { composed: true }) {
-	return function eventEmit(value: unknown, context: DecoratorContext) {
-		return function (this: HTMLElement) {
-			return new EventEmitter(this, { ...eventInit });
-		};
+	return function eventEmit(target: any, eventName: string) {
+		const events = Reflect.getMetadata('events', target) || new Map();
+		events.set(eventName, new EventEmitter({ ...eventInit }));
+		Reflect.defineMetadata('events', events, target);
 	};
 }
 
@@ -13,8 +13,13 @@ export interface ListenOptions extends AddEventListenerOptions {
 }
 
 export function Listen(eventName: string, listenOptions: ListenOptions = {}) {
-	return function listen(this: any, value: EventListenerOrEventListenerObject, context: DecoratorContext) {
-		context.addInitializer(function (this: unknown) {
+	return function listen(target: any, methodKey: string) {
+		console.log(111, target, methodKey);
+
+		const listenTarget = function (this: any) {
+			console.log('Listen', this);
+
+			const value: EventListenerOrEventListenerObject = this[methodKey];
 			if (!isFunction(value)) {
 				throw new Error(`@Listen: ${value} is not a function.`);
 			}
@@ -39,15 +44,22 @@ export function Listen(eventName: string, listenOptions: ListenOptions = {}) {
 				}
 			}
 			listenTarget.addEventListener(eventName, value, { once, passive, signal, capture });
-		});
+		};
+
+		const listens = Reflect.getMetadata('listens', target) || new Map();
+		listens.set(eventName, listenTarget);
+		Reflect.defineMetadata('listens', listens, target);
 	};
 }
 
 export class EventEmitter<T extends { ev: string; value: unknown } = { ev: string; value: unknown }> {
 	eventInit: EventInit;
-	customElement: HTMLElement;
-	constructor(customElement: HTMLElement, eventInit: EventInit = {}) {
+	customElement!: HTMLElement;
+	constructor(eventInit: EventInit = {}) {
 		this.eventInit = eventInit;
+	}
+
+	setEventTarget(customElement: HTMLElement) {
 		this.customElement = customElement;
 	}
 
