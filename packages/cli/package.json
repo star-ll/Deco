@@ -1,17 +1,17 @@
 {
-	"name": "@deco/cli",
-	"version": "0.2.0",
+	"name": "create-deco",
+	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
 	"type": "module",
+	"scripts": {},
 	"author": "star-ll",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/star-ll/deco.git"
 	},
-	"scripts": {},
 	"bin": {
-		"create-deco": "index.js",
+		"create-deco": "index.js init",
 		"deco": "index.js"
 	},
 	"private": true,
@@ -22,6 +22,7 @@
 		"figlet": "^1.7.0",
 		"fs-extra": "^11.2.0",
 		"inquirer": "^9.2.23",
+		"minimist": "^1.2.8",
 		"ora": "^8.0.1",
 		"picocolors": "^1.0.1"
 	}
