@@ -114,10 +114,10 @@ export class TestPropElement extends DecoElement {
 						</button>
 						<button
 							onClick={() => {
-								this.setAttribute('num', (this.getAttribute('num') || '0') + 1);
+								this.setAttribute('num', (Number(this.getAttribute('num') || '0') + 1).toString());
 							}}
 						>
-							this.host.current.setAttribute('num', Number(this.host.current.getAttribute('num')) + 1);
+							this.setAttribute('num', (Number(this.getAttribute('num') || '0') + 1).toString())
 						</button>
 					</div>
 				</div>

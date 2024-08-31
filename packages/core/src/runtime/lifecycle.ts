@@ -21,17 +21,24 @@ type CallLifecycleResult = {
 export type LifecycleCallback = () => void | boolean;
 
 export function callLifecycle(target: any, lifecycle: LifeCycleList): CallLifecycleResult | void {
-	if (!Array.isArray(target[lifecycle])) {
+	const lifecycles = target[lifecycle + 'List'];
+
+	if (!Array.isArray(lifecycles)) {
 		throw new Error('lifecycle init error');
 	}
 
 	const result = [];
-	for (const lifecycleCallback of target[lifecycle]) {
-		const callbackResult = lifecycleCallback.call(target);
-		if (isPromise(callbackResult)) {
-			throw new Error(`${lifecycle} callback must be sync`);
+	for (const lifecycleCallback of lifecycles) {
+		try {
+			const callbackResult = lifecycleCallback.call(target);
+			if (isPromise(callbackResult)) {
+				throw new Error(`${lifecycle} callback must be sync`);
+			}
+			result.push(callbackResult);
+		} catch (err) {
+			console.error(`Lifecycle ${lifecycle} callback error`);
+			console.error(err);
 		}
-		result.push(callbackResult);
 	}
 
 	if (lifecycle === LifeCycleList.COMPONENT_WILL_MOUNT && result.some((i) => i === false)) {

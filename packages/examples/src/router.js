@@ -1,6 +1,6 @@
 export default  {
     "/test": {
-        name: 'test-reactive',
-        component: () => import("./reactive/index.tsx")
+        name: 'test-demo',
+        component: () => import("./test-demo.tsx")
     }
 }

@@ -5,49 +5,6 @@ export * from './src/decorators/index';
 import { Effect } from './src/reactive/effect';
 import { nextTick } from './src/runtime/scheduler';
 
-/** fix decorator context.metadata is undefined */
-(function (SymbolConstructor: any) {
-	if (!SymbolConstructor.metadata) {
-		SymbolConstructor.metadata = Symbol.for('Symbol.metadata');
-	}
-})(Symbol);
-
-function nextTickApi(this: any, callback: Function, ctx?: object) {
-	return nextTick.call(this, new Effect(callback, ctx));
-}
-export { nextTickApi as nextTick };
-
-// export abstract class WebComponent extends HTMLElement {
-// 	componentWillMount?(): void;
-// 	componentDidMount?(): void;
-// 	componentWillUpdate?(): boolean | void;
-// 	componentDidUpdate?(): void;
-// 	connectedCallback?(): void;
-// 	disconnectedCallback?(): void;
-// 	adoptedCallback?(): void;
-// 	attributeChangedCallback?(): void;
-
-// 	abstract render(): JSX.Element;
-// }
-
-export class DecoElement extends HTMLElement {
-	static h = h;
-	static Fragment = Fragment;
-
-	componentWillMount?(): void;
-	componentDidMount?(): void;
-	componentWillUpdate?(): boolean | void;
-	componentDidUpdate?(): void;
-	connectedCallback?(): void;
-	disconnectedCallback?(): void;
-	adoptedCallback?(): void;
-	attributeChangedCallback?(name: string, oldValue: any, newValue: any): void;
-
-	render() {
-		// return h(Fragment, {});
-	}
-}
-
 declare global {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace JSX {
@@ -56,4 +13,33 @@ declare global {
 			[key: string]: any;
 		}
 	}
+}
+
+function nextTickApi(this: any, callback: Function, ctx?: object) {
+	return nextTick.call(this, new Effect(callback, ctx));
+}
+export { nextTickApi as nextTick };
+
+export class DecoElement extends HTMLElement {
+	static h = h;
+	static Fragment = Fragment;
+
+	componentWillMount() {}
+	componentDidMount() {}
+	componentWillUpdate() {}
+	componentDidUpdate() {}
+	connectedCallback() {}
+	disconnectedCallback() {}
+	adoptedCallback() {}
+	attributeChangedCallback?(name: string, oldValue: any, newValue: any) {}
+
+	static use() {
+		return this;
+	}
+
+	static globalStyle() {
+		return this;
+	}
+
+	render() {}
 }

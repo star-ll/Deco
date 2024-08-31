@@ -1,10 +1,11 @@
-import './src/reactive/index';
-import './src/component/event';
-import './src/render/nestedComponent';
-import './src/render/ref';
-import { DecoElement } from '@deco/core';
+import './reactive/index';
+import './component/event';
+import './render/nestedComponent';
+import './render/ref';
+import { DecoElement, Component } from '@deco/core';
 
-export class DemoTest extends DecoElement {
+@Component()
+export class TestDemo extends DecoElement {
 	render() {
 		return (
 			<>

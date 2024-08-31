@@ -5,9 +5,10 @@ import { Effect } from '../reactive/effect';
 import { expToPath } from '../utils/share';
 // import { isDevelopment } from '../utils/is';
 import { callLifecycle, LifecycleCallback, LifeCycleList } from '../runtime/lifecycle';
+import { nextTick } from '../runtime/scheduler';
 
 let uid = 0;
-export default function Component(options: {
+export default function Component(options?: {
 	// tag name
 	tag?: string;
 
@@ -16,11 +17,11 @@ export default function Component(options: {
 }) {
 	return function (target: any) {
 		const tag =
-			options.tag ||
+			options?.tag ||
 			String(target.name)
-				.replace(/([A-Z])/g, '-$1')
+				.replace(/([a-z0-9])([A-Z])/g, '$1-$2')
 				.toLowerCase();
-		const style = options.style || '';
+		const style = options?.style || '';
 		const observedAttributes = target.prototype.__propKeys || [];
 
 		customElements.define(String(tag), getCustomElementWrapper(target, { tag, style, observedAttributes }));
@@ -39,10 +40,15 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 		__updateComponent: () => void;
 		__mounted = false;
 
-		componentWillMount: LifecycleCallback[] = [];
-		componentDidMount: LifecycleCallback[] = [];
-		componentWillUpdate: LifecycleCallback[] = [];
-		componentDidUpdate: LifecycleCallback[] = [];
+		componentWillMountList: LifecycleCallback[] = [];
+		componentDidMountList: LifecycleCallback[] = [];
+		componentWillUpdateList: LifecycleCallback[] = [];
+		componentDidUpdateList: LifecycleCallback[] = [];
+		connectedCallbackList: LifecycleCallback[] = [];
+		disconnectedCallbackList: LifecycleCallback[] = [];
+		attributeChangedCallbackList: LifecycleCallback[] = [];
+		adoptedCallbackList: LifecycleCallback[] = [];
+
 		// can't use "Reflect.getMetadata('propKeys', this)", because this is not initialized yet
 		static observedAttributes = observedAttributes;
 
@@ -80,6 +86,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			this.initProps();
 			this.initWatch();
 			this.initEventAndListen();
+			this.initLifecycle();
 
 			callLifecycle(this, LifeCycleList.COMPONENT_WILL_MOUNT);
 			this.__updateComponent();
@@ -133,13 +140,15 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			// automatically trigger re-render when prop change, so no need to setAll
 			// statePool.setAll(this, this.__updateComponent);
 
-			Array.from(propKeys.values()).forEach((name: any) => {
+			Array.from(propKeys.keys()).forEach((name: any) => {
 				observe(this, name, this.hasAttribute(name) ? this.getAttribute(name) : this[name], {
 					isProp: true,
 				});
 
 				if (!this.hasAttribute(name) && this[name] !== undefined && this[name] !== null) {
-					this.setAttribute(name, this[name]);
+					nextTick()?.then(() => {
+						this.setAttribute(name, this[name]);
+					});
 				}
 			});
 		}
@@ -212,7 +221,20 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			render(fragment, this.shadowRoot);
 		}
 
+		initLifecycle() {
+			this.connectedCallbackList.push(super.connectedCallback);
+			this.disconnectedCallbackList.push(super.disconnectedCallback);
+			this.attributeChangedCallbackList.push(super.attributeChangedCallback);
+			this.adoptedCallbackList.push(super.adoptedCallback);
+			this.componentWillMountList.push(super.componentWillMount);
+			this.componentDidMountList.push(super.componentDidMount);
+			this.componentWillUpdateList.push(super.componentWillUpdate);
+			this.componentDidUpdateList.push(super.componentDidUpdate);
+		}
+
 		attributeChangedCallback(name: string, oldValue: any, newValue: any) {
+			callLifecycle(this, LifeCycleList.ATTRIBUTE_CHANGED_CALLBACK);
+
 			if (oldValue === null && newValue === null) {
 				return;
 			}
@@ -226,6 +248,16 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			escapePropSet(this, name, parseElementAttribute(newValue));
 		}
 
-		initLifecycle() {}
+		connectedCallback() {
+			callLifecycle(this, LifeCycleList.CONNECTED_CALLBACK);
+		}
+
+		disconnectedCallback() {
+			callLifecycle(this, LifeCycleList.DISCONNECTED_CALLBACK);
+		}
+
+		adoptedCallback() {
+			callLifecycle(this, LifeCycleList.ADOPTED_CALLBACK);
+		}
 	};
 }

@@ -12,13 +12,13 @@ function flushCallbacks(cycles = 0) {
 
 	// deduplicating
 	for (let i = depEffectQueue.length - 1; i >= 0; i--) {
-		const Effect = depEffectQueue[i];
-		const id = Effect.id;
+		const effect = depEffectQueue[i];
+		const id = effect.id;
 		if (callbackIdMap.has(id)) {
 			continue;
 		}
 		callbackIdMap.set(id, true);
-		copies.unshift(Effect);
+		copies.unshift(effect);
 	}
 
 	callbacks.length = 0;
@@ -60,7 +60,7 @@ export function nextTick(effect?: Effect, ctx?: object) {
 		pending = true;
 		scheduler(flushCallbacks);
 	}
-	if (!Effect && typeof Promise !== 'undefined') {
+	if (!effect && typeof Promise !== 'undefined') {
 		return new Promise((resolve) => {
 			_resolve = resolve;
 		});
