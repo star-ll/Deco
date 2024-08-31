@@ -4,6 +4,11 @@
 	"description": "",
 	"main": "index.js",
 	"type": "module",
+	"author": "star-ll",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/star-ll/deco.git"
+	},
 	"scripts": {},
 	"bin": {
 		"create-deco": "index.js",

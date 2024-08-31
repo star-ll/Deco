@@ -8,8 +8,6 @@ export default function State() {
 		// const stateKeys: Set<unknown> = (metadata?.stateKeys as Set<unknown>) || (metadata.stateKeys = new Set());
 		// stateKeys.add(context.name);
 
-		console.log('state', target, value);
-
 		const stateKeys = Reflect.getMetadata('stateKeys', target) || new Set();
 		stateKeys.add(value);
 		Reflect.defineMetadata('stateKeys', stateKeys, target);

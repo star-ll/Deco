@@ -14,11 +14,7 @@ export interface ListenOptions extends AddEventListenerOptions {
 
 export function Listen(eventName: string, listenOptions: ListenOptions = {}) {
 	return function listen(target: any, methodKey: string) {
-		console.log(111, target, methodKey);
-
 		const listenTarget = function (this: any) {
-			console.log('Listen', this);
-
 			const value: EventListenerOrEventListenerObject = this[methodKey];
 			if (!isFunction(value)) {
 				throw new Error(`@Listen: ${value} is not a function.`);

@@ -16,6 +16,11 @@
 			"require": "./dist/umd/index.js"
 		}
 	},
+	"author": "star-ll",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/star-ll/deco.git"
+	},
 	"scripts": {
 		"build": "tsc && rollup -c"
 	},
@@ -23,7 +28,6 @@
 		"typescript": "^5.5.3"
 	},
 	"keywords": [],
-	"author": "",
 	"license": "MIT",
 	"devDependencies": {
 		"@rollup/plugin-typescript": "^11.1.6",

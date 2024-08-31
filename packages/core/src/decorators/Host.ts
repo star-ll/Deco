@@ -5,7 +5,6 @@ export default function Host(this: any) {
 		// return function (this: any) {
 		// 	return { current: this } as RefType<HTMLElement | undefined>;
 		// };
-		console.log('host', target, propertyKey);
 
 		target[propertyKey] = { current: target } as RefType<HTMLElement>;
 	};

@@ -47,7 +47,6 @@ export function mountVnode(vnode: Vnode, container: HTMLElement) {
 }
 
 function mountElement(vnode: ElementVnode, container: HTMLElement) {
-	console.log(vnode, container);
 	const elm = createElement(vnode.tag);
 	vnode.elm = elm;
 	vnode.children.forEach((child) => {

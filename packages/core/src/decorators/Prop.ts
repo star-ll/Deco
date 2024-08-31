@@ -5,7 +5,7 @@ export default function Prop() {
 		Reflect.defineMetadata('propKeys', propKeys, target);
 
 		Object.defineProperty(target, '__propKeys', {
-			writable: false,
+			writable: true,
 			configurable: false,
 			value: Array.from(propKeys),
 			enumerable: false,

@@ -16,7 +16,11 @@
 		"build": "tsc --noEmit && rollup -c --environment Production"
 	},
 	"packageManager": "pnpm@8.7.0",
-	"author": "",
+	"author": "star-ll",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/star-ll/deco.git"
+	},
 	"license": "MIT",
 	"files": [
 		"dist",
