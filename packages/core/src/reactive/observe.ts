@@ -1,4 +1,4 @@
-import { nextTick } from '../runtime/scheduler';
+import { queueJob } from '../runtime/scheduler';
 import { ObserverOptions } from '../types';
 import { isArray, isObject, isPlainObject } from '../utils/is';
 import { Effect } from './effect';
@@ -183,7 +183,7 @@ export class StatePool {
 				Effect.setOption(options);
 			}
 
-			nextTick(Effect);
+			queueJob(Effect);
 		});
 	}
 }

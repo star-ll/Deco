@@ -2,29 +2,40 @@ import { warn } from 'src/utils/error';
 import { Effect } from '../reactive/effect';
 
 const callbacks: Array<Effect> = [];
+const postCallbacks: Array<Effect> = [];
 let pending = false;
 
-function flushCallbacks(cycles = 0) {
-	pending = false;
-	const depEffectQueue = callbacks.slice();
-	const copies = [];
+function deduplicating(queue: Array<Effect>) {
 	const callbackIdMap = new Map();
+	const deduped = [...new Set(queue)];
+	const result = [];
 
 	// deduplicating
-	for (let i = depEffectQueue.length - 1; i >= 0; i--) {
-		const effect = depEffectQueue[i];
+	for (let i = deduped.length - 1; i >= 0; i--) {
+		const effect = deduped[i];
 		const id = effect.id;
 		if (callbackIdMap.has(id)) {
 			continue;
 		}
 		callbackIdMap.set(id, true);
-		copies.unshift(effect);
+		result.unshift(effect);
 	}
 
-	callbacks.length = 0;
+	return result;
+}
+
+function flushCallbacks(cycles = 0) {
+	pending = false;
+
+	// deduplicating
+	const copies = deduplicating(callbacks.slice());
+
+	callbacks.splice(0, callbacks.length);
 	for (let i = 0; i < copies.length; i++) {
 		copies[i].run();
 	}
+
+	flushPostCallbacks();
 
 	if (callbacks.length) {
 		if (cycles >= 100) {
@@ -32,6 +43,22 @@ function flushCallbacks(cycles = 0) {
 			return;
 		}
 		flushCallbacks(cycles + 1);
+	}
+}
+
+// todo: use flushPostCallbacks for watch(post type)
+function flushPostCallbacks(cycles = 0) {
+	// deduplicating
+	const copies = deduplicating(postCallbacks.slice());
+
+	postCallbacks.splice(0, postCallbacks.length);
+	for (let i = 0; i < copies.length; i++) {
+		copies[i].run();
+	}
+
+	if (callbacks.length && cycles >= 100) {
+		warn(`The number of scheduler postCallbacks exceeds the maximum limit of 100, please check the code.`);
+		return;
 	}
 }
 
@@ -45,24 +72,34 @@ if (typeof window.queueMicrotask === 'function') {
 	scheduler = (callback: typeof flushCallbacks) => setTimeout(callback, 0);
 }
 
-export function nextTick(effect?: Effect, ctx?: object) {
-	let _resolve: (arg0: object | undefined) => void;
+export function nextTick(cb?: Function) {
+	if (cb) {
+		return Promise.resolve().then(() => cb);
+	}
 
-	if (effect) {
+	return Promise.resolve();
+}
+
+export function queueJob(effect: Effect) {
+	const lastJob = callbacks[callbacks.length - 1];
+
+	if (!lastJob || effect.id >= lastJob.id) {
 		callbacks.push(effect);
 	} else {
-		const effect = new Effect(() => {
-			_resolve(ctx);
-		});
-		callbacks.push(effect);
+		const shouldInsertIndex = callbacks.findIndex((item) => item.id > effect.id);
+		callbacks.splice(shouldInsertIndex, 0, effect);
 	}
+
+	queueFlush();
+}
+
+export function queuePostJob(effect: Effect) {
+	callbacks.push(effect);
+}
+
+function queueFlush() {
 	if (!pending) {
 		pending = true;
 		scheduler(flushCallbacks);
-	}
-	if (!effect && typeof Promise !== 'undefined') {
-		return new Promise((resolve) => {
-			_resolve = resolve;
-		});
 	}
 }

@@ -5,7 +5,7 @@ import { Effect } from '../reactive/effect';
 import { expToPath } from '../utils/share';
 // import { isDevelopment } from '../utils/is';
 import { callLifecycle, LifecycleCallback, LifeCycleList } from '../runtime/lifecycle';
-import { nextTick } from '../runtime/scheduler';
+import { queueJob } from '../runtime/scheduler';
 
 let uid = 0;
 export default function Component(options?: {
@@ -146,9 +146,11 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 				});
 
 				if (!this.hasAttribute(name) && this[name] !== undefined && this[name] !== null) {
-					nextTick()?.then(() => {
-						this.setAttribute(name, this[name]);
-					});
+					queueJob(
+						new Effect(() => {
+							this.setAttribute(name, this[name]);
+						}),
+					);
 				}
 			});
 		}

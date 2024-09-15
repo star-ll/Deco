@@ -1,6 +1,7 @@
 import { DecoratorMetadata } from '../types';
 
-//  todo： watchKeys param support ‘obj.s.a’
+// todo： watchKeys param support ‘obj.s.a’
+// todo: pre / sync / post
 export default function Watch(watchKeys: any[] | never[]) {
 	return function (target: Function, context: DecoratorMetadata) {
 		const watchers = Reflect.getMetadata('watchers', target) || new Set();
