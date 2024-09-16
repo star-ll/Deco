@@ -16,5 +16,6 @@ export default {
 	extends: ['@commitlint/config-conventional'],
 	rules: {
 		'type-enum': [2, 'always', typeEnum],
+		"subject-case": [0]
 	},
 };

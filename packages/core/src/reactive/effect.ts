@@ -1,9 +1,10 @@
 export type EffectOptions = {
 	value?: any;
 	oldValue?: any;
-	clear?: Function;
+	cleanup?: Function;
+	scheduler?: Function;
 };
-export type EffectTarget = ((value: unknown, oldValue?: unknown, clear?: Function) => any) | Function;
+export type EffectTarget = ((value: unknown, oldValue?: unknown, cleanup?: Function) => any) | Function;
 
 let uid = 1;
 
@@ -11,28 +12,18 @@ export class Effect {
 	static target: any | null = null;
 
 	id = uid++;
-	#effect: EffectTarget = (...args: any[]) => {};
-	#options: EffectOptions = {};
+	effect: (...args: any[]) => unknown;
+	scheduler?: Function;
+	cleanup?: Function;
 
-	constructor(effect?: EffectTarget | Function, options: EffectOptions = {}) {
-		this.#effect = effect || this.#effect;
-		this.#options = options || this.#options;
+	constructor(effect: (...args: any[]) => unknown, options: EffectOptions = {}) {
+		const { scheduler, cleanup } = options;
+		this.effect = effect;
+		this.scheduler = scheduler;
+		this.cleanup = cleanup;
 	}
 
-	run() {
-		const { value, oldValue, clear } = this.#options;
-		this.#effect(value, oldValue, clear);
-	}
-	setOption(options: EffectOptions) {
-		this.#options = options;
-	}
-	getOption() {
-		return this.#options;
-	}
-	setEffect(effect: any) {
-		this.#effect = effect;
-	}
-	getEffect() {
-		return this.#effect;
+	run(...args: any[]) {
+		return this.effect(...args);
 	}
 }

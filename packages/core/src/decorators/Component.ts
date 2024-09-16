@@ -5,7 +5,8 @@ import { Effect } from '../reactive/effect';
 import { expToPath } from '../utils/share';
 // import { isDevelopment } from '../utils/is';
 import { callLifecycle, LifecycleCallback, LifeCycleList } from '../runtime/lifecycle';
-import { queueJob } from '../runtime/scheduler';
+import { createJob, queueJob, SchedulerJob } from '../runtime/scheduler';
+import { doWatch } from './Watch';
 
 let uid = 0;
 export default function Component(options?: {
@@ -35,7 +36,7 @@ type CustomElementWrapperOptions = {
 };
 function getCustomElementWrapper(target: any, { tag, style, observedAttributes }: CustomElementWrapperOptions): any {
 	return class WebComponent extends target {
-		uid = ++uid;
+		id = ++uid;
 
 		__updateComponent: () => void;
 		__mounted = false;
@@ -56,7 +57,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			super();
 			this.attachShadow({ mode: 'open' });
 
-			const componentUpdateEffect = new Effect();
+			const componentUpdateEffect = new Effect(__updateComponent.bind(this));
 			function __updateComponent(this: WebComponent) {
 				if (this.__mounted) {
 					const updateCallbackResult = callLifecycle(this, LifeCycleList.COMPONENT_WILL_UPDATE);
@@ -66,7 +67,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 				}
 
 				{
-					componentUpdateEffect.setEffect(this.__updateComponent);
+					// componentUpdateEffect.effect = this.__updateComponent;
 					Effect.target = componentUpdateEffect;
 					Effect.target.targetElement = this;
 					this.domUpdate();
@@ -145,12 +146,17 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 					isProp: true,
 				});
 
+				// prop map to html attribute
 				if (!this.hasAttribute(name) && this[name] !== undefined && this[name] !== null) {
-					queueJob(
-						new Effect(() => {
-							this.setAttribute(name, this[name]);
-						}),
-					);
+					// const effect = new Effect(() => {
+					// 	this.setAttribute(name, this[name]);
+					// })
+					// const job = new SchedulerJob(()=> queueJob())
+					// effect.scheduler = ()=> queueJob()
+					// queueJob(
+					// 	,
+					// );
+					queueJob(createJob(() => this.setAttribute(name, this[name])));
 				}
 			});
 		}
@@ -164,18 +170,13 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			}
 
 			for (const item of watchers) {
-				const { watchKeys, target } = item;
+				const { watchKeys, watchMethodName } = item;
 				watchKeys.forEach((watchKey: string) => {
 					const { ctx, property } = expToPath(watchKey, this);
 
-					const watchDep = new Effect((options: any) => {
-						const { newValue, value } = options;
+					const watchEffect = new Effect(() => this[watchKey]);
 
-						target.call(this, newValue, value, () => {
-							statePool.delete(ctx, property, watchDep);
-						});
-					});
-					statePool.set(ctx, property, watchDep);
+					doWatch(this, watchMethodName, watchEffect, property, statePool, item.options);
 				});
 			}
 		}

@@ -1,4 +1,4 @@
-import { Component, Prop, Ref, State, DecoElement } from '@deco/core';
+import { Component, Prop, Ref, State, DecoElement, Watch } from '@deco/core';
 
 const isObject = (target: unknown) => typeof target === 'object' && target !== null;
 
@@ -122,6 +122,46 @@ export class TestPropElement extends DecoElement {
 					</div>
 				</div>
 			</div>
+		);
+	}
+}
+
+@Component()
+export class TestWatch extends DecoElement {
+	@State()
+	value = 1;
+
+	@Watch(['value'])
+	watchValue(val: number, oldValue: number, cleanup: () => void) {
+		console.log('watch value', val, oldValue);
+		cleanup();
+	}
+
+	@Watch(['value'], { once: true })
+	watchValueOnce(val: number, oldValue: number, cleanup: () => void) {
+		console.log('watch once value', val, oldValue);
+	}
+
+	@Watch(['value'], { immediate: true, once: true })
+	watchValueImmediate(val: number, oldValue: number, cleanup: () => void) {
+		console.log('watch value, immediate run', val, oldValue);
+	}
+
+	render() {
+		const onClick = () => {
+			this.value++;
+		};
+
+		return (
+			<>
+				<div>
+					<h3>prop</h3>
+					<div>value: {this.value} (print in console)</div>
+					<div>
+						<button onClick={onClick}>+1</button>
+					</div>
+				</div>
+			</>
 		);
 	}
 }

@@ -1,24 +1,34 @@
 import { warn } from 'src/utils/error';
 import { Effect } from '../reactive/effect';
 
-const callbacks: Array<Effect> = [];
-const postCallbacks: Array<Effect> = [];
+const callbacks: Array<SchedulerJob> = [];
+const postCallbacks: Array<SchedulerJob> = [];
 let pending = false;
 
-function deduplicating(queue: Array<Effect>) {
+let jobId = 1;
+export interface SchedulerJob extends Function {
+	id: number;
+}
+export function createJob(cb: Function): SchedulerJob {
+	const job = cb as SchedulerJob;
+	job.id = jobId++;
+	return job;
+}
+
+function deduplicating(queue: Array<SchedulerJob>) {
 	const callbackIdMap = new Map();
 	const deduped = [...new Set(queue)];
 	const result = [];
 
 	// deduplicating
 	for (let i = deduped.length - 1; i >= 0; i--) {
-		const effect = deduped[i];
-		const id = effect.id;
+		const job = deduped[i];
+		const id = job.id;
 		if (callbackIdMap.has(id)) {
 			continue;
 		}
 		callbackIdMap.set(id, true);
-		result.unshift(effect);
+		result.unshift(job);
 	}
 
 	return result;
@@ -32,7 +42,7 @@ function flushCallbacks(cycles = 0) {
 
 	callbacks.splice(0, callbacks.length);
 	for (let i = 0; i < copies.length; i++) {
-		copies[i].run();
+		copies[i]();
 	}
 
 	flushPostCallbacks();
@@ -53,7 +63,7 @@ function flushPostCallbacks(cycles = 0) {
 
 	postCallbacks.splice(0, postCallbacks.length);
 	for (let i = 0; i < copies.length; i++) {
-		copies[i].run();
+		copies[i]();
 	}
 
 	if (callbacks.length && cycles >= 100) {
@@ -80,21 +90,21 @@ export function nextTick(cb?: Function) {
 	return Promise.resolve();
 }
 
-export function queueJob(effect: Effect) {
+export function queueJob(job: SchedulerJob) {
 	const lastJob = callbacks[callbacks.length - 1];
 
-	if (!lastJob || effect.id >= lastJob.id) {
-		callbacks.push(effect);
+	if (!lastJob || job.id >= lastJob.id) {
+		callbacks.push(job);
 	} else {
-		const shouldInsertIndex = callbacks.findIndex((item) => item.id > effect.id);
-		callbacks.splice(shouldInsertIndex, 0, effect);
+		const shouldInsertIndex = callbacks.findIndex((item) => item.id > job.id);
+		callbacks.splice(shouldInsertIndex, 0, job);
 	}
 
 	queueFlush();
 }
 
-export function queuePostJob(effect: Effect) {
-	callbacks.push(effect);
+export function queuePostJob(job: SchedulerJob) {
+	callbacks.push(job);
 }
 
 function queueFlush() {

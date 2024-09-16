@@ -1,8 +1,9 @@
+import { DecoElement, Component } from '@deco/core';
+
 import './reactive/index';
 import './component/event';
 import './render/nestedComponent';
 import './render/ref';
-import { DecoElement, Component } from '@deco/core';
 
 @Component()
 export class TestDemo extends DecoElement {
@@ -14,6 +15,7 @@ export class TestDemo extends DecoElement {
 				<test-event></test-event>
 				<nested-component></nested-component>
 				<test-ref></test-ref>
+				<test-watch></test-watch>
 			</>
 		);
 	}

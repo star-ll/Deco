@@ -1,4 +1,4 @@
-import { queueJob } from '../runtime/scheduler';
+import { createJob, queueJob, SchedulerJob } from '../runtime/scheduler';
 import { ObserverOptions } from '../types';
 import { isArray, isObject, isPlainObject } from '../utils/is';
 import { Effect } from './effect';
@@ -33,7 +33,7 @@ export function createReactive(targetElement: any, target: unknown, options: Obs
 
 			// isNewProperty ? metadata.statePool.notify(target) : metadata.statePool.notify(target, key);
 
-			statePool.notify(target, key, { value, oldValue });
+			statePool.notify(target, key);
 
 			return true;
 		},
@@ -107,7 +107,7 @@ export function observe(
 				const oldValue = value;
 				value = autoDeepReactive ? createReactive(target, newValue, options) : newValue;
 
-				statePool.notify(target, name, { value, oldValue });
+				statePool.notify(target, name);
 				return true;
 			},
 		},
@@ -136,7 +136,7 @@ export class StatePool {
 		// this.isInitState = true;
 	}
 
-	set(target: object, name: string | symbol, Effect?: Effect) {
+	set(target: object, name: string | symbol, effect?: Effect) {
 		if (proxyMap.has(target)) {
 			// target is a proxy
 			target = proxyMap.get(target)!;
@@ -147,8 +147,8 @@ export class StatePool {
 
 		const depKeyMap = this.statePool.get(target) || this.statePool.set(target, new Map()).get(target);
 		const deps = depKeyMap!.get(name) || depKeyMap!.set(name, new Set()).get(name);
-		if (Effect) {
-			deps?.add(Effect);
+		if (effect) {
+			deps?.add(effect);
 		}
 	}
 
@@ -159,7 +159,7 @@ export class StatePool {
 		});
 	}
 
-	delete(target: object, name: string | symbol, Effect?: Effect) {
+	delete(target: object, name: string | symbol, effect?: Effect) {
 		const depKeyMap = this.statePool.get(target);
 		if (!depKeyMap) {
 			throw new Error(`${target} has no state ${String(name)}`);
@@ -168,22 +168,22 @@ export class StatePool {
 		if (!deps) {
 			return;
 		}
-		if (!Effect) {
-			deps.clear();
+		if (!effect) {
+			// effect?.cleanup?.();
 			return;
 		}
-		deps.delete(Effect);
+		deps.delete(effect);
 	}
 
-	notify(target: object, name: string | symbol, options?: { value: unknown; oldValue: unknown }) {
+	notify(target: object, name: string | symbol) {
 		const depKeyMap = this.statePool.get(target) || this.statePool.set(target, new Map()).get(target);
 		const deps = depKeyMap!.get(name) || depKeyMap!.set(name, new Set()).get(name);
-		deps?.forEach((Effect: Effect) => {
-			if (options) {
-				Effect.setOption(options);
+		deps?.forEach((effect: Effect) => {
+			if (effect.scheduler) {
+				effect.scheduler(target);
+			} else {
+				queueJob(createJob(effect.run.bind(effect)));
 			}
-
-			queueJob(Effect);
 		});
 	}
 }
