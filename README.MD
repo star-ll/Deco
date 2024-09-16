@@ -28,5 +28,5 @@ npm create deco
 
 ```shell
 pnpm install
-pnpm run dev --filter <package, e.g. core>
+pnpm run --filter <package, e.g. core> dev
 ```
