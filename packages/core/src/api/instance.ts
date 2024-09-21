@@ -1,7 +1,8 @@
 import { jsx as h, Fragment } from '@deco/renderer';
 import { nextTickApi } from './global-api';
+import { DecoPlugin } from './plugin';
 
-export class DecoElement extends HTMLElement {
+export class DecoElement extends DecoPlugin {
 	static h = h;
 	static Fragment = Fragment;
 
@@ -13,14 +14,6 @@ export class DecoElement extends HTMLElement {
 	disconnectedCallback() {}
 	adoptedCallback() {}
 	attributeChangedCallback?(name: string, oldValue: any, newValue: any) {}
-
-	static use() {
-		return this;
-	}
-
-	static globalStyle() {
-		return this;
-	}
 
 	$nextTick(this: any, callback: Function) {
 		return nextTickApi.call(this, callback);

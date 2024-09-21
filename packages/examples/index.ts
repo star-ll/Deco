@@ -1,6 +1,6 @@
-import routes from './src/router';
+import routes, { Route } from './src/router';
 
-function handlerRouter(route) {
+function handlerRouter(route: Route) {
 	if (!route) {
 		document.write('404');
 	}

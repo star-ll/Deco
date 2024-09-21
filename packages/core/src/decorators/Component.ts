@@ -5,12 +5,22 @@ import { ComponentEffect, Effect } from '../reactive/effect';
 import { expToPath } from '../utils/share';
 // import { isDevelopment } from '../utils/is';
 import { callLifecycle, LifecycleCallback, LifeCycleList } from '../runtime/lifecycle';
-import { createJob, queueJob, SchedulerJob } from '../runtime/scheduler';
+import { createJob, queueJob } from '../runtime/scheduler';
 import { doWatch } from './Watch';
+import { DecoPlugin } from '../api/plugin';
 
 export interface DecoWebComponent {
 	[K: string | symbol]: any;
 	readonly uid: number;
+
+	componentWillMountList: LifecycleCallback[];
+	componentDidMountList: LifecycleCallback[];
+	componentWillUpdateList: LifecycleCallback[];
+	componentDidUpdateList: LifecycleCallback[];
+	connectedCallbackList: LifecycleCallback[];
+	disconnectedCallbackList: LifecycleCallback[];
+	attributeChangedCallbackList: LifecycleCallback[];
+	adoptedCallbackList: LifecycleCallback[];
 }
 
 let uid = 0;
@@ -98,6 +108,9 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			this.__updateComponent();
 			this.__mounted = true;
 			callLifecycle(this, LifeCycleList.COMPONENT_WILL_MOUNT);
+
+			const plugins = this.getPlugins?.();
+			console.log(plugins);
 		}
 
 		validateStateAndPropKeys() {
@@ -143,8 +156,6 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			}
 
 			statePool.initState(this, Array.from(propKeys));
-			// automatically trigger re-render when prop change, so no need to setAll
-			// statePool.setAll(this, this.__updateComponent);
 
 			Array.from(propKeys.keys()).forEach((name: any) => {
 				observe(this, name, this.hasAttribute(name) ? this.getAttribute(name) : this[name], {

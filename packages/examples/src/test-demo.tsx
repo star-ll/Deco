@@ -1,9 +1,15 @@
 import { DecoElement, Component } from '@deco/core';
 
-import './reactive/index';
-import './component/event';
-import './render/nestedComponent';
-import './render/ref';
+import './reactive';
+import './event';
+import './nestedComponent';
+import './ref';
+
+class GlobalStyle {
+	apply() {}
+}
+
+DecoElement.use(new GlobalStyle());
 
 @Component()
 export class TestDemo extends DecoElement {
