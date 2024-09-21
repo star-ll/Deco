@@ -8,6 +8,11 @@ import { callLifecycle, LifecycleCallback, LifeCycleList } from '../runtime/life
 import { createJob, queueJob, SchedulerJob } from '../runtime/scheduler';
 import { doWatch } from './Watch';
 
+export interface DecoWebComponent {
+	[K: string | symbol]: any;
+	readonly uid: number;
+}
+
 let uid = 0;
 export default function Component(options?: {
 	// tag name
@@ -35,8 +40,8 @@ type CustomElementWrapperOptions = {
 	observedAttributes: string[];
 };
 function getCustomElementWrapper(target: any, { tag, style, observedAttributes }: CustomElementWrapperOptions): any {
-	return class WebComponent extends target {
-		id = ++uid;
+	return class WebComponent extends target implements DecoWebComponent {
+		uid = ++uid;
 
 		__updateComponent: () => void;
 		__mounted = false;

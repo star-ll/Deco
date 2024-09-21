@@ -2,6 +2,7 @@ import { DecoratorMetadata } from '../types';
 import { createJob, queueJob, SchedulerJob } from '../runtime/scheduler';
 import { Effect } from '../reactive/effect';
 import { StatePool } from '../reactive/observe';
+import { DecoWebComponent } from './Component';
 
 export interface WatchOptions {
 	once?: boolean;
@@ -19,8 +20,8 @@ export default function Watch(watchKeys: any[] | never[], options: WatchOptions 
 }
 
 export function doWatch(
-	ctx: any,
-	watchMethodName: string,
+	ctx: DecoWebComponent,
+	watchMethodName: keyof DecoWebComponent,
 	watchEffect: Effect,
 	property: string | symbol,
 	statePool: StatePool,
@@ -33,6 +34,7 @@ export function doWatch(
 		const cleanup = () => {
 			statePool.delete(ctx, property, watchEffect);
 		};
+
 		ctx[watchMethodName].call(ctx, newValue, oldValue, cleanup);
 
 		oldValue = newValue;
@@ -42,7 +44,7 @@ export function doWatch(
 		}
 	}, watchEffect.id);
 	watchEffect.scheduler = () => queueJob(job);
-	statePool.set(ctx, property, watchEffect);
+	watchEffect.captureSelf(ctx, property);
 
 	if (watchOptions.immediate) {
 		job();

@@ -1,4 +1,4 @@
-import { createJob, queueJob, SchedulerJob } from '../runtime/scheduler';
+import { createJob, queueJob } from '../runtime/scheduler';
 import { ObserverOptions } from '../types';
 import { isArray, isObject, isPlainObject } from '../utils/is';
 import { Effect } from './effect';
@@ -18,21 +18,16 @@ export function createReactive(targetElement: any, target: unknown, options: Obs
 	const proxyTarget = new Proxy(target, {
 		get(target, key, receiver) {
 			if (Effect.target && Effect.target.targetElement === targetElement) {
-				statePool.set(target, key, Effect.target);
+				const effect = Effect.target;
+				const targetElement = Effect.target.targetElement;
+				effect.captureSelf(target, key, targetElement);
 			}
 
 			return Reflect.get(target, key, receiver);
 		},
 
 		set(target, key, value, receiver) {
-			// const isNewProperty = !Reflect.has(target, key);
-			// metadata.statePool.set(target, key);
-
-			const oldValue = Reflect.get(target, key, receiver);
 			Reflect.set(target, key, autoDeepReactive ? createReactive(targetElement, value) : value, receiver);
-
-			// isNewProperty ? metadata.statePool.notify(target) : metadata.statePool.notify(target, key);
-
 			statePool.notify(target, key);
 
 			return true;
@@ -89,7 +84,8 @@ export function observe(
 		[name]: {
 			get() {
 				if (Effect.target && Effect.target.targetElement === target) {
-					statePool.set(target, name, Effect.target);
+					const effect = Effect.target;
+					effect.captureSelf(target, name);
 				}
 
 				return value;
@@ -116,7 +112,7 @@ export function observe(
 
 export class StatePool {
 	private isInitState: boolean = false;
-	private statePool: WeakMap<object, Map<string | symbol, Set<Effect>>> = new WeakMap();
+	private store: WeakMap<object, Map<string | symbol, Set<Effect>>> = new WeakMap();
 
 	constructor() {}
 
@@ -125,7 +121,7 @@ export class StatePool {
 			throw new Error('StatePool has been initialized');
 		}
 
-		const depKeyMap = this.statePool.get(target) || this.statePool.set(target, new Map()).get(target);
+		const depKeyMap = this.store.get(target) || this.store.set(target, new Map()).get(target);
 		stateKeys.forEach((key) => {
 			if (depKeyMap!.has(key)) {
 				return;
@@ -145,7 +141,7 @@ export class StatePool {
 			}
 		}
 
-		const depKeyMap = this.statePool.get(target) || this.statePool.set(target, new Map()).get(target);
+		const depKeyMap = this.store.get(target) || this.store.set(target, new Map()).get(target);
 		const deps = depKeyMap!.get(name) || depKeyMap!.set(name, new Set()).get(name);
 		if (effect) {
 			deps?.add(effect);
@@ -153,14 +149,14 @@ export class StatePool {
 	}
 
 	setAll(target: object, Effect: Effect) {
-		const depKeyMap = this.statePool.get(target) || this.statePool.set(target, new Map()).get(target);
+		const depKeyMap = this.store.get(target) || this.store.set(target, new Map()).get(target);
 		depKeyMap?.forEach((deps) => {
 			deps.add(Effect);
 		});
 	}
 
 	delete(target: object, name: string | symbol, effect?: Effect) {
-		const depKeyMap = this.statePool.get(target);
+		const depKeyMap = this.store.get(target);
 		if (!depKeyMap) {
 			throw new Error(`${target} has no state ${String(name)}`);
 		}
@@ -176,7 +172,7 @@ export class StatePool {
 	}
 
 	notify(target: object, name: string | symbol) {
-		const depKeyMap = this.statePool.get(target) || this.statePool.set(target, new Map()).get(target);
+		const depKeyMap = this.store.get(target) || this.store.set(target, new Map()).get(target);
 		const deps = depKeyMap!.get(name) || depKeyMap!.set(name, new Set()).get(name);
 		deps?.forEach((effect: Effect) => {
 			if (effect.scheduler) {

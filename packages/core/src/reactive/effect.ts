@@ -1,3 +1,6 @@
+import { StatePool } from './observe';
+import { DecoWebComponent } from '../decorators/Component';
+
 export type EffectOptions = {
 	value?: any;
 	oldValue?: any;
@@ -6,7 +9,7 @@ export type EffectOptions = {
 };
 export type EffectTarget = ((value: unknown, oldValue?: unknown, cleanup?: Function) => any) | Function;
 
-export type ComponentEffect = Effect & { targetElement: any };
+export type ComponentEffect = Effect & { targetElement: DecoWebComponent };
 
 let uid = 1;
 
@@ -27,5 +30,10 @@ export class Effect {
 
 	run(...args: any[]) {
 		return this.effect(...args);
+	}
+
+	captureSelf(target: any, name: string | symbol, instance?: any) {
+		const statePool: StatePool = Reflect.getMetadata('statePool', instance || target);
+		statePool.set(target, name, this);
 	}
 }
