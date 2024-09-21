@@ -40,7 +40,7 @@ export function doWatch(
 		if (watchOptions.once) {
 			cleanup();
 		}
-	});
+	}, watchEffect.id);
 	watchEffect.scheduler = () => queueJob(job);
 	statePool.set(ctx, property, watchEffect);
 

@@ -54,7 +54,7 @@ export function isNull(value: unknown): value is null {
 	return value === null;
 }
 
-export function isDefined(value: unknown) {
+export function isDefined<T>(value: unknown): value is T {
 	return !isUndefined(value) && !isNull(value);
 }
 

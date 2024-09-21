@@ -1,17 +1,18 @@
 import { warn } from 'src/utils/error';
-import { Effect } from '../reactive/effect';
+import { isDefined } from '../utils/is';
+
+enum SchedulerJobFlag {}
 
 const callbacks: Array<SchedulerJob> = [];
 const postCallbacks: Array<SchedulerJob> = [];
 let pending = false;
 
-let jobId = 1;
 export interface SchedulerJob extends Function {
-	id: number;
+	id?: number;
 }
-export function createJob(cb: Function): SchedulerJob {
+export function createJob(cb: Function, id?: number, flag?: SchedulerJobFlag): SchedulerJob {
 	const job = cb as SchedulerJob;
-	job.id = jobId++;
+	job.id = id;
 	return job;
 }
 
@@ -31,7 +32,7 @@ function deduplicating(queue: Array<SchedulerJob>) {
 		result.unshift(job);
 	}
 
-	return result;
+	return result.sort((a, b) => Number(a.id ?? Number.MIN_SAFE_INTEGER) - Number(b.id ?? Number.MIN_SAFE_INTEGER));
 }
 
 function flushCallbacks(cycles = 0) {
@@ -91,12 +92,14 @@ export function nextTick(cb?: Function) {
 }
 
 export function queueJob(job: SchedulerJob) {
-	const lastJob = callbacks[callbacks.length - 1];
+	const lastJob = callbacks.findLast((i) => isDefined<number>(i.id));
+	const lastJobId = lastJob?.id;
+	const jobId = job.id;
 
-	if (!lastJob || job.id >= lastJob.id) {
+	if (!isDefined<number>(jobId) || !isDefined<number>(lastJobId) || jobId > lastJobId) {
 		callbacks.push(job);
 	} else {
-		const shouldInsertIndex = callbacks.findIndex((item) => item.id > job.id);
+		const shouldInsertIndex = callbacks.findIndex((item) => isDefined<number>(item.id) && item.id > jobId);
 		callbacks.splice(shouldInsertIndex, 0, job);
 	}
 

@@ -1,7 +1,7 @@
 import { flagComponent, parseElementAttribute } from '../utils/element';
 import { Fragment, jsx, render } from '@deco/renderer';
 import { escapePropSet, observe, StatePool } from '../reactive/observe';
-import { Effect } from '../reactive/effect';
+import { ComponentEffect, Effect } from '../reactive/effect';
 import { expToPath } from '../utils/share';
 // import { isDevelopment } from '../utils/is';
 import { callLifecycle, LifecycleCallback, LifeCycleList } from '../runtime/lifecycle';
@@ -57,7 +57,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			super();
 			this.attachShadow({ mode: 'open' });
 
-			const componentUpdateEffect = new Effect(__updateComponent.bind(this));
+			const componentUpdateEffect = new Effect(__updateComponent.bind(this)) as ComponentEffect;
 			function __updateComponent(this: WebComponent) {
 				if (this.__mounted) {
 					const updateCallbackResult = callLifecycle(this, LifeCycleList.COMPONENT_WILL_UPDATE);
@@ -148,14 +148,6 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 
 				// prop map to html attribute
 				if (!this.hasAttribute(name) && this[name] !== undefined && this[name] !== null) {
-					// const effect = new Effect(() => {
-					// 	this.setAttribute(name, this[name]);
-					// })
-					// const job = new SchedulerJob(()=> queueJob())
-					// effect.scheduler = ()=> queueJob()
-					// queueJob(
-					// 	,
-					// );
 					queueJob(createJob(() => this.setAttribute(name, this[name])));
 				}
 			});

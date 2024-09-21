@@ -16,6 +16,8 @@ export class TestReactiveElement extends DecoElement {
 	};
 
 	render() {
+		console.log('render');
+
 		return (
 			<div>
 				<div>
@@ -134,7 +136,7 @@ export class TestWatch extends DecoElement {
 	@Watch(['value'])
 	watchValue(val: number, oldValue: number, cleanup: () => void) {
 		console.log('watch value', val, oldValue);
-		cleanup();
+		// cleanup();
 	}
 
 	@Watch(['value'], { once: true })
@@ -142,7 +144,7 @@ export class TestWatch extends DecoElement {
 		console.log('watch once value', val, oldValue);
 	}
 
-	@Watch(['value'], { immediate: true, once: true })
+	@Watch(['value'], { immediate: true })
 	watchValueImmediate(val: number, oldValue: number, cleanup: () => void) {
 		console.log('watch value, immediate run', val, oldValue);
 	}

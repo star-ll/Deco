@@ -182,7 +182,7 @@ export class StatePool {
 			if (effect.scheduler) {
 				effect.scheduler(target);
 			} else {
-				queueJob(createJob(effect.run.bind(effect)));
+				queueJob(createJob(effect.run.bind(effect), effect.id));
 			}
 		});
 	}

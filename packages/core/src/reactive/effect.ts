@@ -6,10 +6,12 @@ export type EffectOptions = {
 };
 export type EffectTarget = ((value: unknown, oldValue?: unknown, cleanup?: Function) => any) | Function;
 
+export type ComponentEffect = Effect & { targetElement: any };
+
 let uid = 1;
 
 export class Effect {
-	static target: any | null = null;
+	static target: ComponentEffect | null = null;
 
 	id = uid++;
 	effect: (...args: any[]) => unknown;
