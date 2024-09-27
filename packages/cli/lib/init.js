@@ -12,7 +12,7 @@ class ArgsContext {
 	constructor(projectName) {
 		this.cwd = process.cwd();
 		this.__filename = url.fileURLToPath(import.meta.url);
-		this.__dirname = path.dirname(__filename);
+		this.__dirname = path.dirname(this.__filename);
 		this.projectName = projectName;
 		this.projectPath = path.join(this.cwd, projectName);
 		this.packageManagerTool = 'npm';
@@ -90,60 +90,33 @@ async function ensureProjectPath({ projectPath, projectName }) {
 	return execContext;
 }
 
-async function execCopyConfigFile({ projectPath }) {
-	// copy ../template/webpack.config.js
-	const execContext = {
-		desc: 'Create webpack.config.js file',
-		callback: (execContext.callback = async () =>
-			copy(
-				path.join(__dirname, '../template/webpack.config.js'),
-				path.join(projectPath, 'webpack.config.js'),
-			).catch((err) => {
-				console.error('copy package.json file fail');
-				console.error(err);
-			})),
-	};
-
-	return execContext;
-}
-
-async function execCreatePackageJson({ projectName, projectPath }) {
-	// create ../template/package.json
-	const execContext = {
-		desc: 'Create package.json file',
-		callback: async () => {
-			// const targetPackage = await readJson(path.join(__dirname, '../template/package.json'));
-			// targetPackage.name = projectName;
-			// return outputJson(path.join(projectPath, 'package.json'), targetPackage).catch((err) => {
-			// 	console.error('create package.json file fail');
-			// 	console.error(err);
-			// });
-		},
-	};
-	return execContext;
-}
-
 async function execInstall({ packageManagerTool, projectPath }) {
-	return {
-		desc: 'Install dependencies',
-		callback: async () =>
-			exec(
-				`${packageManagerTool} install`,
-				{
-					cwd: projectPath,
-					shell: true,
-					// stdio: 'inherit',
-				},
-				(error, stdout, stderr) => {
-					if (error) {
-						console.error(`exec error: ${error}`);
-						return;
-					}
-					console.log(`stdout: ${stdout}`);
-					console.error(`stderr: ${stderr}`);
-				},
-			),
-	};
+	return new Promise((resolve, reject) => {
+		const spinner = ora(`${packageManagerTool} install...`).start();
+
+		exec(
+			`${packageManagerTool} install`,
+			{
+				cwd: projectPath,
+				shell: true,
+				// stdio: [process.stdin, process.stdout, process.stderr],
+			},
+			(err, stdout, stderr) => {
+				if (err) {
+					console.error(err);
+					spinner.fail(`${packageManagerTool} install fail`);
+					return reject(err);
+				}
+				console.log(stdout);
+				if (stderr) {
+					console.error(stderr);
+				}
+
+				spinner.succeed(`${packageManagerTool} install OK`);
+				resolve();
+			},
+		);
+	});
 }
 
 async function ensurePackageManagerTool(argsContext) {
@@ -160,24 +133,18 @@ async function ensurePackageManagerTool(argsContext) {
 
 	argsContext.packageManagerTool = action;
 }
-
-async function execAll(execQueue, argsContext) {
-	const spinner = ora('Loading unicorns');
+async function execCopyAllFiles(argsContext) {
+	const spinner = ora('Copy all files...').start();
 	try {
-		for (const execTask of execQueue) {
-			if (!execTask) {
-				continue;
-			}
-			spinner.text(execTask.desc + '...').start();
-			await execTask(argsContext);
-			spinner.succeed(execTask.desc + ' OK');
-		}
-	} catch (err) {
-		spinner.fail('Fail!! Please check fail log.');
-		console.error(err);
+		await fs.ensureDir(argsContext.projectPath);
+		await fs.copy(path.join(argsContext.__dirname, '../template'), argsContext.projectPath);
+
+		spinner.succeed('Copy all files OK');
+	} catch (error) {
+		console.error('copy	error:', error);
+		spinner.fail('Copy all files fail');
 	}
 }
-
 async function main() {
 	await runStartUI();
 	const command = await ensureProjectName();
@@ -185,18 +152,11 @@ async function main() {
 	const { projectName } = command;
 	const argsContext = new ArgsContext(projectName);
 
-	const ensureQueue = [
-		ensureProjectPath,
-		ensurePackageManagerTool,
-		execCreatePackageJson,
-		execCopyConfigFile,
-		execInstall,
-	];
-	const execQueue = [];
-	for (const task of ensureQueue) {
-		execQueue.push(await task(argsContext));
+	const ensureQueue = [ensureProjectPath, ensurePackageManagerTool, execCopyAllFiles, execInstall];
+
+	for (const execTask of ensureQueue) {
+		await execTask(argsContext);
 	}
-	await execAll(execQueue, argsContext);
 }
 
 export default main;

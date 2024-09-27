@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"strict": true,
+		"rootDir": "./",
+		"baseUrl": "./",
+		"outDir": "./dist",
+		"moduleResolution": "Node",
+		"jsx": "react",
+		"jsxFactory": "DecoElement.h",
+		"jsxFragmentFactory": "DecoElement.Fragment",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true
+	},
+	"include": ["./src/**/*.ts", "./src/**/*.tsx"]
+}

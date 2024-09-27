@@ -1,6 +1,5 @@
 import decoInjectComponent from "./rollup-plugin-deco-inject.js"
 
-
 /**
  * @type {import('vite').UserConfig}
  */
