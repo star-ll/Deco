@@ -24,8 +24,16 @@
 	"license": "MIT",
 	"files": [
 		"dist",
-		"jsx.d.ts",
+		"package.json",
 		"README.MD"
+	],
+	"keywords": [
+		"deco",
+		"@deco",
+		"@deco/core",
+		"web component",
+		"decorators",
+		"component"
 	],
 	"engines": {
 		"node": ">=16.0.0"

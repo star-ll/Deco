@@ -6,8 +6,21 @@
 	"type": "module",
 	"types": "dist/index.d.ts",
 	"packageManager": "pnpm@8.7.0",
+	"keywords": [
+		"deco",
+		"@deco",
+		"web component",
+		"component",
+		"deco-render",
+		"decorators",
+		"jsx",
+		"render"
+	],
+	"license": "MIT",
 	"files": [
-		"dist"
+		"dist",
+		"package.json",
+		"README.MD"
 	],
 	"exports": {
 		".": {
@@ -27,8 +40,6 @@
 	"dependencies": {
 		"typescript": "^5.5.3"
 	},
-	"keywords": [],
-	"license": "MIT",
 	"devDependencies": {
 		"@rollup/plugin-typescript": "^11.1.6",
 		"rollup": "^4.19.0",
