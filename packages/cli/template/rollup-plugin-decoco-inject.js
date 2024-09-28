@@ -32,7 +32,7 @@ export default function vitePluginDecoInjectComponent(scanPatterns) {
           componentFiles = await scanFiles(scanPatterns);
           console.log(`Files with ${JSON.stringify(scanPatterns)} extension:`, componentFiles);
 
-          const res ='export default function defineComponent() {' + componentFiles.map(i=>`import("${('.'+path.sep+path.relative(__dirname,i)).replace(/\\/g, '/')}")`).join('\n') + '}\n' 
+          const res = componentFiles.map(i=>`import "${('.'+path.sep+path.relative(__dirname,i)).replace(/\\/g, '/')}"`).join('\n') + '\n' 
           return res
         } catch (error) {
           console.error('Error scanning files:', error);

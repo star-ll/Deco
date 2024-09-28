@@ -110,7 +110,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			callLifecycle(this, LifeCycleList.COMPONENT_WILL_MOUNT);
 
 			const plugins = this.getPlugins?.();
-			console.log(plugins);
+			// console.log(plugins);
 		}
 
 		validateStateAndPropKeys() {
