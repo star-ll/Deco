@@ -1,6 +1,6 @@
 {
 	"name": "create-decoco",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "Create a new Decoco project",
 	"main": "index.js",
 	"type": "module",
@@ -15,13 +15,15 @@
 		"create-decoco": "./index.js"
 	},
 	"devDependencies": {
-		"@types/node": "^20.11.30",
+		"@types/node": "^20.11.30"
+	},
+	"dependencies": {
 		"cross-env": "^7.0.3",
 		"figlet": "^1.7.0",
 		"fs-extra": "^11.2.0",
-		"inquirer": "^9.2.23",
+		"inquirer": "^11.1.0",
 		"minimist": "^1.2.8",
-		"ora": "^8.0.1",
-		"picocolors": "^1.0.1"
+		"ora": "^8.1.0",
+		"picocolors": "^1.1.0"
 	}
 }
