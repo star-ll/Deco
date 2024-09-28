@@ -1,8 +1,8 @@
 {
-	"name": "@deco/renderer",
+	"name": "@decoco/renderer",
 	"version": "0.2.0",
-	"description": "",
-	"main": "dist/index.js",
+	"description": "A vital component of the Deco framework, responsible for rendering elements to the DOM",
+	"main": "dist/esm/index.js",
 	"type": "module",
 	"types": "dist/index.d.ts",
 	"packageManager": "pnpm@8.7.0",
