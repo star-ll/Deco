@@ -1,7 +1,7 @@
 {
 	"name": "create-decoco",
-	"version": "1.0.0",
-	"description": "",
+	"version": "0.2.0",
+	"description": "Create a new Decoco project",
 	"main": "index.js",
 	"type": "module",
 	"scripts": {},
@@ -14,7 +14,6 @@
 		"create-decoco": "index.js init",
 		"decoco": "index.js"
 	},
-	"private": true,
 	"devDependencies": {
 		"@types/node": "^20.11.30",
 		"commander": "^12.1.0",
