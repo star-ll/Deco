@@ -1,22 +1,26 @@
+# Deco
+Deco is an efficient Web Component framework based on decorator-driven development. It provides a new way to build reusable components and simplifies common programming tasks such as event listening and state management through decorators.
 
-# 特点
-- 自动深度响应
-- 基于装饰器模式
-- 完善的组件API设计
-- 支持JSX and TypeScript
+# Features
+- Based on the Decorator Pattern
+- Efficient Reactive System
+- Support JSX and TypeScript
+- Extensible API
 
-# roadmap
-- [x] auto deep reactivity
-- [x] JSX and TypeScript
+# Roadmap
+- [x] Reactive System
+- [x] Scheduler
 - [x] @Component
 - [x] @Prop
 - [x] @State
 - [X] @Event and @Listen
 - [x] @Ref
 - [x] @Watch
-- [x] Scheduler
-- [ ] lifecycle
+- [x] Render and JSX
 - [ ] @useRaw
+- [ ] lifecycle
+- [ ] Plugins
+- [ ] State Management
 - [ ] test
 - [ ] performance optimization
 - [ ] more...

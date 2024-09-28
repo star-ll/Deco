@@ -139,6 +139,16 @@ async function execCopyAllFiles(argsContext) {
 		await fs.ensureDir(argsContext.projectPath);
 		await fs.copy(path.join(argsContext.__dirname, '../template'), argsContext.projectPath);
 
+		{
+			// update package.json
+			const packageJsonPath = path.join(argsContext.projectPath, 'package.json');
+			const packageJsonContent = await fs.readFile(packageJsonPath, 'utf8');
+			let packageJson = JSON.parse(packageJsonContent);
+
+			packageJson.name = argsContext.projectName;
+			await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), 'utf8');
+		}
+
 		spinner.succeed('Copy all files OK');
 	} catch (error) {
 		console.error('copy	error:', error);
