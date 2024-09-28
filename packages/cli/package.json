@@ -8,15 +8,14 @@
 	"author": "star-ll",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/star-ll/deco.git"
+		"url": "git+https://github.com/star-ll/deco.git",
+		"directory": "packages/create-decoco"
 	},
 	"bin": {
-		"create-decoco": "index.js init",
-		"decoco": "index.js"
+		"create-decoco": "./index.js"
 	},
 	"devDependencies": {
 		"@types/node": "^20.11.30",
-		"commander": "^12.1.0",
 		"cross-env": "^7.0.3",
 		"figlet": "^1.7.0",
 		"fs-extra": "^11.2.0",
