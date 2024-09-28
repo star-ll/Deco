@@ -10,8 +10,8 @@
 	"author": "",
 	"license": "MIT",
 	"dependencies": {
-		"@deco/renderer": "^0.2.0",
-		"@deco/core": "^0.2.0"
+		"@decoco/renderer": "^0.2.0",
+		"@decoco/core": "^0.2.0"
 	},
 	"devDependencies": {
 		"vite": "^5.4.8",

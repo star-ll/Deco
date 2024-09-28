@@ -1,17 +1,17 @@
 {
 	"name": "@decoco/renderer",
 	"version": "0.2.0",
-	"description": "A vital component of the Deco framework, responsible for rendering elements to the DOM",
+	"description": "A vital component of the Decoco framework, responsible for rendering elements to the DOM",
 	"main": "dist/esm/index.js",
 	"type": "module",
 	"types": "dist/index.d.ts",
 	"packageManager": "pnpm@8.7.0",
 	"keywords": [
-		"deco",
-		"@deco",
+		"decoco",
+		"@decoco",
 		"web component",
 		"component",
-		"deco-render",
+		"decoco-render",
 		"decorators",
 		"jsx",
 		"render"

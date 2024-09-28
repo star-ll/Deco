@@ -1,4 +1,4 @@
-import { Component, Prop, Ref, State, DecoElement, Watch } from '@deco/core';
+import { Component, Prop, Ref, State, DecoElement, Watch } from '@decoco/core';
 
 const isObject = (target: unknown) => typeof target === 'object' && target !== null;
 

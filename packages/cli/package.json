@@ -1,5 +1,5 @@
 {
-	"name": "create-deco",
+	"name": "create-decoco",
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
@@ -11,8 +11,8 @@
 		"url": "git+https://github.com/star-ll/deco.git"
 	},
 	"bin": {
-		"create-deco": "index.js init",
-		"deco": "index.js"
+		"create-decoco": "index.js init",
+		"decoco": "index.js"
 	},
 	"private": true,
 	"devDependencies": {

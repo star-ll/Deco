@@ -1,4 +1,4 @@
-import { Component, Prop, State, DecoElement } from '@deco/core';
+import { Component, Prop, State, DecoElement } from '@decoco/core';
 
 @Component({ tag: 'm-button' })
 export class Button extends DecoElement {

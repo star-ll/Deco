@@ -1,4 +1,4 @@
-import { Component, DecoElement } from '@deco/core';
+import { Component, DecoElement } from '@decoco/core';
 
 @Component()
 export default class ChatInput extends DecoElement {

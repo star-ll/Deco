@@ -14,7 +14,7 @@ async function scanFiles(scanPatterns) {
 
 
 export default function vitePluginDecoInjectComponent(scanPatterns) {
-  const virtualModuleId = 'virtual:deco'
+  const virtualModuleId = 'virtual:decoco'
   const resolvedVirtualModuleId = '\0' + virtualModuleId
   let componentFiles
 

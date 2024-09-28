@@ -1,4 +1,4 @@
-import { DecoElement, Component } from '@deco/core';
+import { DecoElement, Component } from '@decoco/core';
 
 import './reactive';
 import './event';

@@ -1,7 +1,7 @@
 {
-	"name": "@deco/core",
+	"name": "@decoco/core",
 	"version": "0.2.0",
-	"description": "Deco is an efficient Web Component framework based on decorator-driven development",
+	"description": "decoco is an efficient Web Component framework based on decorator-driven development",
 	"main": "./dist/index.esm.dev.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
@@ -28,9 +28,9 @@
 		"README.MD"
 	],
 	"keywords": [
-		"deco",
-		"@deco",
-		"@deco/core",
+		"decoco",
+		"@decoco",
+		"@decoco/core",
 		"web component",
 		"decorators",
 		"component"
@@ -39,7 +39,7 @@
 		"node": ">=16.0.0"
 	},
 	"dependencies": {
-		"@deco/renderer": "workspace:*",
+		"@decoco/renderer": "workspace:*",
 		"reflect-metadata": "^0.2.2"
 	},
 	"devDependencies": {

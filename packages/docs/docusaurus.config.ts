@@ -3,7 +3,7 @@ import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-	title: 'deco',
+	title: 'decoco',
 	tagline: '一个基于装饰器驱动开发的高效 Web Component 框架',
 	favicon: 'img/favicon.ico',
 
@@ -16,7 +16,7 @@ const config: Config = {
 	// GitHub pages deployment config.
 	// If you aren't using GitHub pages, you don't need these.
 	// organizationName: 'facebook', // Usually your GitHub org/user name.
-	projectName: 'deco', // Usually your repo name.
+	projectName: 'decoco', // Usually your repo name.
 
 	onBrokenLinks: 'throw',
 	onBrokenMarkdownLinks: 'warn',
@@ -58,7 +58,7 @@ const config: Config = {
 		// Replace with your project's social card
 		image: 'img/docusaurus-social-card.jpg',
 		navbar: {
-			title: 'deco',
+			title: 'decoco',
 			logo: {
 				alt: 'My Site Logo',
 				src: 'img/logo.svg',

@@ -1,5 +1,5 @@
 import { flagComponent, parseElementAttribute } from '../utils/element';
-import { Fragment, jsx, render } from '@deco/renderer';
+import { Fragment, jsx, render } from '@decoco/renderer';
 import { escapePropSet, observe, StatePool } from '../reactive/observe';
 import { ComponentEffect, Effect } from '../reactive/effect';
 import { expToPath } from '../utils/share';

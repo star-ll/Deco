@@ -1,4 +1,4 @@
-import decoInjectComponent from "./rollup-plugin-deco-inject.js"
+import decoInjectComponent from "./rollup-plugin-decoco-inject.js"
 
 /**
  * @type {import('vite').UserConfig}

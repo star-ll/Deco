@@ -21,7 +21,7 @@ class ArgsContext {
 
 function runStartUI() {
 	return new Promise((resolve, reject) => {
-		figlet('Deco Start !!', function (err, data) {
+		figlet('decoco Start !!', function (err, data) {
 			if (err) {
 				console.log('Something went wrong...');
 				console.dir(err);
@@ -39,7 +39,7 @@ function ensureProjectName() {
 				type: 'input',
 				name: 'projectName',
 				message: 'Project name:',
-				default: 'deco-project',
+				default: 'decoco-project',
 			},
 		])
 		.then((answers) => {
@@ -47,7 +47,7 @@ function ensureProjectName() {
 		})
 		.catch((error) => {
 			if (error.isTtyError) {
-				console.error("deco couldn't be rendered in the current environment");
+				console.error("decoco couldn't be rendered in the current environment");
 			} else {
 				console.error(error);
 			}

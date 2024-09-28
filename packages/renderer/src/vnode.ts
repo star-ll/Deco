@@ -1,6 +1,6 @@
 import { Fragment } from './const';
 
-const isVnode = Symbol.for('deco:isVnode');
+const isVnode = Symbol.for('decoco:isVnode');
 
 export enum NodeType {
 	ELEMENT_NODE = 1,

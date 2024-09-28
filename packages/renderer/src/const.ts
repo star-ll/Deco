@@ -1,1 +1,1 @@
-export const Fragment = Symbol.for('deco.Fragment');
+export const Fragment = Symbol.for('decoco.Fragment');

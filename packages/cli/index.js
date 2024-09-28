@@ -16,7 +16,7 @@ program.name(name).description(description).version(version);
 
 program
 	.command('init')
-	.description('Initialize a Deco project')
+	.description('Initialize a decoco project')
 	.action((str, options) => {
 		init()
 	});

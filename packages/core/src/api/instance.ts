@@ -1,4 +1,4 @@
-import { jsx as h, Fragment } from '@deco/renderer';
+import { jsx as h, Fragment } from '@decoco/renderer';
 import { nextTickApi } from './global-api';
 import { DecoPlugin } from './plugin';
 

@@ -1,5 +1,5 @@
 {
-	"name": "@deco/examples",
+	"name": "@decoco/examples",
 	"private": "true",
 	"version": "0.2.0",
 	"description": "",
@@ -8,6 +8,10 @@
 	"license": "MIT",
 	"scripts": {
 		"dev": "vite"
+	},
+	"dependencies": {
+		"@decoco/renderer": "workspace:*",
+		"@decoco/core": "workspace:*"
 	},
 	"devDependencies": {
 		"vite": "^5.4.1"

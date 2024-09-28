@@ -3,7 +3,7 @@ import { isElementNode } from '../is';
 import { DocumentFragmentVnode, ElementVnode, NodeType, TextVnode, type Vnode } from '../vnode';
 import { patchProps } from './props';
 
-export const vnodeFlag = Symbol.for('deco:vnode');
+export const vnodeFlag = Symbol.for('decoco:vnode');
 
 interface Container extends HTMLElement {
 	[vnodeFlag]: Vnode;

@@ -1,4 +1,4 @@
-import { Component, Ref, DecoElement } from '@deco/core';
+import { Component, Ref, DecoElement } from '@decoco/core';
 
 @Component({ tag: 'test-ref' })
 export class TestRef extends DecoElement {

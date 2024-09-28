@@ -1,4 +1,4 @@
-import { Component, Event, Listen, type EventEmitter, DecoElement } from '@deco/core';
+import { Component, Event, Listen, type EventEmitter, DecoElement } from '@decoco/core';
 
 @Component({
 	tag: 'test-event',

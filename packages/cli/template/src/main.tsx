@@ -1,5 +1,5 @@
-import { DecoElement, Component } from '@deco/core';
-import defineDecoComponents from 'virtual:deco';
+import { DecoElement, Component } from '@decoco/core';
+import defineDecoComponents from 'virtual:decoco';
 
 defineDecoComponents();
 

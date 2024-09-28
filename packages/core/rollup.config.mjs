@@ -49,13 +49,13 @@ const config =  [
     input: 'index.ts',
     output: {
       dir: 'dist',
-      name: 'deco',
+      name: 'decoco',
       format: 'umd',
       strict: useStrict,
       entryFileNames: 'index.umd.dev.js',
       sourcemap: false,
       globals:{
-        "@deco/renderer": 'decoRenderer'
+        "@decoco/renderer": 'decoRenderer'
       }
     },
     plugins: getPlugins(false, 'umd'),
@@ -82,7 +82,7 @@ if(isProduction){
       output: {
         dir: 'dist',
         entryFileNames: 'index.umd.prod.js',
-        name: 'deco',
+        name: 'decoco',
         format: 'umd',
         generatedCode: {
           constBindings: usePreferConst,
@@ -91,7 +91,7 @@ if(isProduction){
         strict: useStrict,
         sourcemap: true,
         globals:{
-          "@deco/renderer": 'decoRenderer'
+          "@decoco/renderer": 'decoRenderer'
         }
       },
       plugins: getPlugins(true, 'umd'),
