@@ -17,6 +17,8 @@ function handleInputProps(element: HTMLElement, propName: string, value: any) {
 		((tag === 'INPUT' && !['checkbox', 'radio'].includes((element as HTMLInputElement).type)) || tag === 'TEXTAREA')
 	) {
 		(element as HTMLInputElement).value = value;
+	} else {
+		element.setAttribute(propName, value);
 	}
 }
 
@@ -37,6 +39,7 @@ function handleOtherProps(element: HTMLElement, propName: string, value: any) {
 	} else {
 		try {
 			if (Object.hasOwnProperty.call(HTMLElement.prototype, propName)) {
+				element.setAttribute(propName, value);
 				(element as any)[propName] = value;
 			} else {
 				element.setAttribute(propName, value);
@@ -115,7 +118,11 @@ export function patchProps(element: HTMLElement, props: Props, oldProps: Props) 
 				case 'ref':
 					if (typeof value === 'function') {
 						value(element);
-					} else if (typeof value === 'object' && value !== null && value.hasOwnProperty('current')) {
+					} else if (
+						typeof value === 'object' &&
+						value !== null &&
+						Object.prototype.hasOwnProperty.call(value, 'current')
+					) {
 						value.current = element;
 					} else {
 						props[propName] = { current: element };

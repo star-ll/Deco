@@ -8,6 +8,7 @@ import { callLifecycle, LifecycleCallback, LifeCycleList } from '../runtime/life
 import { createJob, queueJob } from '../runtime/scheduler';
 import { doWatch } from './Watch';
 import { DecoPlugin } from '../api/plugin';
+import { isObjectAttribute } from '../utils/is';
 
 export interface DecoWebComponent {
 	[K: string | symbol]: any;
@@ -175,7 +176,8 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			statePool.initState(this, Array.from(propKeys));
 
 			Array.from(propKeys.keys()).forEach((name: any) => {
-				observe(this, name, this.hasAttribute(name) ? this.getAttribute(name) : this[name], {
+				const attr = this.getAttribute(name);
+				observe(this, name, this.hasAttribute(name) && !isObjectAttribute(attr) ? attr : this[name], {
 					isProp: true,
 				});
 
@@ -266,7 +268,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			if (oldValue === null && newValue === null) {
 				return;
 			}
-			if (/^\[object /.test(newValue)) {
+			if (isObjectAttribute(newValue)) {
 				// Do not need to handle object prop
 				return;
 			}

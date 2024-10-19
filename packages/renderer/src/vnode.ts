@@ -71,7 +71,7 @@ export function createTextVnode(text: string): TextVnode {
 
 export function createElementVnode(tag: string, props: JSXProps): ElementVnode {
 	const { key, children = [], ...properties } = props || {};
-	console.log('children', children);
+
 	return {
 		type: NodeType.ELEMENT_NODE,
 		tag,
