@@ -11,7 +11,7 @@ class GlobalStyle {
 
 DecoElement.use(new GlobalStyle());
 
-@Component()
+@Component('test-demo')
 export class TestDemo extends DecoElement {
 	render() {
 		return (

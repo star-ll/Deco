@@ -23,21 +23,38 @@ export interface DecoWebComponent {
 	adoptedCallbackList: LifecycleCallback[];
 }
 
-let uid = 0;
-export default function Component(options?: {
+interface ComponentDecoratorOptions {
 	// tag name
-	tag?: string;
-
+	tag: string;
 	// style string or style sheet object
-	style?: string | StyleSheet;
-}) {
+	style: string | StyleSheet;
+}
+
+let uid = 0;
+
+/**
+ * Why not use the class name as the tag name?
+ * Because third-party minification plugins may obfuscate the actual class names
+ * during the build process.
+ */
+type LegacyComponentOptions = Pick<ComponentDecoratorOptions, 'tag'> & Partial<Omit<ComponentDecoratorOptions, 'tag'>>;
+type ComponentOptions = Partial<Omit<ComponentDecoratorOptions, 'tag'>>;
+export function Component(tag: string, options?: ComponentOptions): any;
+export function Component(options: LegacyComponentOptions): any;
+export default function Component(tagOrOptions: string | LegacyComponentOptions, options?: ComponentOptions) {
 	return function (target: any) {
-		const tag =
-			options?.tag ||
-			String(target.name)
-				.replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-				.toLowerCase();
-		const style = options?.style || '';
+		// todo: validate tag
+
+		let tag, style;
+		if (typeof tagOrOptions === 'string') {
+			// new options
+			tag = tagOrOptions;
+		} else {
+			// legacy options
+			style = tagOrOptions.style || '';
+			tag = tagOrOptions.tag;
+		}
+
 		const observedAttributes = target.prototype.__propKeys || [];
 
 		customElements.define(String(tag), getCustomElementWrapper(target, { tag, style, observedAttributes }));
@@ -46,7 +63,7 @@ export default function Component(options?: {
 
 type CustomElementWrapperOptions = {
 	tag: string;
-	style: string | StyleSheet;
+	style?: string | StyleSheet;
 	observedAttributes: string[];
 };
 function getCustomElementWrapper(target: any, { tag, style, observedAttributes }: CustomElementWrapperOptions): any {

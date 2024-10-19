@@ -128,7 +128,7 @@ export class TestPropElement extends DecoElement {
 	}
 }
 
-@Component()
+@Component('test-watch')
 export class TestWatch extends DecoElement {
 	@State()
 	value = 1;

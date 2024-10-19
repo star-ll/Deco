@@ -1,6 +1,6 @@
 import { DecoElement, Component } from '@decoco/core';
 
-@Component()
+@Component('decoco-app')
 export class DecocoApp extends DecoElement {
 	render() {
 		return (

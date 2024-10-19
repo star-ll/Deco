@@ -1,6 +1,6 @@
 import { Component, DecoElement } from '@decoco/core';
 
-@Component()
+@Component('chat-input')
 export default class ChatInput extends DecoElement {
 	render() {
 		return (
