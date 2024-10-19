@@ -42,12 +42,13 @@ export type JSXProps = {
 	[key: string]: any;
 };
 
-export function jsxElementToVnode(element: JSX.Element): Vnode {
-	if ((element as any)[isVnode]) {
+export function jsxElementToVnode(element: JSX.Element | JSX.Element[] | string | number): Vnode {
+	if (Array.isArray(element)) {
+		return createFragmentVnode(element.map(jsxElementToVnode));
+	} else if ((element as any)[isVnode]) {
 		return element as Vnode;
-	}
-	if (typeof element === 'string' || typeof element === 'number') {
-		return createTextVnode(element);
+	} else if (typeof element === 'string' || typeof element === 'number') {
+		return createTextVnode(String(element));
 	} else if (element.type === Fragment) {
 		return createFragmentVnode(element.props.children);
 	} else if (element.type) {
@@ -70,6 +71,7 @@ export function createTextVnode(text: string): TextVnode {
 
 export function createElementVnode(tag: string, props: JSXProps): ElementVnode {
 	const { key, children = [], ...properties } = props || {};
+	console.log('children', children);
 	return {
 		type: NodeType.ELEMENT_NODE,
 		tag,

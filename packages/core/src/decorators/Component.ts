@@ -266,6 +266,10 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			if (oldValue === null && newValue === null) {
 				return;
 			}
+			if (/^\[object /.test(newValue)) {
+				// Do not need to handle object prop
+				return;
+			}
 
 			// const observedAttributes = WebComponent.observedAttributes;
 			// if (!observedAttributes.includes(name)) {
