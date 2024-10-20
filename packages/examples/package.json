@@ -1,7 +1,7 @@
 {
 	"name": "@decoco/examples",
 	"private": "true",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"description": "",
 	"main": "index.js",
 	"author": "",
@@ -10,8 +10,8 @@
 		"dev": "vite"
 	},
 	"dependencies": {
-		"@decoco/renderer": "workspace:*",
-		"@decoco/core": "workspace:*"
+		"@decoco/core": "workspace:*",
+		"@decoco/renderer": "workspace:*"
 	},
 	"devDependencies": {
 		"vite": "^5.4.1"
