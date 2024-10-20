@@ -116,6 +116,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			Reflect.defineMetadata('statePool', statePool, this);
 
 			this.validateStateAndPropKeys();
+			this.initRefs();
 			this.initState();
 			this.initProps();
 			this.initWatch();
@@ -144,6 +145,14 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 					}
 				}
 			}
+		}
+
+		initRefs() {
+			const refs = Reflect.getMetadata('refs', this);
+
+			refs?.keys()?.forEach((refKey: keyof this) => {
+				(this as any)[refKey] = refs.get(refKey);
+			});
 		}
 
 		initState() {
