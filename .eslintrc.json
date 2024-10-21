@@ -18,9 +18,9 @@
 		"@typescript-eslint/ban-ts-comment": "off"
 	},
 	"settings": {},
-	"ignorePatterns": [],
+	"ignorePatterns": ["node_modules/", "packages/docs/"],
 	"globals": {},
-	"root": false,
+	"root": true,
 	"overrides": [],
 	"noInlineConfig": false,
 	"ecmaFeatures": {}

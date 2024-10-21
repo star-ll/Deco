@@ -8,7 +8,7 @@
 	"packageManager": "pnpm@8.7.0",
 	"scripts": {
 		"prepare": "husky",
-		"test": "echo 'test ok'"
+		"lint": "eslint './packages/**/*.{ts,tsx}'"
 	},
 	"keywords": [],
 	"author": "",

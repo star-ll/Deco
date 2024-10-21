@@ -78,7 +78,7 @@ export function mountDocumentFragment(vnode: DocumentFragmentVnode, container: H
 	addNode(container, fragment);
 }
 
-export function patchVnode(oldVnode: Vnode, newVnode: Vnode) {
+export function patchVnode(newVnode: Vnode, oldVnode: Vnode) {
 	const elm = (newVnode.elm = oldVnode.elm)! as HTMLElement;
 
 	switch (oldVnode.type) {
@@ -105,9 +105,9 @@ function patchElement(parentElement: HTMLElement, oldVnode: ElementVnode, newVno
 
 		patchProps(newElm, newVnode.props, {});
 	} else {
-		newVnode.elm = oldVnode.elm;
-		patchProps(newVnode.elm as HTMLElement, newVnode.props, oldVnode.props);
-		updateChilren(parentElement, oldVnode.children, newVnode.children);
+		const elm = (newVnode.elm = oldVnode.elm);
+		patchProps(elm as HTMLElement, newVnode.props, oldVnode.props);
+		updateChildren(elm as HTMLElement, newVnode.children, oldVnode.children);
 	}
 }
 
@@ -131,7 +131,8 @@ export function patchDocumentFragment(
 		addNode(parentElement, newElm, oldVnode.elm!);
 		removeNode(oldVnode);
 	} else {
-		updateChilren(parentElement, oldVnode.children, newVnode.children);
+		const elm = (newVnode.elm = oldVnode.elm);
+		updateChildren(elm!, newVnode.children, oldVnode.children);
 	}
 }
 
@@ -151,7 +152,7 @@ function sameVnode(oldVnode: Vnode, newVnode: Vnode) {
 	);
 }
 
-function updateChilren(parentElement: HTMLElement, newChilren: Vnode[], oldChilren: Vnode[]) {
+function updateChildren(parentElement: HTMLElement | DocumentFragment, newChilren: Vnode[], oldChilren: Vnode[]) {
 	let newStartIdx = 0;
 	let oldStartIdx = 0;
 	let newEndIdx = newChilren.length - 1;
@@ -184,12 +185,10 @@ function updateChilren(parentElement: HTMLElement, newChilren: Vnode[], oldChilr
 			}
 			idxInOld = oldKeyToIdx[newChilren[newStartIdx].key!];
 			if (idxInOld === undefined) {
-				const elm = createNode(newChilren[newStartIdx]);
+				const elm = createNode(newChilren[newStartIdx], true);
 				newChilren[newStartIdx].elm = elm;
-				addNode(parentElement, elm, oldChilren[idxInOld].elm!);
-				removeNode(oldChilren[idxInOld]);
+				addNode(parentElement, elm, oldChilren[oldStartIdx].elm!);
 				newStartIdx++;
-				newEndIdx--;
 			} else {
 				if (sameVnode(oldChilren[idxInOld], newChilren[newStartIdx])) {
 					patchVnode(newChilren[newStartIdx], oldChilren[idxInOld]);

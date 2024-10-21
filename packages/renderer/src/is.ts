@@ -15,3 +15,6 @@ export function isDcoumentFragmentNode(vnode: Vnode): vnode is DocumentFragmentV
 export function isDevelopment() {
 	return process.env.NODE_ENV === 'development';
 }
+export function isElementEventListener(attrName: string) {
+	return attrName.startsWith('on');
+}

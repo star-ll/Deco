@@ -1,3 +1,5 @@
+import { isElementEventListener } from 'src/is';
+
 type Props = {
 	[key: string]: any;
 };
@@ -54,7 +56,7 @@ function handleOtherProps(element: HTMLElement, propName: string, value: any) {
 export function patchEvents(element: HTMLElement, props: Props, oldProps: Props) {
 	// unmount old events
 	for (const key of Object.keys(oldProps)) {
-		if (key.startsWith('on') && typeof oldProps[key] === 'function') {
+		if (isElementEventListener(key) && typeof oldProps[key] === 'function') {
 			const useCapture = key.endsWith('Capture');
 			let eventName = key.toLowerCase().slice(2);
 			if (useCapture) {
@@ -66,7 +68,7 @@ export function patchEvents(element: HTMLElement, props: Props, oldProps: Props)
 
 	// add new events
 	for (const key of Object.keys(props)) {
-		if (key.startsWith('on')) {
+		if (isElementEventListener(key)) {
 			if (typeof props[key] !== 'function') {
 				console.error(new Error(`${element.tagName} ${key} must be a function!`));
 			}
@@ -85,6 +87,9 @@ export function patchProps(element: HTMLElement, props: Props, oldProps: Props) 
 	patchEvents(element, props, oldProps);
 
 	for (const propName of Object.keys(props)) {
+		if (isElementEventListener(propName)) {
+			continue;
+		}
 		if (Object.prototype.hasOwnProperty.call(props, propName) && !['key', 'children'].includes(propName)) {
 			const value = props[propName];
 

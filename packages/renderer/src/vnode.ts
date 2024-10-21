@@ -16,7 +16,7 @@ export type TextVnode = baseVnode & {
 	type: NodeType.TEXT_NODE;
 	text: string;
 	key: undefined;
-	elm?: Node;
+	elm?: Text;
 };
 export type ElementVnode = baseVnode & {
 	type: NodeType.ELEMENT_NODE;
@@ -24,14 +24,14 @@ export type ElementVnode = baseVnode & {
 	props: { [key: string]: any };
 	children: Vnode[];
 	key?: string;
-	elm?: Node;
+	elm?: HTMLElement;
 };
 
 export type DocumentFragmentVnode = baseVnode & {
 	type: NodeType.DOCUMENT_FRAGMENT_NODE;
 	children: Vnode[];
 	key?: string;
-	elm?: Node;
+	elm?: DocumentFragment;
 };
 
 export type Vnode = ElementVnode | TextVnode | DocumentFragmentVnode;

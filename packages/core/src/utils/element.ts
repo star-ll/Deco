@@ -39,7 +39,9 @@ export function parseElementAttribute(attr: string) {
 
 	try {
 		result = JSON.parse(attr);
-	} catch (e) {}
+	} catch (e) {
+		//
+	}
 
 	return result;
 }
