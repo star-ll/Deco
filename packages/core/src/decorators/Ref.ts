@@ -1,11 +1,7 @@
 export default function Ref() {
 	return function (target: any, propertyKey: string) {
-		const refTarget: RefType<HTMLElement | undefined> = {
-			current: undefined,
-		};
-
 		const refs = Reflect.getMetadata('refs', target) || new Map();
-		refs.set(propertyKey, refTarget);
+		refs.set(propertyKey, true);
 		Reflect.defineMetadata('refs', refs, target);
 	};
 }

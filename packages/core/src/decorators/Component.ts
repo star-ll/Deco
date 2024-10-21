@@ -151,7 +151,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			const refs = Reflect.getMetadata('refs', this);
 
 			refs?.keys()?.forEach((refKey: keyof this) => {
-				(this as any)[refKey] = refs.get(refKey);
+				(this as any)[refKey] = { current: undefined };
 			});
 		}
 
