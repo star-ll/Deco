@@ -15,7 +15,7 @@ export function render(root: any, container: Container) {
 	// console.log('render', root);
 
 	if (container[vnodeFlag]) {
-		patchVnode(container[vnodeFlag], root);
+		patchVnode(root, container[vnodeFlag]);
 	} else {
 		container.innerHTML = '';
 		mountVnode(root, container);
@@ -69,7 +69,7 @@ function mountText(vnode: TextVnode, container: HTMLElement) {
 export function mountDocumentFragment(vnode: DocumentFragmentVnode, container: HTMLElement) {
 	const fragment = createNode(vnode);
 	// const fragment = document.createElement('div');
-	vnode.elm = fragment;
+	vnode.elm = container;
 
 	vnode.children.forEach((child) => {
 		mountVnode(child, fragment as any);
@@ -79,7 +79,7 @@ export function mountDocumentFragment(vnode: DocumentFragmentVnode, container: H
 }
 
 export function patchVnode(newVnode: Vnode, oldVnode: Vnode) {
-	const elm = (newVnode.elm = oldVnode.elm)! as HTMLElement;
+	const elm = (newVnode.elm = oldVnode.elm) as HTMLElement;
 
 	switch (oldVnode.type) {
 		case NodeType.ELEMENT_NODE:
@@ -148,7 +148,7 @@ export function patchDocumentFragment(
 function sameVnode(oldVnode: Vnode, newVnode: Vnode) {
 	return (
 		// @ts-ignore
-		oldVnode.type === newVnode.type && oldVnode.props?.key === newVnode.props?.key && oldVnode.tag === newVnode.tag
+		oldVnode.type === newVnode.type && oldVnode.key === newVnode.key && oldVnode.tag === newVnode.tag
 	);
 }
 
@@ -172,13 +172,17 @@ function updateChildren(parentElement: HTMLElement | DocumentFragment, newChilre
 		} else if (sameVnode(newChilren[newStartIdx], oldChilren[oldStartIdx])) {
 			patchVnode(newChilren[newStartIdx++], oldChilren[oldStartIdx++]);
 		} else if (sameVnode(newChilren[newEndIdx], oldChilren[oldEndIdx])) {
-			patchVnode(newChilren[newStartIdx++], oldChilren[oldEndIdx--]);
+			patchVnode(newChilren[newEndIdx--], oldChilren[oldEndIdx--]);
 		} else if (sameVnode(newChilren[newStartIdx], oldChilren[oldEndIdx])) {
 			patchVnode(newChilren[newStartIdx], oldChilren[oldEndIdx]);
-			addNode(parentElement, oldChilren[oldEndIdx--].elm!, oldChilren[oldStartIdx++].elm!);
+			addNode(parentElement, oldChilren[oldEndIdx].elm!, oldChilren[oldStartIdx].elm!);
+			newStartIdx++;
+			oldEndIdx--;
 		} else if (sameVnode(newChilren[newEndIdx], oldChilren[oldStartIdx])) {
 			patchVnode(newChilren[newEndIdx], oldChilren[oldStartIdx]);
-			addNode(parentElement, oldChilren[oldStartIdx++].elm!, oldChilren[oldEndIdx--].elm!.nextSibling!);
+			addNode(parentElement, oldChilren[oldStartIdx].elm!, oldChilren[oldEndIdx].elm!.nextSibling!);
+			newEndIdx--;
+			oldStartIdx++;
 		} else {
 			if (!oldKeyToIdx) {
 				oldKeyToIdx = createKeyToOldIdx(oldChilren, oldStartIdx, oldEndIdx);
@@ -196,7 +200,7 @@ function updateChildren(parentElement: HTMLElement | DocumentFragment, newChilre
 					oldChilren[idxInOld] = undefined;
 					addNode(parentElement, oldChilren[idxInOld].elm!, oldChilren[oldStartIdx].elm!);
 				} else {
-					const elm = createNode(newChilren[newStartIdx]);
+					const elm = createNode(newChilren[newStartIdx], true);
 					newChilren[newStartIdx].elm = elm;
 					addNode(parentElement, elm, oldChilren[oldStartIdx].elm!);
 				}
@@ -207,7 +211,7 @@ function updateChildren(parentElement: HTMLElement | DocumentFragment, newChilre
 	}
 
 	for (let i = newStartIdx; i <= newEndIdx; i++) {
-		const elm = createNode(newChilren[i]);
+		const elm = createNode(newChilren[i], true);
 		newChilren[i].elm = elm;
 		addNode(parentElement, elm, oldChilren[oldStartIdx].elm!);
 	}

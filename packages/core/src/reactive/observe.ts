@@ -75,10 +75,8 @@ export function observe(
 	const { lazy, deep, isProp, autoDeepReactive = true } = options;
 	const statePool = Reflect.getMetadata('statePool', target as any);
 
-	if (isPlainObject(value) || (isArray(value) && deep)) {
-		target[name] = deep ? createReactive(target, value, options) : value;
-		return;
-	}
+	const isDeepReactive = (isPlainObject(value) || isArray(value)) && deep;
+	value = isDeepReactive && deep ? createReactive(target, value, options) : value;
 
 	return Object.defineProperties(target, {
 		[name]: {
@@ -100,7 +98,8 @@ export function observe(
 					}
 				}
 
-				const oldValue = value;
+				console.log(statePool, name, newValue);
+				statePool.delete(this, name);
 				value = autoDeepReactive ? createReactive(target, newValue, options) : newValue;
 
 				statePool.notify(target, name);
@@ -158,7 +157,8 @@ export class StatePool {
 	delete(target: object, name: string | symbol, effect?: Effect) {
 		const depKeyMap = this.store.get(target);
 		if (!depKeyMap) {
-			throw new Error(`${target} has no state ${String(name)}`);
+			console.error(new Error(`${target} has no state ${String(name)}`));
+			return;
 		}
 		const deps = depKeyMap.get(name);
 		if (!deps) {

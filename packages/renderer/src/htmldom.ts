@@ -23,12 +23,12 @@ export function createNode(vnode: Vnode, isDeep = false) {
 		vnode.children.forEach((child) => {
 			let node;
 			if (isTextNode(child)) {
-				createNode(child);
+				node = createNode(child);
 			} else {
-				createNode(child as ElementVnode, isDeep);
+				node = createNode(child as ElementVnode, isDeep);
 			}
 			child.elm = elm;
-			addNode(elm as HTMLElement, node!);
+			addNode(elm as HTMLElement, node);
 		});
 	}
 

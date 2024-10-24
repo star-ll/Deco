@@ -1,4 +1,5 @@
 import { Fragment } from './const';
+import { isObject } from './is';
 
 const isVnode = Symbol.for('decoco:isVnode');
 
@@ -31,7 +32,7 @@ export type DocumentFragmentVnode = baseVnode & {
 	type: NodeType.DOCUMENT_FRAGMENT_NODE;
 	children: Vnode[];
 	key?: string;
-	elm?: DocumentFragment;
+	elm?: DocumentFragment | HTMLElement;
 };
 
 export type Vnode = ElementVnode | TextVnode | DocumentFragmentVnode;
@@ -45,10 +46,14 @@ export type JSXProps = {
 export function jsxElementToVnode(element: JSX.Element | JSX.Element[] | string | number): Vnode {
 	if (Array.isArray(element)) {
 		return createFragmentVnode(element.map(jsxElementToVnode));
+	} else if (!isObject(element)) {
+		if (!element && element !== 0) {
+			return createFragmentVnode([]); // empty node
+		} else {
+			return createTextVnode(String(element));
+		}
 	} else if ((element as any)[isVnode]) {
 		return element as Vnode;
-	} else if (typeof element === 'string' || typeof element === 'number') {
-		return createTextVnode(String(element));
 	} else if (element.type === Fragment) {
 		return createFragmentVnode(element.props.children);
 	} else if (element.type) {
