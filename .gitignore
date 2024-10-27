@@ -5,3 +5,7 @@ node_modules/
 dist/
 ./**/dist
 .DS_Store
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
