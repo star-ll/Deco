@@ -6,6 +6,7 @@
 		"baseUrl": "./",
 		"outDir": "./dist",
 		"moduleResolution": "Node",
+		"module": "ESNext",
 		"jsx": "react",
 		"jsxFactory": "DecoElement.h",
 		"jsxFragmentFactory": "DecoElement.Fragment",

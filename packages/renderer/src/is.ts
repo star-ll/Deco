@@ -5,7 +5,7 @@ export function isObject(target: unknown): target is object {
 }
 
 export function isElementNode(vnode: Vnode): vnode is ElementVnode {
-	return vnode.type === NodeType.ELEMENT_NODE;
+	return vnode && vnode.type === NodeType.ELEMENT_NODE;
 }
 
 export function isTextNode(vnode: Vnode): vnode is TextVnode {

@@ -10,7 +10,7 @@ export class HelloWorld extends DecoElement {
 				<h1>Hello World!</h1>
 				<div>
 					<section>count: {this.count}</section>
-					<button onClick={() => this.count++}></button>
+					<button onClick={() => this.count++}>+1</button>
 				</div>
 			</div>
 		);

@@ -8,7 +8,9 @@
 	"packageManager": "pnpm@8.7.0",
 	"scripts": {
 		"prepare": "husky",
-		"lint": "eslint './packages/**/*.{ts,tsx}'"
+		"lint": "eslint './packages/**/*.{ts,tsx}'",
+		"test": "playwright test && playwright show-report",
+		"test:ui": "playwright test --ui"
 	},
 	"keywords": [],
 	"author": "",
@@ -19,6 +21,7 @@
 		"@babel/preset-react": "^7.24.1",
 		"@commitlint/cli": "^19.3.0",
 		"@commitlint/config-conventional": "^19.2.2",
+		"@playwright/test": "^1.48.2",
 		"@types/node": "^20.11.30",
 		"@types/react": "^18.2.70",
 		"@typescript-eslint/eslint-plugin": "^7.3.1",

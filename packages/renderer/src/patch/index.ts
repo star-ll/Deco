@@ -213,7 +213,7 @@ function updateChildren(parentElement: HTMLElement | DocumentFragment, newChilre
 	for (let i = newStartIdx; i <= newEndIdx; i++) {
 		const elm = createNode(newChilren[i], true);
 		newChilren[i].elm = elm;
-		addNode(parentElement, elm, oldChilren[oldStartIdx].elm!);
+		addNode(parentElement, elm, oldChilren[oldStartIdx]?.elm as never | HTMLElement);
 	}
 
 	for (let i = oldStartIdx; i <= oldEndIdx; i++) {
