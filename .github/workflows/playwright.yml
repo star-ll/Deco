@@ -17,6 +17,8 @@ jobs:
               run: npm install -g pnpm && pnpm install
             - name: Install Playwright Browsers
               run: pnpm exec playwright install --with-deps
+            - name: Build Decoco
+              run: pnpm run --filter core build && pnpm run --filter renderer build
             - name: Start development server
               run: |
                   nohup pnpm run --filter examples dev &  # start dev server in the background
