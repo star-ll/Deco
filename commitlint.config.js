@@ -10,6 +10,7 @@ const typeEnum = [
 	'revert', // revert commit
 	'test', // new test code
 	'chore', // change config file etc.
+	'ci', // change ci config etc.
 ];
 
 export default {

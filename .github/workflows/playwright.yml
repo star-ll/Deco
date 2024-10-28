@@ -22,7 +22,7 @@ jobs:
             - name: Start development server
               run: |
                   nohup pnpm run --filter examples dev &  # start dev server in the background
-                  sleep 20  # wait for server to start
+                  sleep 8 # wait for server to start
             - name: Run Playwright tests
               run: pnpm exec playwright test
             - uses: actions/upload-artifact@v4
