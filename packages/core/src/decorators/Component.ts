@@ -16,7 +16,7 @@ export interface DecoWebComponent {
 
 	componentWillMountList: LifecycleCallback[];
 	componentDidMountList: LifecycleCallback[];
-	componentWillUpdateList: LifecycleCallback[];
+	shouldComponentUpdateList: LifecycleCallback[];
 	componentDidUpdateList: LifecycleCallback[];
 	connectedCallbackList: LifecycleCallback[];
 	disconnectedCallbackList: LifecycleCallback[];
@@ -76,7 +76,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 
 		componentWillMountList: LifecycleCallback[] = [];
 		componentDidMountList: LifecycleCallback[] = [];
-		componentWillUpdateList: LifecycleCallback[] = [];
+		shouldComponentUpdateList: LifecycleCallback[] = [];
 		componentDidUpdateList: LifecycleCallback[] = [];
 		connectedCallbackList: LifecycleCallback[] = [];
 		disconnectedCallbackList: LifecycleCallback[] = [];
@@ -93,7 +93,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			const componentUpdateEffect = new Effect(__updateComponent.bind(this)) as ComponentEffect;
 			function __updateComponent(this: WebComponent) {
 				if (this.__mounted) {
-					const updateCallbackResult = callLifecycle(this, LifeCycleList.COMPONENT_WILL_UPDATE);
+					const updateCallbackResult = callLifecycle(this, LifeCycleList.SHOULD_COMPONENT_UPDATE);
 					if (updateCallbackResult && updateCallbackResult.stop) {
 						return;
 					}
@@ -107,7 +107,9 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 					Effect.target = null;
 				}
 
-				callLifecycle(this, LifeCycleList.COMPONENT_DID_UPDATE);
+				if (this.__mounted) {
+					callLifecycle(this, LifeCycleList.COMPONENT_DID_UPDATE);
+				}
 			}
 			this.__updateComponent = __updateComponent.bind(this);
 			flagComponent(this);
@@ -126,7 +128,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			callLifecycle(this, LifeCycleList.COMPONENT_WILL_MOUNT);
 			this.__updateComponent();
 			this.__mounted = true;
-			callLifecycle(this, LifeCycleList.COMPONENT_DID_MOUNT);
+			queueJob(createJob(() => callLifecycle(this, LifeCycleList.COMPONENT_DID_MOUNT)));
 
 			const plugins = this.getPlugins?.();
 			// console.log(plugins);
@@ -267,7 +269,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			this.adoptedCallbackList.push(super.adoptedCallback);
 			this.componentWillMountList.push(super.componentWillMount);
 			this.componentDidMountList.push(super.componentDidMount);
-			this.componentWillUpdateList.push(super.componentWillUpdate);
+			this.shouldComponentUpdateList.push(super.shouldComponentUpdate);
 			this.componentDidUpdateList.push(super.componentDidUpdate);
 		}
 

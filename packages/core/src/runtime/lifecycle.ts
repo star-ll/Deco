@@ -10,7 +10,7 @@ export enum LifeCycleList {
 	// COMPONENT_DID_CREATE = 'componentDidCreate',
 	COMPONENT_WILL_MOUNT = 'componentWillMount',
 	COMPONENT_DID_MOUNT = 'componentDidMount',
-	COMPONENT_WILL_UPDATE = 'componentWillUpdate',
+	SHOULD_COMPONENT_UPDATE = 'shouldComponentUpdate',
 	COMPONENT_DID_UPDATE = 'componentDidUpdate',
 }
 
