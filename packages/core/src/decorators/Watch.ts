@@ -9,6 +9,7 @@ export interface WatchOptions {
 	immediate?: boolean;
 }
 
+// todo: validate watchKeys
 // todo： watchKeys param support ‘obj.s.a’
 // todo: pre / sync / post
 export default function Watch(watchKeys: any[] | never[], options: WatchOptions = {}) {

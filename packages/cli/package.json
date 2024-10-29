@@ -14,6 +14,9 @@
 	"bin": {
 		"create-decoco": "./index.js"
 	},
+	"engines": {
+		"node": "^18.0.0 || >=20.0.0"
+	},
 	"devDependencies": {
 		"@types/node": "^20.11.30"
 	},

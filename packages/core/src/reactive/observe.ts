@@ -98,7 +98,6 @@ export function observe(
 					}
 				}
 
-				console.log(statePool, name, newValue);
 				statePool.delete(this, name);
 				value = autoDeepReactive ? createReactive(target, newValue, options) : newValue;
 

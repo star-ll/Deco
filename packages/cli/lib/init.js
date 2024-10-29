@@ -97,7 +97,7 @@ async function execInstall({ packageManagerTool, projectPath }) {
 		const spinner = ora(`${packageManagerTool} install...`).start();
 
 		exec(
-			`${packageManagerTool} install`,
+			`${packageManagerTool} upgrade`,
 			{
 				cwd: projectPath,
 				shell: true,
@@ -106,15 +106,17 @@ async function execInstall({ packageManagerTool, projectPath }) {
 			(err, stdout, stderr) => {
 				if (err) {
 					console.error(err);
-					spinner.fail(`${packageManagerTool} install fail`);
+					spinner.fail(
+						`${packageManagerTool} install fail\nPlease run command manually: ${packageManagerTool} upgrade`,
+					);
 					return reject(err);
 				}
-				console.log(stdout);
 				if (stderr) {
 					console.error(stderr);
 				}
 
 				spinner.succeed(`${packageManagerTool} install OK`);
+				console.log('\n' + stdout);
 				resolve();
 			},
 		);
@@ -157,6 +159,11 @@ async function execCopyAllFiles(argsContext) {
 		spinner.fail('Copy all files fail');
 	}
 }
+
+async function finnalyTip(argsContext) {
+	console.log(`\n\n\nPlease run: cd ${argsContext.projectName} && ${argsContext.packageManagerTool} run dev\n\n\n`);
+}
+
 async function main() {
 	await runStartUI();
 	const command = await ensureProjectName();
@@ -164,7 +171,7 @@ async function main() {
 	const { projectName } = command;
 	const argsContext = new ArgsContext(projectName);
 
-	const ensureQueue = [ensureProjectPath, ensurePackageManagerTool, execCopyAllFiles, execInstall];
+	const ensureQueue = [ensureProjectPath, ensurePackageManagerTool, execCopyAllFiles, execInstall, finnalyTip];
 
 	for (const execTask of ensureQueue) {
 		await execTask(argsContext);

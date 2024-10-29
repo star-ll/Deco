@@ -128,9 +128,10 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			callLifecycle(this, LifeCycleList.COMPONENT_WILL_MOUNT);
 			this.__updateComponent();
 			this.__mounted = true;
-			queueJob(createJob(() => callLifecycle(this, LifeCycleList.COMPONENT_DID_MOUNT)));
+			callLifecycle(this, LifeCycleList.COMPONENT_DID_MOUNT);
 
-			const plugins = this.getPlugins?.();
+			// todo: plugins
+			// const plugins = this.getPlugins?.();
 			// console.log(plugins);
 		}
 

@@ -8,7 +8,9 @@ export class DecoElement extends DecoPlugin {
 
 	componentWillMount() {}
 	componentDidMount() {}
-	shouldComponentUpdate() {}
+	shouldComponentUpdate() {
+		return true;
+	}
 	componentDidUpdate() {}
 	connectedCallback() {}
 	disconnectedCallback() {}
