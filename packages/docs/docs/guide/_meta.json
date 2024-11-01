@@ -1,0 +1,12 @@
+[
+  {
+    "type": "file",
+    "label": "快速开始",
+    "name": "index"
+  },
+  {
+    "type": "dir",
+    "name": "decorators",
+    "label": "装饰器"
+  }
+]

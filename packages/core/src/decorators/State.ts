@@ -1,7 +1,7 @@
 export default function State() {
 	return function (target: any, value: unknown) {
 		// if ((context as DecoratorContextObject).static) {
-		// 	throw new Error('@State decorator must be used on a instance property');
+		// 	throw new Error('@State.md decorator must be used on a instance property');
 		// }
 
 		// const metadata = context.metadata;
