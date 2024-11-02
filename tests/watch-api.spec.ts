@@ -31,9 +31,9 @@ test.describe('TestWatch Component', () => {
 		expect(logMessages.length).toBe(4);
 		expect(logMessages).toEqual([
 			'baby-change baby',
-			'Proxy(Object) Proxy(Object)',
+			'baby-change baby-change',
 			'Juk-change Juk',
-			'Proxy(Object) Proxy(Object)',
+			'Juk-change Juk-change',
 		]);
 	});
 
@@ -55,6 +55,6 @@ test.describe('TestWatch Component', () => {
 
 		// 验证只触发了一次监听
 		expect(logMessages.length).toBe(1);
-		expect(logMessages[0]).toBe('Proxy(Object) Proxy(Object)');
+		expect(logMessages[0]).toBe('Juk-change Juk');
 	});
 });

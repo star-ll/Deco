@@ -5,8 +5,8 @@ export default class TestWatch extends DecoElement {
 	@State() person = { name: 'Juk', children: [{ name: 'baby' }] };
 
 	@Watch(['person', 'person.name', 'person.children[0]', 'person.children[0].name'])
-	onPersonChange(value: unknown, oldValue: unknown) {
-		console.log(value, oldValue);
+	onPersonChange(value: any, oldValue: any) {
+		console.log(value?.name || value, oldValue?.name || oldValue);
 	}
 
 	render() {
