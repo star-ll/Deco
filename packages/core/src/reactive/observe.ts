@@ -30,7 +30,7 @@ export function createReactive(targetElement: any, target: unknown, options: Obs
 		set(target, key, value, receiver) {
 			Reflect.set(target, key, autoDeepReactive ? createReactive(targetElement, value) : value, receiver);
 			statePool.notify(target, key);
-			statePool.delete(target, key);
+			// statePool.delete(target, key);
 
 			return true;
 		},
@@ -102,7 +102,7 @@ export function observe(
 
 				value = autoDeepReactive ? createReactive(target, newValue, options) : newValue;
 				statePool.notify(target, name);
-				statePool.delete(this, name);
+				// statePool.delete(this, name);
 
 				return true;
 			},
