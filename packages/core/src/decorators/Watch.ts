@@ -21,22 +21,23 @@ export default function Watch(watchKeys: any[] | never[], options: WatchOptions 
 }
 
 export function doWatch(
-	ctx: DecoWebComponent,
+	instance: DecoWebComponent,
 	watchMethodName: keyof DecoWebComponent,
-	watchEffect: Effect,
+	propertyCtx: any,
 	property: string | symbol,
 	statePool: StatePool,
 	watchOptions: WatchOptions,
 ) {
 	let oldValue: any;
+	const watchEffect = new Effect(() => propertyCtx[property]);
 	const job = createJob(() => {
 		const newValue = watchEffect.run();
 
 		const cleanup = () => {
-			statePool.delete(ctx, property, watchEffect);
+			statePool.delete(propertyCtx, property, watchEffect);
 		};
 
-		ctx[watchMethodName].call(ctx, newValue, oldValue, cleanup);
+		instance[watchMethodName].call(instance, newValue, oldValue, cleanup);
 
 		oldValue = newValue;
 
@@ -45,7 +46,7 @@ export function doWatch(
 		}
 	}, watchEffect.id);
 	watchEffect.scheduler = () => queueJob(job);
-	watchEffect.captureSelf(ctx, property);
+	watchEffect.captureSelf(propertyCtx, property, instance);
 
 	if (watchOptions.immediate) {
 		job();

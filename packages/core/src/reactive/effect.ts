@@ -19,13 +19,17 @@ export class Effect {
 	id = uid++;
 	effect: (...args: any[]) => unknown;
 	scheduler?: Function;
-	cleanup?: Function;
+	cleanup: Set<Function> = new Set();
 
 	constructor(effect: (...args: any[]) => unknown, options: EffectOptions = {}) {
 		const { scheduler, cleanup } = options;
 		this.effect = effect;
 		this.scheduler = scheduler;
-		this.cleanup = cleanup;
+
+		// todo
+		if (cleanup) {
+			this.cleanup.add(cleanup);
+		}
 	}
 
 	run(...args: any[]) {
@@ -35,5 +39,11 @@ export class Effect {
 	captureSelf(target: any, name: string | symbol, instance?: any) {
 		const statePool: StatePool = Reflect.getMetadata('statePool', instance || target);
 		statePool.set(target, name, this);
+	}
+
+	execCleanup() {
+		for (const cleanup of this.cleanup.values()) {
+			cleanup();
+		}
 	}
 }
