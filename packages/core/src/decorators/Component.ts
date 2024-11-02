@@ -9,6 +9,7 @@ import { createJob, queueJob } from '../runtime/scheduler';
 import { doWatch } from './Watch';
 import { DecoPlugin } from '../api/plugin';
 import { isObjectAttribute } from '../utils/is';
+import { warn } from '../utils/error';
 
 export interface DecoWebComponent {
 	[K: string | symbol]: any;
@@ -58,6 +59,18 @@ export default function Component(tagOrOptions: string | LegacyComponentOptions,
 
 		const observedAttributes = target.prototype.__propKeys || [];
 
+		if (customElements.get(tag)) {
+			warn(`custom element ${tag} already exists`);
+			return;
+		}
+
+		// Validate tag name
+		const tagNamePattern = /^[a-zA-Z][a-zA-Z0-9-]*$/;
+		if (!tagNamePattern.test(tag)) {
+			warn(
+				`Invalid tag name: ${tag}. Tag names must start with a letter and contain only letters, digits, and hyphens.`,
+			);
+		}
 		customElements.define(String(tag), getCustomElementWrapper(target, { tag, style, observedAttributes }));
 	};
 }
@@ -142,10 +155,21 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			if (stateKeys && propKeys) {
 				for (const propKey of propKeys.values()) {
 					if (stateKeys.has(propKey)) {
-						throw new Error(
+						warn(
 							`${String(tag)} ${propKey} can only be one state or prop, please change it to another name.`,
 						);
 					}
+				}
+			}
+		}
+
+		validateSomeInStateOrProps(validateKeys: Array<string>) {
+			const stateKeys: Set<string> = Reflect.getMetadata('stateKeys', this);
+			const propKeys: Set<string> = Reflect.getMetadata('propKeys', this);
+
+			for (const key of validateKeys) {
+				if (!stateKeys.has(key) && !propKeys.has(key)) {
+					return key;
 				}
 			}
 		}
@@ -211,11 +235,12 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			for (const item of watchers) {
 				const { watchKeys, watchMethodName } = item;
 				watchKeys.forEach((watchKey: string) => {
-					const { ctx, property } = expToPath(watchKey, this);
-
-					const watchEffect = new Effect(() => this[watchKey]);
-
-					doWatch(this, watchMethodName, watchEffect, property, statePool, item.options);
+					const { ctx, property } = expToPath(watchKey, this) || {};
+					if (!ctx || !property) {
+						warn(`invalid watchKey ${watchKey}`);
+						return;
+					}
+					doWatch(this, watchMethodName, ctx, property, statePool, item.options);
 				});
 			}
 		}

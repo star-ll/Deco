@@ -16,6 +16,10 @@ const routes: { [name: string]: Route } = {
 		name: 'test-lifecycle',
 		component: () => import('./lifecycle/test-lifecycle'),
 	},
+	'/api/watch': {
+		name: 'test-watch-all',
+		component: () => import('./api/watch'),
+	},
 };
 
 export default routes;

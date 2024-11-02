@@ -1,5 +1,7 @@
+import { warn } from './error';
+
 export function expToPath(exp: string, ctx: object) {
-	const paths = exp.split('.');
+	const paths = exp.replace(/\[(\w+)\]/g, '.$1').split('.');
 	if (paths.length === 1) {
 		return { ctx, property: paths[0] };
 	}
@@ -15,6 +17,6 @@ export function expToPath(exp: string, ctx: object) {
 
 		return { ctx: prevObj, property: key };
 	} catch (err) {
-		throw new Error(`${exp} is not a valid path`, { cause: err });
+		warn(`${exp} is not a valid path`);
 	}
 }

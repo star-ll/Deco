@@ -2,6 +2,7 @@ import { createJob, queueJob } from '../runtime/scheduler';
 import { ObserverOptions } from '../types';
 import { isArray, isObject, isPlainObject } from '../utils/is';
 import { Effect } from './effect';
+import { warn } from '../utils/error';
 
 const proxyMap = new WeakMap<object, object>();
 
@@ -29,6 +30,7 @@ export function createReactive(targetElement: any, target: unknown, options: Obs
 		set(target, key, value, receiver) {
 			Reflect.set(target, key, autoDeepReactive ? createReactive(targetElement, value) : value, receiver);
 			statePool.notify(target, key);
+			statePool.delete(target, key);
 
 			return true;
 		},
@@ -72,7 +74,7 @@ export function observe(
 	options: ObserverOptions = { deep: true },
 ) {
 	let value = originValue;
-	const { lazy, deep, isProp, autoDeepReactive = true } = options;
+	const { lazy, deep = true, isProp, autoDeepReactive = true } = options;
 	const statePool = Reflect.getMetadata('statePool', target as any);
 
 	const isDeepReactive = (isPlainObject(value) || isArray(value)) && deep;
@@ -98,10 +100,10 @@ export function observe(
 					}
 				}
 
-				statePool.delete(this, name);
 				value = autoDeepReactive ? createReactive(target, newValue, options) : newValue;
-
 				statePool.notify(target, name);
+				statePool.delete(this, name);
+
 				return true;
 			},
 		},
@@ -156,7 +158,7 @@ export class StatePool {
 	delete(target: object, name: string | symbol, effect?: Effect) {
 		const depKeyMap = this.store.get(target);
 		if (!depKeyMap) {
-			console.error(new Error(`${target} has no state ${String(name)}`));
+			warn(`${target} has no state ${String(name)}`);
 			return;
 		}
 		const deps = depKeyMap.get(name);
@@ -164,10 +166,18 @@ export class StatePool {
 			return;
 		}
 		if (!effect) {
-			// effect?.cleanup?.();
+			deps.clear();
+			deps.values().forEach((effect: Effect) => {
+				effect.execCleanup();
+			});
 			return;
+		} else {
+			if (!deps.has(effect)) {
+				warn(`Not find effect. This possibly is a bug. Please report it.`);
+			}
+			deps.delete(effect);
+			effect.execCleanup();
 		}
-		deps.delete(effect);
 	}
 
 	notify(target: object, name: string | symbol) {
