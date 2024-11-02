@@ -235,7 +235,11 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			for (const item of watchers) {
 				const { watchKeys, watchMethodName } = item;
 				watchKeys.forEach((watchKey: string) => {
-					const { ctx, property } = expToPath(watchKey, this);
+					const { ctx, property } = expToPath(watchKey, this) || {};
+					if (!ctx || !property) {
+						warn(`invalid watchKey ${watchKey}`);
+						return;
+					}
 					doWatch(this, watchMethodName, ctx, property, statePool, item.options);
 				});
 			}
