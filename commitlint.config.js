@@ -11,6 +11,7 @@ const typeEnum = [
 	'test', // new test code
 	'chore', // change config file etc.
 	'ci', // change ci config etc.
+	"docs" // change docs
 ];
 
 export default {

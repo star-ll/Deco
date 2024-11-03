@@ -75,7 +75,7 @@ export class HelloWorld extends DecoElement {
 
 ## Document
 
-> developing
+[documents (developing)](https://star-ll.github.io/Deco/)
 
 ## Contributing
 
