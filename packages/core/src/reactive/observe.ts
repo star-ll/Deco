@@ -166,10 +166,10 @@ export class StatePool {
 			return;
 		}
 		if (!effect) {
-			deps.clear();
 			deps.values().forEach((effect: Effect) => {
 				effect.execCleanup();
 			});
+			deps.clear();
 			return;
 		} else {
 			if (!deps.has(effect)) {

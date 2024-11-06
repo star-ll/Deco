@@ -278,7 +278,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			const vndoes = [this.render()];
 
 			//  style
-			if (style instanceof StyleSheet) {
+			if (style instanceof CSSStyleSheet) {
 				this.shadowRoot.adoptedStyleSheets = [style];
 			} else if (typeof style === 'string') {
 				vndoes.unshift(jsx('style', {}, style));

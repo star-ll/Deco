@@ -6,9 +6,16 @@
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.esm.dev.js",
-			"require": "./dist/index.umd.dev.js"
+			"development": {
+				"types": "./dist/index.d.ts",
+				"import": "./dist/index.esm.dev.js",
+				"require": "./dist/index.umd.dev.js"
+			},
+			"production": {
+				"types": "./dist/index.d.ts",
+				"import": "./dist/index.esm.prod.js",
+				"require": "./dist/index.umd.prod.js"
+			}
 		}
 	},
 	"scripts": {
