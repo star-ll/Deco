@@ -97,7 +97,7 @@ async function execInstall({ packageManagerTool, projectPath }) {
 		const spinner = ora(`${packageManagerTool} install...`).start();
 
 		exec(
-			`${packageManagerTool} upgrade`,
+			`${packageManagerTool} add @decoco/core@latest @decoco/renderer@latest && ${packageManagerTool} install`,
 			{
 				cwd: projectPath,
 				shell: true,
@@ -107,7 +107,7 @@ async function execInstall({ packageManagerTool, projectPath }) {
 				if (err) {
 					console.error(err);
 					spinner.fail(
-						`${packageManagerTool} install fail\nPlease run command manually: ${packageManagerTool} upgrade`,
+						`${packageManagerTool} install fail\nPlease run command manually: ${packageManagerTool} install`,
 					);
 					return reject(err);
 				}
