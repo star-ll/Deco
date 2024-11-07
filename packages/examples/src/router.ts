@@ -20,6 +20,10 @@ const routes: { [name: string]: Route } = {
 		name: 'test-watch-all',
 		component: () => import('./api/watch'),
 	},
+	'/api/prop': {
+		name: 'test-prop',
+		component: () => import('./api/prop'),
+	},
 };
 
 export default routes;

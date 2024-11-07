@@ -40,9 +40,9 @@ function handleOtherProps(element: HTMLElement, propName: string, value: any) {
 		}
 	} else {
 		try {
-			if (Object.hasOwnProperty.call(HTMLElement.prototype, propName)) {
-				element.setAttribute(propName, value);
+			if (propName in element) {
 				(element as any)[propName] = value;
+				element.setAttribute(propName, value);
 			} else {
 				element.setAttribute(propName, value);
 			}
