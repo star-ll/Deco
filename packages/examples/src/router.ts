@@ -1,5 +1,5 @@
 export interface Route {
-	name: string;
+	name?: string;
 	component: () => Promise<any>;
 }
 
@@ -12,8 +12,11 @@ const routes: { [name: string]: Route } = {
 		name: 'test-diff',
 		component: () => import('./renderer/test-diff'),
 	},
+	'/renderer/event': {
+		name: 'emit-event-test',
+		component: () => import('./renderer/event'),
+	},
 	'/renderer/jsx': {
-		name: 'test-jsx',
 		component: () => import('./renderer/jsx'),
 	},
 	'/lifecycycle': {

@@ -1,9 +1,9 @@
 import { isFunction } from '../utils/is';
 
-export function Event(eventInit: EventInit = { composed: true }) {
+export function Event(eventInit: EventInit = { composed: true, bubbles: true, cancelable: true }) {
 	return function eventEmit(target: any, eventName: string) {
 		const events = Reflect.getMetadata('events', target) || new Map();
-		events.set(eventName, new EventEmitter({ ...eventInit }));
+		events.set(eventName, eventInit);
 		Reflect.defineMetadata('events', events, target);
 	};
 }

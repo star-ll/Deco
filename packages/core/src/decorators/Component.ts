@@ -10,6 +10,7 @@ import { doWatch } from './Watch';
 import { DecoPlugin } from '../api/plugin';
 import { isObjectAttribute } from '../utils/is';
 import { warn } from '../utils/error';
+import { EventEmitter } from './Event';
 
 export interface DecoWebComponent {
 	[K: string | symbol]: any;
@@ -250,8 +251,9 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 
 			if (events) {
 				for (const eventName of events.keys()) {
-					const eventEmit = events.get(eventName);
-					eventEmit.setEventTarget(this);
+					const eventInit = events.get(eventName);
+					const eventEmit = new EventEmitter({ ...eventInit });
+					eventEmit.setEventTarget(this as any);
 					this[eventName] = eventEmit;
 				}
 			}

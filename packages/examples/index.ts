@@ -6,9 +6,12 @@ function handlerRouter(route: Route) {
 	}
 
 	route.component().then(() => {
-		const component = document.createElement(route.name);
 		document.body.innerHTML = '';
-		document.body.appendChild(component);
+
+		if (route.name) {
+			const component = document.createElement(route.name);
+			document.body.appendChild(component);
+		}
 	});
 }
 window.addEventListener('hashchange', function (e) {
