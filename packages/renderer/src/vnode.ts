@@ -43,19 +43,25 @@ export type JSXProps = {
 	[key: string]: any;
 };
 
-export function jsxElementToVnode(element: JSX.Element | JSX.Element[] | string | number): Vnode {
+export function jsxElementToVnode(element: JSX.Element | JSX.Element[] | string | number): Vnode | Vnode[] {
 	if (Array.isArray(element)) {
-		return createFragmentVnode(element.map(jsxElementToVnode));
+		const vnodeList: Vnode[] = [];
+		element.forEach((jsxElement) => {
+			const vnode = jsxElementToVnode(jsxElement);
+			if (Array.isArray(vnode)) {
+				vnodeList.push(...vnode);
+			} else {
+				vnodeList.push(vnode);
+			}
+		});
+		return vnodeList;
 	} else if (!isObject(element)) {
-		if (!element && element !== 0) {
-			return createFragmentVnode([]); // empty node
-		} else {
-			return createTextVnode(String(element));
-		}
+		return typeof element === 'string' || typeof element === 'number' ? createTextVnode(String(element)) : [];
 	} else if ((element as any)[isVnode]) {
 		return element as Vnode;
 	} else if (element.type === Fragment) {
-		return createFragmentVnode(element.props.children);
+		// return createFragmentVnode(element.props.children);
+		return jsxElementToVnode(element.props.children);
 	} else if (element.type) {
 		return createElementVnode(element.type, element.props);
 	} else {
@@ -77,12 +83,22 @@ export function createTextVnode(text: string): TextVnode {
 export function createElementVnode(tag: string, props: JSXProps): ElementVnode {
 	const { key, children = [], ...properties } = props || {};
 
+	const childrenVnode: Vnode[] = [];
+	(children as JSX.Element[]).forEach((jsxElement) => {
+		const vnode = jsxElementToVnode(jsxElement);
+		if (Array.isArray(vnode)) {
+			childrenVnode.push(...vnode);
+		} else {
+			childrenVnode.push(vnode);
+		}
+	});
+
 	return {
 		type: NodeType.ELEMENT_NODE,
 		tag,
 		key,
 		props: properties,
-		children: (children as JSX.Element[]).map(jsxElementToVnode),
+		children: childrenVnode,
 		elm: undefined,
 		[isVnode]: true,
 	};

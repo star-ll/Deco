@@ -12,6 +12,10 @@ const routes: { [name: string]: Route } = {
 		name: 'test-diff',
 		component: () => import('./renderer/test-diff'),
 	},
+	'/renderer/jsx': {
+		name: 'test-jsx',
+		component: () => import('./renderer/jsx'),
+	},
 	'/lifecycycle': {
 		name: 'test-lifecycle',
 		component: () => import('./lifecycle/test-lifecycle'),

@@ -1,6 +1,6 @@
-import { isElementEventListener } from 'src/is';
+import { isElementEventListener, isDefined } from 'src/is';
 
-type Props = {
+export type Props = {
 	[key: string]: any;
 };
 
@@ -33,27 +33,27 @@ function handleStyleProps(element: HTMLElement, value: any) {
 }
 
 function handleOtherProps(element: HTMLElement, propName: string, value: any) {
-	if (['checked', 'selected', 'disabled', 'readOnly', 'contentEditable', 'draggable'].includes(propName)) {
-		// 对于直接属性赋值的，进行类型检查和值的校验
-		if (typeof value !== 'undefined') {
-			(element as any)[propName] = value;
+	if (!isDefined(value)) {
+		const property = (element as any)[propName];
+		if (!Object.isFrozen(property) && property !== undefined) {
+			(element as any)[propName] = undefined;
 		}
+		element.removeAttribute(propName);
 	} else {
 		try {
 			if (propName in element) {
 				(element as any)[propName] = value;
-				element.setAttribute(propName, value);
+				element.setAttribute(propName, String(value));
 			} else {
-				element.setAttribute(propName, value);
+				element.setAttribute(propName, String(value));
 			}
 		} catch (e) {
 			console.error(`Error setting attribute '${propName}':`, e);
-			// 错误处理逻辑
 		}
 	}
 }
 
-export function patchEvents(element: HTMLElement, props: Props, oldProps: Props) {
+function patchEvents(element: HTMLElement, props: Props, oldProps: Props) {
 	// unmount old events
 	for (const key of Object.keys(oldProps)) {
 		if (isElementEventListener(key) && typeof oldProps[key] === 'function') {
@@ -86,57 +86,74 @@ export function patchEvents(element: HTMLElement, props: Props, oldProps: Props)
 export function patchProps(element: HTMLElement, props: Props, oldProps: Props) {
 	patchEvents(element, props, oldProps);
 
+	const handledProps = new Set();
 	for (const propName of Object.keys(props)) {
 		if (isElementEventListener(propName)) {
+			// event has been handled
 			continue;
 		}
-		if (Object.prototype.hasOwnProperty.call(props, propName) && !['key', 'children'].includes(propName)) {
+		if (!['key', 'children'].includes(propName)) {
 			const value = props[propName];
 
-			if (value == null) continue;
-
-			switch (propName) {
-				case 'dangerouslySetInnerHTML':
-					if (typeof value === 'object' && '__html' in value && value.__html != null) {
-						// todo: xss
-						element.innerHTML = value.__html;
-					}
-					break;
-
-				case 'defaultValue':
-				case 'defaultChecked':
-				case 'value':
-					handleInputProps(element, propName, value);
-					break;
-
-				case 'className':
-					// 添加空值检查
-					if (value != null) {
-						element.className = value;
-					}
-					break;
-
-				case 'style':
-					handleStyleProps(element, value);
-					break;
-
-				case 'ref':
-					if (typeof value === 'function') {
-						value(element);
-					} else if (
-						typeof value === 'object' &&
-						value !== null &&
-						Object.prototype.hasOwnProperty.call(value, 'current')
-					) {
-						value.current = element;
-					} else {
-						props[propName] = { current: element };
-					}
-					break;
-
-				default:
-					handleOtherProps(element, propName, value);
-			}
+			handlePros(element, propName, props, value);
+			handledProps.add(propName);
 		}
+	}
+
+	for (const propName of Object.keys(oldProps)) {
+		if (!handledProps.has(propName)) {
+			handlePros(element, propName, oldProps, undefined);
+		}
+	}
+}
+
+export function handlePros(element: HTMLElement, propName: string, props: Props, value: any) {
+	try {
+		switch (propName) {
+			case 'dangerouslySetInnerHTML':
+				if (typeof value === 'object' && '__html' in value && value.__html != null) {
+					// todo: xss
+					element.innerHTML = value.__html;
+				}
+				break;
+
+			case 'defaultValue':
+			case 'defaultChecked':
+			case 'value':
+				handleInputProps(element, propName, value);
+				break;
+
+			case 'className':
+				// 添加空值检查
+				if (!isDefined<string>(value)) {
+					element.removeAttribute('class');
+				} else {
+					element.className = value;
+				}
+				break;
+
+			case 'style':
+				handleStyleProps(element, value);
+				break;
+
+			case 'ref':
+				if (typeof value === 'function') {
+					value(element);
+				} else if (
+					typeof value === 'object' &&
+					value !== null &&
+					Object.prototype.hasOwnProperty.call(value, 'current')
+				) {
+					value.current = element;
+				} else {
+					props[propName] = { current: element };
+				}
+				break;
+
+			default:
+				handleOtherProps(element, propName, value);
+		}
+	} catch (err) {
+		console.error(`Error setting attribute '${propName}':`, err);
 	}
 }

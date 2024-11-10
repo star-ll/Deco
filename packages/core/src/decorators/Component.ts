@@ -45,12 +45,11 @@ export function Component(tag: string, options?: ComponentOptions): any;
 export function Component(options: LegacyComponentOptions): any;
 export default function Component(tagOrOptions: string | LegacyComponentOptions, options?: ComponentOptions) {
 	return function (target: any) {
-		// todo: validate tag
-
 		let tag, style;
 		if (typeof tagOrOptions === 'string') {
 			// new options
 			tag = tagOrOptions;
+			style = options?.style;
 		} else {
 			// legacy options
 			style = tagOrOptions.style || '';
@@ -265,16 +264,6 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 		}
 
 		domUpdate() {
-			// if (!this.root) {
-			// 	throw new Error(`this.root is ${this.root}, render error`);
-			// }
-			// this.root.render(
-			// 	<>
-			// 		<style>{style}</style>
-			// 		{this.render()}
-			// 	</>,
-			// );
-
 			const vndoes = [this.render()];
 
 			//  style
@@ -284,7 +273,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 				vndoes.unshift(jsx('style', {}, style));
 			}
 
-			const fragment = jsx(Fragment, {}, ...vndoes);
+			const fragment = jsx('div', {}, ...vndoes);
 			render(fragment, this.shadowRoot);
 		}
 

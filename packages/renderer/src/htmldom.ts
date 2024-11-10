@@ -1,5 +1,6 @@
 import { isDcoumentFragmentNode, isElementNode, isTextNode } from './is';
 import { DocumentFragmentVnode, ElementVnode, NodeType, TextVnode, Vnode } from './vnode';
+import { patchProps, Props } from './patch/props';
 
 export function createNode(vnode: ElementVnode, isDeep?: boolean): HTMLElement;
 export function createNode(vnode: TextVnode): Text;
@@ -8,7 +9,7 @@ export function createNode(vnode: Vnode, isDeep?: boolean): HTMLElement;
 export function createNode(vnode: Vnode, isDeep = false) {
 	let elm;
 	if (isElementNode(vnode)) {
-		elm = createElement(vnode.tag);
+		elm = createElement(vnode.tag, vnode.props);
 	} else if (isTextNode(vnode)) {
 		elm = createTextNode(vnode.text);
 	} else if (isDcoumentFragmentNode(vnode)) {
@@ -38,8 +39,10 @@ export function removeNode(vnode: Vnode) {
 	return vnode.elm!.parentNode?.removeChild(vnode.elm!);
 }
 
-export function createElement(tagName: string) {
-	return document.createElement(tagName);
+export function createElement(tagName: string, props: Props) {
+	const elm = document.createElement(tagName);
+	patchProps(elm, props, {});
+	return elm;
 }
 export function createTextNode(text: string) {
 	const textNode = document.createTextNode('');

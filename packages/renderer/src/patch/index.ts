@@ -47,17 +47,13 @@ export function mountVnode(vnode: Vnode, container: HTMLElement) {
 }
 
 function mountElement(vnode: ElementVnode, container: HTMLElement) {
-	const elm = createElement(vnode.tag);
+	const elm = createElement(vnode.tag, vnode.props);
 	vnode.elm = elm;
 	vnode.children.forEach((child) => {
 		mountVnode(child, elm);
 	});
 
 	addNode(container, elm);
-
-	patchProps(elm, vnode.props, {});
-	// mountRef(vnode.ref, el);
-	// mountSlots(vnode.slots, el);
 }
 
 function mountText(vnode: TextVnode, container: HTMLElement) {
@@ -69,7 +65,7 @@ function mountText(vnode: TextVnode, container: HTMLElement) {
 export function mountDocumentFragment(vnode: DocumentFragmentVnode, container: HTMLElement) {
 	const fragment = createNode(vnode);
 	// const fragment = document.createElement('div');
-	vnode.elm = container;
+	vnode.elm = fragment;
 
 	vnode.children.forEach((child) => {
 		mountVnode(child, fragment as any);
@@ -98,7 +94,7 @@ export function patchVnode(newVnode: Vnode, oldVnode: Vnode) {
 
 function patchElement(parentElement: HTMLElement, oldVnode: ElementVnode, newVnode: ElementVnode) {
 	if (oldVnode.tag !== newVnode.tag) {
-		const newElm = createElement(newVnode.tag);
+		const newElm = createElement(newVnode.tag, newVnode.props);
 		newVnode.elm = newElm;
 		addNode(oldVnode.elm!.parentElement!, newElm, oldVnode.elm!);
 		removeNode(oldVnode);
@@ -131,8 +127,8 @@ export function patchDocumentFragment(
 		addNode(parentElement, newElm, oldVnode.elm!);
 		removeNode(oldVnode);
 	} else {
-		const elm = (newVnode.elm = oldVnode.elm);
-		updateChildren(elm!, newVnode.children, oldVnode.children);
+		newVnode.elm = oldVnode.elm;
+		updateChildren(parentElement, newVnode.children, oldVnode.children);
 	}
 }
 
