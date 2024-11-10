@@ -28,16 +28,28 @@ export class EmitEventTest extends DecoElement {
 				<emit-event ref={this.emitRef2} onTestEventCapture={onEvent}></emit-event>
 				<emit-event ref={this.emitRef3} on-test-event={onEvent}></emit-event>
 				<emit-event ref={this.emitRef4} on-test-event-capture={onEvent}></emit-event>
-				<button onClick={() => this.emitRef.current!.triggerEvent('testevent', 'onTestEvent ok')}>
+				<button
+					data-id="onTestEvent"
+					onClick={() => this.emitRef.current!.triggerEvent('testevent', 'onTestEvent ok')}
+				>
 					onTestEvent
 				</button>
-				<button onClick={() => this.emitRef2.current!.triggerEvent('testevent', 'onTestEventCapture ok')}>
+				<button
+					data-id="onTestEventCapture"
+					onClick={() => this.emitRef2.current!.triggerEvent('testevent', 'onTestEventCapture ok')}
+				>
 					onTestEventCapture
 				</button>
-				<button onClick={() => this.emitRef3.current!.triggerEvent('test-event', 'test-event ok')}>
+				<button
+					data-id="on-test-event"
+					onClick={() => this.emitRef3.current!.triggerEvent('test-event', 'test-event ok')}
+				>
 					on-test-event
 				</button>
-				<button onClick={() => this.emitRef4.current!.triggerEvent('test-event', 'test-event-capture ok')}>
+				<button
+					data-id="on-test-event-capture"
+					onClick={() => this.emitRef4.current!.triggerEvent('test-event', 'test-event-capture ok')}
+				>
 					on-test-event-capture
 				</button>
 			</div>
