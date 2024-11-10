@@ -53,15 +53,33 @@ function handleOtherProps(element: HTMLElement, propName: string, value: any) {
 	}
 }
 
+function parseEventName(eventName: string) {
+	if (eventName.includes('-')) {
+		// on-lowerCamelCase-Capture or on-UpperCamelCase or on-kebab-case-capture
+		const parseEventName = eventName.split('-');
+		const useCapture = parseEventName[parseEventName.length - 1].toLowerCase() === 'capture';
+		return {
+			useCapture,
+			eventName: parseEventName
+				.slice(1, useCapture ? parseEventName.length - 1 : parseEventName.length)
+				.join('-'),
+		};
+	} else {
+		// onUpperCamelCase
+		const useCapture = eventName.endsWith('Capture');
+		const parseEventName = eventName.slice(2, useCapture ? eventName.length - 7 : eventName.length);
+		return {
+			useCapture,
+			eventName: parseEventName.toLowerCase(),
+		};
+	}
+}
+
 function patchEvents(element: HTMLElement, props: Props, oldProps: Props) {
 	// unmount old events
 	for (const key of Object.keys(oldProps)) {
 		if (isElementEventListener(key) && typeof oldProps[key] === 'function') {
-			const useCapture = key.endsWith('Capture');
-			let eventName = key.toLowerCase().slice(2);
-			if (useCapture) {
-				eventName = key.slice(0, -7).toLowerCase();
-			}
+			const { eventName, useCapture } = parseEventName(key);
 			element.removeEventListener(eventName, oldProps[key] as EventListener, useCapture);
 		}
 	}
@@ -73,11 +91,7 @@ function patchEvents(element: HTMLElement, props: Props, oldProps: Props) {
 				console.error(new Error(`${element.tagName} ${key} must be a function!`));
 			}
 
-			const useCapture = key.endsWith('Capture');
-			let eventName = key.toLowerCase().slice(2);
-			if (useCapture) {
-				eventName = key.slice(0, -7).toLowerCase();
-			}
+			const { eventName, useCapture } = parseEventName(key);
 			element.addEventListener(eventName, props[key] as EventListener, useCapture);
 		}
 	}
