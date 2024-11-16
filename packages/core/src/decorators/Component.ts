@@ -240,7 +240,9 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 						warn(`invalid watchKey ${watchKey}`);
 						return;
 					}
-					doWatch(this, watchMethodName, ctx, property, statePool, item.options);
+
+					const watchCallback = this[watchMethodName];
+					doWatch(this, watchCallback, ctx, property, statePool, item.options);
 				});
 			}
 		}

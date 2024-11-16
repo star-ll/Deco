@@ -9,6 +9,8 @@ export interface WatchOptions {
 	immediate?: boolean;
 }
 
+export type WatchCallback<T = unknown> = (value?: T, oldValue?: T, cleanup?: () => void) => void;
+
 // todo: validate watchKeys
 // todo： watchKeys param support ‘obj.s.a’
 // todo: pre / sync / post
@@ -22,7 +24,7 @@ export default function Watch(watchKeys: any[] | never[], options: WatchOptions 
 
 export function doWatch(
 	instance: DecoWebComponent,
-	watchMethodName: keyof DecoWebComponent,
+	watchCallback: WatchCallback,
 	propertyCtx: any,
 	property: string | symbol,
 	statePool: StatePool,
@@ -37,7 +39,7 @@ export function doWatch(
 			statePool.delete(propertyCtx, property, watchEffect);
 		};
 
-		instance[watchMethodName].call(instance, newValue, oldValue, cleanup);
+		watchCallback.call(instance, newValue, oldValue, cleanup);
 
 		oldValue = newValue;
 

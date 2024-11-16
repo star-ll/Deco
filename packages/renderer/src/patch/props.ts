@@ -109,19 +109,19 @@ export function patchProps(element: HTMLElement, props: Props, oldProps: Props) 
 		if (!['key', 'children'].includes(propName)) {
 			const value = props[propName];
 
-			handlePros(element, propName, props, value);
+			handleProps(element, propName, props, value);
 			handledProps.add(propName);
 		}
 	}
 
 	for (const propName of Object.keys(oldProps)) {
 		if (!handledProps.has(propName)) {
-			handlePros(element, propName, oldProps, undefined);
+			handleProps(element, propName, oldProps, undefined);
 		}
 	}
 }
 
-export function handlePros(element: HTMLElement, propName: string, props: Props, value: any) {
+export function handleProps(element: HTMLElement, propName: string, props: Props, value: any) {
 	try {
 		switch (propName) {
 			case 'dangerouslySetInnerHTML':
