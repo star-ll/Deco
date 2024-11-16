@@ -2,7 +2,7 @@
 
 ## 基本用法
 
-通过@Watch装饰监听函数，来实现监听状态或prop的效果，监听的目标只能是State或者Prop。
+通过@Watch装饰监听函数，来实现监听状态或prop的效果，监听的目标必须是响应式的（例如State或Prop）。
 
 ```typescript jsx
 @Component('test-watch')
@@ -72,9 +72,11 @@ export default class TestWatch extends DecoElement {
 }
 ```
 
-## 丢失监听
+## 深层属性丢失监听
 
-@Watch会将初始值和监听器进行绑定，因此对于引用值而言，如果在运行中改变的对象的指向，那么就会造成监听的丢失。
+对于对象而言，@Watch对组件State的监听总是有效的，但是对于State的深层嵌套属性的监听并非总是有效。
+
+例如下面这个例子，`state`的监听总是有效的，但是当改变`this.state`后，`state.name`的监听就会失效。
 
 ```typescript jsx
 // ...
@@ -110,3 +112,6 @@ changeState() // change state
 changeStateName() // not print
 changeStateName() // not print
 ```
+当改变`this.state`时，`state`监听器会触发，但是`state.name`监听器并不会触发，并且之后也不会再触发。
+
+造成这种现象的原因是因为decoco会在初始化时会绑定监听的对象，但是当`this.state`改变时，新的`state`对象会被重新绑定，但是其内部属性不会被重新绑定，因此之后再次改变`state.name`时，不会再触发`state.name`监听器。

@@ -8,5 +8,10 @@
     "type": "dir",
     "name": "decorators",
     "label": "装饰器"
+  },
+  {
+    "type": "dir",
+    "name": "hooks",
+    "label": "hooks"
   }
 ]
