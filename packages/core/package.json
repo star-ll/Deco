@@ -20,7 +20,8 @@
 	},
 	"scripts": {
 		"dev": "rollup -c -w",
-		"build": "tsc --noEmit && rollup -c --environment Production"
+		"build": "tsc --noEmit && rollup -c --environment Production",
+		"prepublish": "pnpm run build"
 	},
 	"packageManager": "pnpm@8.7.0",
 	"author": "star-ll",

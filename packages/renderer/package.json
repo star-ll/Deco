@@ -36,7 +36,8 @@
 	},
 	"scripts": {
 		"build": "tsc && rollup -c",
-		"dev": "rollup -c --watch"
+		"dev": "rollup -c --watch",
+		"prepublish": "pnpm run build"
 	},
 	"dependencies": {
 		"typescript": "^5.5.3"
