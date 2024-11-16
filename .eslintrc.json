@@ -15,10 +15,11 @@
 		"@typescript-eslint/no-explicit-any": "off",
 		"@typescript-eslint/ban-types": "warn",
 		"@typescript-eslint/no-unused-vars": "warn",
-		"@typescript-eslint/ban-ts-comment": "off"
+		"@typescript-eslint/ban-ts-comment": "off",
+		"no-console": ["error", { "allow": ["warn", "error"] }]
 	},
 	"settings": {},
-	"ignorePatterns": ["node_modules/", "packages/docs/"],
+	"ignorePatterns": ["node_modules/", "packages/examples/"],
 	"globals": {},
 	"root": true,
 	"overrides": [],
