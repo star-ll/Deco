@@ -4,6 +4,14 @@ export type Props = {
 	[key: string]: any;
 };
 
+function changeElemenProp(element: HTMLElement, propName: string, propValue: unknown) {
+	if ('escapePropSet' in element && typeof element.escapePropSet === 'function') {
+		element.escapePropSet(propName, propValue);
+	} else {
+		(element as any)[propName] = propValue;
+	}
+}
+
 function handleInputProps(element: HTMLElement, propName: string, value: any) {
 	const tag = element.tagName.toUpperCase();
 	if (propName === 'defaultValue' && ['INPUT', 'TEXTAREA'].includes(tag)) {
@@ -44,7 +52,7 @@ function handleOtherProps(element: HTMLElement, propName: string, value: unknown
 	if (!isDefined(value)) {
 		const property = (element as any)[propName];
 		if (property !== undefined) {
-			(element as any)[propName] = undefined;
+			changeElemenProp(element, propName, undefined);
 		}
 		element.removeAttribute(propName);
 	} else {
@@ -52,7 +60,7 @@ function handleOtherProps(element: HTMLElement, propName: string, value: unknown
 			if (propName in element) {
 				const description = Object.getOwnPropertyDescriptor(element, propName);
 				if (!description || description.writable) {
-					(element as any)[propName] = value;
+					changeElemenProp(element, propName, value);
 				}
 				element.setAttribute(propName, String(value));
 			} else {

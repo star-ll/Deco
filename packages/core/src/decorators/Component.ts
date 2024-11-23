@@ -1,4 +1,4 @@
-import { flagComponent, parseElementAttribute } from '../utils/element';
+import { bindEscapePropSet, bindComponentFlag, parseElementAttribute } from '../utils/element';
 import { Fragment, jsx, render } from '@decoco/renderer';
 import { escapePropSet, observe, StatePool } from '../reactive/observe';
 import { ComponentEffect, Effect } from '../reactive/effect';
@@ -125,7 +125,9 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 				}
 			}
 			this.__updateComponent = __updateComponent.bind(this);
-			flagComponent(this);
+
+			bindComponentFlag(this);
+			bindEscapePropSet(this);
 
 			const statePool = new StatePool();
 			Reflect.defineMetadata('statePool', statePool, this);
