@@ -3,7 +3,7 @@ import { Fragment, jsx, render } from '@decoco/renderer';
 import { escapePropSet, observe, StatePool } from '../reactive/observe';
 import { ComponentEffect, Effect } from '../reactive/effect';
 import { expToPath } from '../utils/share';
-// import { isDevelopment } from '../utils/is';
+import { forbiddenStateAndPropKey } from '../utils/const';
 import { callLifecycle, LifecycleCallback, LifeCycleList } from '../runtime/lifecycle';
 import { createJob, queueJob } from '../runtime/scheduler';
 import { doWatch } from './Watch';
@@ -154,12 +154,30 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			const stateKeys = Reflect.getMetadata('stateKeys', this);
 			const propKeys = Reflect.getMetadata('propKeys', this);
 
+			console.log(11, WebComponent.prototype);
+
 			if (stateKeys && propKeys) {
 				for (const propKey of propKeys.values()) {
 					if (stateKeys.has(propKey)) {
 						warn(
 							`${String(tag)} ${propKey} can only be one state or prop, please change it to another name.`,
 						);
+					}
+				}
+			}
+
+			if (stateKeys) {
+				for (const key of stateKeys.values()) {
+					if (forbiddenStateAndPropKey.has(key) || key in WebComponent.prototype) {
+						warn(`${String(tag)} ${key} is a reserved keyword, please change it to another name.`);
+					}
+				}
+			}
+
+			if (propKeys) {
+				for (const key of propKeys.values()) {
+					if (forbiddenStateAndPropKey.has(key)) {
+						warn(`${String(tag)} ${key} is a reserved keyword, please change it to another name.`);
 					}
 				}
 			}
