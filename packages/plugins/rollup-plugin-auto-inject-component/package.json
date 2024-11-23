@@ -2,23 +2,9 @@
 	"name": "@decoco/rollup-plugin-auto-inject-component",
 	"version": "0.3.1",
 	"description": "Auto inject import component code for decoco project.",
-	"main": "./dist/index.esm.js",
+	"main": "./lib/index.js",
 	"type": "module",
-	"scripts": {
-		"build": "rollup -c",
-		"prepublish": "npm run build"
-	},
-	"exports": {
-		"*": {
-			"import": "./dist/index.esm.js",
-			"require": "./dist/index.umd.js",
-			"default": "./dist/index.umd.js"
-		}
-	},
-	"files": [
-		"./dist",
-		"package.json"
-	],
+	"scripts": {},
 	"keywords": [
 		"decoco",
 		"rollup-plugin",
@@ -28,8 +14,5 @@
 	"license": "MIT",
 	"dependencies": {
 		"fast-glob": "^3.3.2"
-	},
-	"devDependencies": {
-		"rollup": "^4.19.0"
 	}
 }
