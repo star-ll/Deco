@@ -17,7 +17,7 @@ export default function decocoInjectComponent(scanPatterns) {
 	let componentFiles;
 
 	return {
-		name: 'rollup-plugin-auto-inject-component',
+		name: '@decoco/rollup-plugin-auto-inject-component',
 
 		resolveId(id) {
 			if (id === virtualModuleId) {

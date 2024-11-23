@@ -16,6 +16,6 @@
 	},
 	"devDependencies": {
 		"vite": "^5.4.1",
-		"rollup-plugin-auto-inject-component": "workspace:*"
+		"@decoco/rollup-plugin-auto-inject-component": "workspace:*"
 	}
 }

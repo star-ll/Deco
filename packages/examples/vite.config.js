@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import decoInjectComponent from 'rollup-plugin-auto-inject-component';
+import decoInjectComponent from '@decoco/rollup-plugin-auto-inject-component';
 
 const config = defineConfig({
 	base: './',

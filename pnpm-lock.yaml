@@ -165,7 +165,7 @@ importers:
         specifier: workspace:*
         version: link:../renderer
     devDependencies:
-      rollup-plugin-auto-inject-component:
+      '@decoco/rollup-plugin-auto-inject-component':
         specifier: workspace:*
         version: link:../plugins/rollup-plugin-auto-inject-component
       vite:

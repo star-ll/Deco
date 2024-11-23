@@ -154,8 +154,6 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			const stateKeys = Reflect.getMetadata('stateKeys', this);
 			const propKeys = Reflect.getMetadata('propKeys', this);
 
-			console.log(11, WebComponent.prototype);
-
 			if (stateKeys && propKeys) {
 				for (const propKey of propKeys.values()) {
 					if (stateKeys.has(propKey)) {
