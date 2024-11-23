@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
-import decoInjectComponent from './rollup-plugin-decoco-inject.js';
+import decoInjectComponent from '@decoco/rollup-plugin-auto-inject-component';
 
 const config = defineConfig({
 	base: './',
-	plugins: [decoInjectComponent()],
+	plugins: [decoInjectComponent(['src/**/*.(tsx|jsx)'])],
 	build: {
 		lib: {
 			entry: './index.ts',

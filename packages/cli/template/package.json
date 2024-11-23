@@ -3,6 +3,7 @@
 	"version": "1.0.0",
 	"description": "",
 	"main": "./dist/index.js",
+	"type": "module",
 	"scripts": {
 		"dev": "vite",
 		"build": "vite build"
@@ -15,7 +16,7 @@
 	},
 	"devDependencies": {
 		"vite": "^5.4.8",
-		"fast-glob": "^3.3.2",
+		"@decoco/rollup-plugin-auto-inject-component": "^0.3.1",
 		"typescript": "^5.6.2",
 		"@types/react": "^18.3.11"
 	}
