@@ -1,0 +1,18 @@
+export const forbiddenStateAndPropKey = new Set([
+	'constructor',
+	'connectedCallback',
+	'disconnectedCallback',
+	'attributeChangedCallback',
+	'adoptedCallback',
+	'connectedCallbackList',
+	'disconnectedCallbackList',
+	'attributeChangedCallbackList',
+	'adoptedCallbackList',
+	'componentWillMountList',
+	'componentDidMountList',
+	'componentWillUpdateList',
+	'componentDidUpdateList',
+	'render',
+	'__isDecocoComponent__',
+	'escapePropSet',
+]);

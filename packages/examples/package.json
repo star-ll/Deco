@@ -6,6 +6,7 @@
 	"main": "index.js",
 	"author": "",
 	"license": "MIT",
+	"type": "module",
 	"scripts": {
 		"dev": "vite"
 	},
@@ -14,6 +15,7 @@
 		"@decoco/renderer": "workspace:*"
 	},
 	"devDependencies": {
-		"vite": "^5.4.1"
+		"vite": "^5.4.1",
+		"@decoco/rollup-plugin-auto-inject-component": "workspace:*"
 	}
 }

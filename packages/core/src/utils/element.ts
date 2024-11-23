@@ -1,3 +1,5 @@
+import { escapePropSet } from 'src/reactive/observe';
+
 /**
  * 根据elementType生成一个唯一随机字符串
  * @param elementType 元素类型
@@ -47,9 +49,17 @@ export function parseElementAttribute(attr: string) {
 }
 
 export function isComponent(element: any) {
-	return element && element.__isComponent__;
+	return element && element.__isDecocoComponent__;
 }
 
-export function flagComponent(element: any) {
-	element.__isComponent__ = true;
+export function bindComponentFlag(element: any) {
+	element.__isDecocoComponent__ = true;
+}
+
+export function bindEscapePropSet(element: any) {
+	function elementEscapePropSet(prop: string, value: unknown) {
+		return escapePropSet(element, prop, value);
+	}
+
+	element.escapePropSet = elementEscapePropSet.bind(element);
 }

@@ -1,0 +1,18 @@
+{
+	"name": "@decoco/rollup-plugin-auto-inject-component",
+	"version": "0.3.1",
+	"description": "Auto inject import component code for decoco project.",
+	"main": "./lib/index.js",
+	"type": "module",
+	"scripts": {},
+	"keywords": [
+		"decoco",
+		"rollup-plugin",
+		"decoco-plugin"
+	],
+	"author": "",
+	"license": "MIT",
+	"dependencies": {
+		"fast-glob": "^3.3.2"
+	}
+}

@@ -1,9 +1,9 @@
-import { flagComponent, parseElementAttribute } from '../utils/element';
+import { bindEscapePropSet, bindComponentFlag, parseElementAttribute } from '../utils/element';
 import { Fragment, jsx, render } from '@decoco/renderer';
 import { escapePropSet, observe, StatePool } from '../reactive/observe';
 import { ComponentEffect, Effect } from '../reactive/effect';
 import { expToPath } from '../utils/share';
-// import { isDevelopment } from '../utils/is';
+import { forbiddenStateAndPropKey } from '../utils/const';
 import { callLifecycle, LifecycleCallback, LifeCycleList } from '../runtime/lifecycle';
 import { createJob, queueJob } from '../runtime/scheduler';
 import { doWatch } from './Watch';
@@ -125,7 +125,9 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 				}
 			}
 			this.__updateComponent = __updateComponent.bind(this);
-			flagComponent(this);
+
+			bindComponentFlag(this);
+			bindEscapePropSet(this);
 
 			const statePool = new StatePool();
 			Reflect.defineMetadata('statePool', statePool, this);
@@ -158,6 +160,22 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 						warn(
 							`${String(tag)} ${propKey} can only be one state or prop, please change it to another name.`,
 						);
+					}
+				}
+			}
+
+			if (stateKeys) {
+				for (const key of stateKeys.values()) {
+					if (forbiddenStateAndPropKey.has(key) || key in WebComponent.prototype) {
+						warn(`${String(tag)} ${key} is a reserved keyword, please change it to another name.`);
+					}
+				}
+			}
+
+			if (propKeys) {
+				for (const key of propKeys.values()) {
+					if (forbiddenStateAndPropKey.has(key)) {
+						warn(`${String(tag)} ${key} is a reserved keyword, please change it to another name.`);
 					}
 				}
 			}

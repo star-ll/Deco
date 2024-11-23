@@ -31,6 +31,10 @@ const routes: { [name: string]: Route } = {
 		name: 'test-prop',
 		component: () => import('./api/prop'),
 	},
+	'/plugins/auto-inject': {
+		name: 'test-auto-inject-plugin',
+		component: () => import('./plugins/rollup-plugin-auto-inject-component/index'),
+	},
 };
 
 export default routes;

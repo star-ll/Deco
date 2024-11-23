@@ -1,12 +1,17 @@
-import decoInjectComponent from "./rollup-plugin-decoco-inject.js"
+import { defineConfig } from 'vite';
+import decoInjectComponent from '@decoco/rollup-plugin-auto-inject-component';
 
+const config = defineConfig({
+	base: './',
+	plugins: [decoInjectComponent()],
+	build: {
+		lib: {
+			entry: './index.ts',
+			name: 'decoco',
+			fileName: 'index',
+			formats: ['es', 'umd'],
+		},
+	},
+});
 
-/**
- * @type {import('vite').UserConfig}
- */
-const config =  {
-    "base": "./",
-    plugins: [decoInjectComponent()]
-}
-
-export default config
+export default config;
