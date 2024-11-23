@@ -1,7 +1,7 @@
 {
 	"name": "@decoco/examples",
 	"private": "true",
-	"version": "0.3.1",
+	"version": "0.3.2",
 	"description": "",
 	"main": "index.js",
 	"author": "",
@@ -15,7 +15,7 @@
 		"@decoco/renderer": "workspace:*"
 	},
 	"devDependencies": {
-		"vite": "^5.4.1",
-		"@decoco/rollup-plugin-auto-inject-component": "workspace:*"
+		"@decoco/rollup-plugin-auto-inject-component": "workspace:*",
+		"vite": "^5.4.1"
 	}
 }
