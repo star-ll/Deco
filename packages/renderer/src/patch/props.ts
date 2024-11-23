@@ -1,4 +1,4 @@
-import { isElementEventListener, isDefined } from 'src/is';
+import { isElementEventListener, isDefined, isObject } from 'src/is';
 
 export type Props = {
 	[key: string]: any;
@@ -24,25 +24,36 @@ function handleInputProps(element: HTMLElement, propName: string, value: any) {
 	}
 }
 
-function handleStyleProps(element: HTMLElement, value: any) {
-	if (typeof value === 'object') {
-		Object.assign(element.style, value);
+function handleStyleProps(element: HTMLElement, value: unknown) {
+	if (isObject(value)) {
+		for (const property of Object.keys(value)) {
+			const propName = property as keyof CSSStyleDeclaration;
+			const propValue = value[propName as keyof typeof value];
+			if (propName !== 'length' && propName !== 'parentRule') {
+				element.style[propName] = propValue;
+			} else {
+				console.error(`Unsupported CSS property: ${property}`);
+			}
+		}
 	} else if (typeof value === 'string') {
 		element.style.cssText = value;
 	}
 }
 
-function handleOtherProps(element: HTMLElement, propName: string, value: any) {
+function handleOtherProps(element: HTMLElement, propName: string, value: unknown) {
 	if (!isDefined(value)) {
 		const property = (element as any)[propName];
-		if (!Object.isFrozen(property) && property !== undefined) {
+		if (property !== undefined) {
 			(element as any)[propName] = undefined;
 		}
 		element.removeAttribute(propName);
 	} else {
 		try {
 			if (propName in element) {
-				(element as any)[propName] = value;
+				const description = Object.getOwnPropertyDescriptor(element, propName);
+				if (!description || description.writable) {
+					(element as any)[propName] = value;
+				}
 				element.setAttribute(propName, String(value));
 			} else {
 				element.setAttribute(propName, String(value));
