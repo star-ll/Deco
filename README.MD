@@ -11,6 +11,7 @@ Decoco is an efficient Web Component framework based on decorator-driven develop
 - packages/docs: document module(todo)
 - packages/examples: for test and demo.
 - packages/cli: cli module(dveloping).
+- packages/plugins: plugin module for vite.
 - packages/devtools: browser develop devtools (dveloping).
 
 ## Start
@@ -83,3 +84,19 @@ export class HelloWorld extends DecoElement {
 pnpm install
 pnpm run --filter <package, e.g. core> dev
 ```
+
+## Roadmap
+- [x] Reactive System
+- [x] Render and JSX
+- [x] Scheduler
+- [x] @Component
+- [x] @Prop
+- [x] @State
+- [X] @Event and @Listen
+- [x] @Ref
+- [x] @Watch
+- [x] lifecycle
+- [x] State Management for redux
+- [ ] Hook API
+- [ ] performance optimization
+- [ ] more...

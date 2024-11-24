@@ -21,5 +21,5 @@ export class DecoElement extends DecoPlugin {
 		return nextTickApi.call(this, callback);
 	}
 
-	render() {}
+	render(): JSX.Element | void {}
 }

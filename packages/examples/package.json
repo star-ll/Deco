@@ -12,7 +12,9 @@
 	},
 	"dependencies": {
 		"@decoco/core": "workspace:*",
-		"@decoco/renderer": "workspace:*"
+		"@decoco/renderer": "workspace:*",
+		"@reduxjs/toolkit": "^2.3.0",
+		"redux": "^5.0.1"
 	},
 	"devDependencies": {
 		"@decoco/rollup-plugin-auto-inject-component": "workspace:*",

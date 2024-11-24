@@ -48,7 +48,9 @@
 	},
 	"dependencies": {
 		"@decoco/renderer": "workspace:*",
-		"reflect-metadata": "^0.2.2"
+		"deep-diff": "^1.0.2",
+		"reflect-metadata": "^0.2.2",
+		"rfdc": "^1.4.1"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.24.3",
@@ -58,6 +60,7 @@
 		"@rollup/plugin-babel": "^6.0.4",
 		"@rollup/plugin-terser": "^0.4.4",
 		"@rollup/plugin-typescript": "^11.1.6",
+		"@types/deep-diff": "^1.0.5",
 		"@types/node": "^20.11.30",
 		"@typescript-eslint/eslint-plugin": "^7.3.1",
 		"@typescript-eslint/parser": "^7.3.1",
