@@ -11,6 +11,8 @@ import { DecoPlugin } from '../api/plugin';
 import { isObjectAttribute } from '../utils/is';
 import { warn } from '../utils/error';
 import { EventEmitter } from './Event';
+import { applyChange, applyDiff, diff } from 'deep-diff';
+import clone from 'rfdc';
 
 export interface DecoWebComponent {
 	[K: string | symbol]: any;
@@ -138,6 +140,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			this.initProps();
 			this.initWatch();
 			this.initEventAndListen();
+			this.initStore();
 			this.initLifecycle();
 
 			callLifecycle(this, LifeCycleList.COMPONENT_WILL_MOUNT);
@@ -308,6 +311,25 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			this.componentDidMountList.push(super.componentDidMount);
 			this.shouldComponentUpdateList.push(super.shouldComponentUpdate);
 			this.componentDidUpdateList.push(super.componentDidUpdate);
+		}
+
+		initStore() {
+			const stores = Reflect.getMetadata('stores', this);
+			if (!stores) {
+				return;
+			}
+
+			for (const propName of stores.keys()) {
+				const { store, getState } = stores.get(propName);
+				const storeState = getState(store.getState());
+				const obj = clone()(storeState);
+				observe(this, propName, obj);
+
+				store.subscribe(() => {
+					const currentState = getState(store.getState());
+					applyDiff(this[propName], currentState);
+				});
+			}
 		}
 
 		attributeChangedCallback(name: string, oldValue: any, newValue: any) {
