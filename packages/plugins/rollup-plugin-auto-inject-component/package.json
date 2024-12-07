@@ -1,6 +1,6 @@
 {
 	"name": "@decoco/rollup-plugin-auto-inject-component",
-	"version": "0.3.2",
+	"version": "0.3.3",
 	"description": "Auto inject import component code for decoco project.",
 	"main": "./lib/index.js",
 	"type": "module",
