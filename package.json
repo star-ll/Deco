@@ -2,7 +2,7 @@
 	"name": "decoco",
 	"version": "1.0.0",
 	"private": true,
-	"description": "",
+	"description": "An efficient Web Component framework based on decorator-driven development",
 	"main": "index.js",
 	"type": "module",
 	"packageManager": "pnpm@8.7.0",
