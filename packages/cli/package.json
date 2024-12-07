@@ -6,6 +6,7 @@
 	"type": "module",
 	"scripts": {},
 	"author": "star-ll",
+	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/star-ll/deco.git",

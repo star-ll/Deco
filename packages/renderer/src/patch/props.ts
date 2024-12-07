@@ -58,10 +58,7 @@ function handleOtherProps(element: HTMLElement, propName: string, value: unknown
 	} else {
 		try {
 			if (propName in element) {
-				const description = Object.getOwnPropertyDescriptor(element, propName);
-				if (!description || description.writable) {
-					changeElemenProp(element, propName, value);
-				}
+				changeElemenProp(element, propName, value);
 				element.setAttribute(propName, String(value));
 			} else {
 				element.setAttribute(propName, String(value));
