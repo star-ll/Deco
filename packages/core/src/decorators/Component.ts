@@ -1,7 +1,7 @@
 import { bindEscapePropSet, bindComponentFlag, parseElementAttribute } from '../utils/element';
 import { jsx, render } from '@decoco/renderer';
 import { escapePropSet, observe, StatePool } from '../reactive/observe';
-import { ComponentEffect, Effect } from '../reactive/effect';
+import { Effect, effectStack } from '../reactive/effect';
 import { expToPath } from '../utils/share';
 import { forbiddenStateAndPropKey } from '../utils/const';
 import { callLifecycle, LifecycleCallback, LifeCycleList } from '../runtime/lifecycle';
@@ -107,7 +107,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			super();
 			this.attachShadow({ mode: 'open' });
 
-			const componentUpdateEffect = new Effect(__updateComponent.bind(this)) as ComponentEffect;
+			const componentUpdateEffect = new Effect(__updateComponent.bind(this));
 			function __updateComponent(this: WebComponent) {
 				if (this.__mounted) {
 					const updateCallbackResult = callLifecycle(this, LifeCycleList.SHOULD_COMPONENT_UPDATE);
@@ -117,11 +117,12 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 				}
 
 				{
-					const lastEffectTarget = Effect.target;
-					Effect.target = componentUpdateEffect;
-					Effect.target.targetElement = this;
+					effectStack.push({
+						effect: componentUpdateEffect,
+						stateNode: this,
+					});
 					this.domUpdate();
-					Effect.target = lastEffectTarget;
+					effectStack.pop();
 				}
 
 				if (this.__mounted) {

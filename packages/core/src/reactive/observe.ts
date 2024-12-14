@@ -1,7 +1,7 @@
 import { createJob, queueJob } from '../runtime/scheduler';
 import { ObserverOptions } from '../types';
 import { isArray, isObject, isPlainObject } from '../utils/is';
-import { Effect } from './effect';
+import { Effect, effectStack } from './effect';
 import { warn } from '../utils/error';
 
 const proxyMap = new WeakMap<object, object>();
@@ -18,10 +18,9 @@ export function createReactive(targetElement: any, target: unknown, options: Obs
 
 	const proxyTarget = new Proxy(target, {
 		get(target, key, receiver) {
-			if (Effect.target && Effect.target.targetElement === targetElement) {
-				const effect = Effect.target;
-				const targetElement = Effect.target.targetElement;
-				effect.captureSelf(target, key, targetElement);
+			if (effectStack.current && effectStack.current.stateNode === targetElement) {
+				const effect = effectStack.current.effect;
+				effect.captureSelf(target, key, effectStack.current.stateNode);
 			}
 
 			return Reflect.get(target, key, receiver);
@@ -83,8 +82,8 @@ export function observe(
 	return Object.defineProperties(target, {
 		[name]: {
 			get() {
-				if (Effect.target && Effect.target.targetElement === target) {
-					const effect = Effect.target;
+				if (effectStack.current && effectStack.current.stateNode === target) {
+					const effect = effectStack.current.effect;
 					effect.captureSelf(target, name);
 				}
 

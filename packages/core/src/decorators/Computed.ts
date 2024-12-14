@@ -1,4 +1,4 @@
-import { Effect } from 'src/reactive/effect';
+import { Effect, effectStack } from 'src/reactive/effect';
 import { DecoratorMetaKeys } from '../enums/decorators';
 import { StatePool } from 'src/reactive/observe';
 
@@ -20,8 +20,8 @@ export function computed(this: any, name: string, descriptor: { get: () => any; 
 	const setter = descriptor.set;
 
 	descriptor.get = function () {
-		if (Effect.target) {
-			const effect = Effect.target;
+		if (effectStack.current && effectStack.current.stateNode === target) {
+			const effect = effectStack.current.effect;
 			effect.captureSelf(target, name);
 		}
 
@@ -31,11 +31,12 @@ export function computed(this: any, name: string, descriptor: { get: () => any; 
 		});
 
 		if (dirty) {
-			const lastEffectTarget = Effect.target;
-			Effect.target = effect as any;
-			(Effect.target as any).targetElement = target;
+			effectStack.push({
+				effect,
+				stateNode: target,
+			});
 			value = getter();
-			Effect.target = lastEffectTarget;
+			effectStack.pop();
 
 			dirty = false;
 		}
