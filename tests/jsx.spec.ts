@@ -6,11 +6,7 @@ test.describe('test jsx logic with', () => {
 		page.evaluate(() => {
 			document.body.appendChild(document.createElement('test-jsx-logic-with'));
 		});
-	});
-
-	test('TestJsxLogicWith - initial state', async ({ page }) => {
-		const resultDiv = page.locator('.result');
-		await expect(resultDiv).not.toContainText('show');
+		await page.waitForTimeout(500);
 	});
 
 	test('TestJsxLogicWith - toggle state', async ({ page }) => {

@@ -4,22 +4,20 @@ import { DecoWebComponent } from '../decorators/Component';
 export type EffectOptions = {
 	value?: any;
 	oldValue?: any;
-	cleanup?: Function;
-	scheduler?: Function;
+	cleanup?: (...args: unknown[]) => void;
+	scheduler?: (...args: unknown[]) => void;
 };
-export type EffectTarget = ((value: unknown, oldValue?: unknown, cleanup?: Function) => any) | Function;
-
-export type ComponentEffect = Effect & { targetElement: DecoWebComponent };
+export type EffectTarget =
+	| ((value: unknown, oldValue?: unknown, cleanup?: (...args: unknown[]) => void) => any)
+	| Function;
 
 let uid = 1;
 
 export class Effect {
-	static target: ComponentEffect | null = null;
-
 	id = uid++;
 	effect: (...args: any[]) => unknown;
-	scheduler?: Function;
-	cleanup: Set<Function> = new Set();
+	scheduler?: (...args: unknown[]) => void;
+	cleanup: Set<(...args: unknown[]) => void> = new Set();
 
 	constructor(effect: (...args: any[]) => unknown, options: EffectOptions = {}) {
 		const { scheduler, cleanup } = options;
@@ -47,3 +45,36 @@ export class Effect {
 		}
 	}
 }
+
+export type EffectStackItem = {
+	effect: Effect;
+	stateNode: DecoWebComponent;
+};
+
+export class EffectStack {
+	private static instance: EffectStack;
+	private stack: EffectStackItem[] = [];
+
+	private constructor() {}
+
+	static getInstance(): EffectStack {
+		if (!EffectStack.instance) {
+			EffectStack.instance = new EffectStack();
+		}
+		return EffectStack.instance;
+	}
+
+	push(effect: EffectStackItem) {
+		this.stack.push(effect);
+	}
+
+	pop() {
+		return this.stack.pop();
+	}
+
+	get current() {
+		return this.stack[this.stack.length - 1];
+	}
+}
+
+export const effectStack = Object.freeze(EffectStack.getInstance());
