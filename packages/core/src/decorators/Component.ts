@@ -1,5 +1,5 @@
 import { bindEscapePropSet, bindComponentFlag, parseElementAttribute } from '../utils/element';
-import { Fragment, jsx, render } from '@decoco/renderer';
+import { jsx, render } from '@decoco/renderer';
 import { escapePropSet, observe, StatePool } from '../reactive/observe';
 import { ComponentEffect, Effect } from '../reactive/effect';
 import { expToPath } from '../utils/share';
@@ -8,11 +8,13 @@ import { callLifecycle, LifecycleCallback, LifeCycleList } from '../runtime/life
 import { createJob, queueJob } from '../runtime/scheduler';
 import { doWatch } from './Watch';
 import { DecoPlugin } from '../api/plugin';
-import { isObjectAttribute } from '../utils/is';
+import { isObjectAttribute, isUndefined } from '../utils/is';
 import { warn } from '../utils/error';
 import { EventEmitter } from './Event';
-import { applyChange, applyDiff, diff } from 'deep-diff';
+import { applyDiff } from 'deep-diff';
 import clone from 'rfdc';
+import { DecoratorMetaKeys } from '../enums/decorators';
+import { computed } from './Computed';
 
 export interface DecoWebComponent {
 	[K: string | symbol]: any;
@@ -115,11 +117,11 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 				}
 
 				{
-					// componentUpdateEffect.effect = this.__updateComponent;
+					const lastEffectTarget = Effect.target;
 					Effect.target = componentUpdateEffect;
 					Effect.target.targetElement = this;
 					this.domUpdate();
-					Effect.target = null;
+					Effect.target = lastEffectTarget;
 				}
 
 				if (this.__mounted) {
@@ -138,6 +140,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			this.initRefs();
 			this.initState();
 			this.initProps();
+			this.initComputed();
 			this.initWatch();
 			this.initEventAndListen();
 			this.initStore();
@@ -236,6 +239,8 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 				const attr = this.getAttribute(name);
 				observe(this, name, this.hasAttribute(name) && !isObjectAttribute(attr) ? attr : this[name], {
 					isProp: true,
+					deep: true,
+					autoDeepReactive: true,
 				});
 
 				// prop map to html attribute
@@ -243,6 +248,31 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 					queueJob(createJob(() => this.setAttribute(name, this[name])));
 				}
 			});
+		}
+
+		initComputed() {
+			const computedKeys = Reflect.getMetadata(DecoratorMetaKeys.computedKeys, this);
+			if (!computedKeys) {
+				return;
+			}
+
+			for (const key of computedKeys.values()) {
+				const descriptor = Object.getOwnPropertyDescriptor(target.prototype, key);
+
+				if (isUndefined(descriptor?.get)) {
+					warn(`computed property ${String(key)} has no getter`);
+					continue;
+				}
+
+				const getter = descriptor.get.bind(this);
+				const setter = descriptor.set?.bind(this);
+
+				const computedDescriptor = computed.call(this, key, {
+					get: getter,
+					set: setter,
+				});
+				Object.defineProperty(this, key, { ...computedDescriptor, get: computedDescriptor.get });
+			}
 		}
 
 		initWatch() {

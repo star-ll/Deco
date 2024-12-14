@@ -40,6 +40,14 @@ export class HelloWorld extends DecoElement {
     cleanup();
   }
 
+  @Computed()
+	get computedValue() {
+		return this.count + 1;
+	}
+	set computedValue(value: number) {
+		this.count = value - 1;
+	}
+
   componentWillMount(): void {
     console.log(this.hostElement.current);
   }
@@ -95,6 +103,7 @@ pnpm run --filter <package, e.g. core> dev
 - [X] @Event and @Listen
 - [x] @Ref
 - [x] @Watch
+- [x] @Computed
 - [x] lifecycle
 - [x] State Management for redux
 - [ ] Hook API

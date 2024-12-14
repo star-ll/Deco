@@ -35,6 +35,10 @@ const routes: { [name: string]: Route } = {
 		name: 'test-base-store',
 		component: () => import('./api/store'),
 	},
+	'/api/computed': {
+		name: 'test-computed',
+		component: () => import('./api/computed'),
+	},
 	'/plugins/auto-inject': {
 		name: 'test-auto-inject-plugin',
 		component: () => import('./plugins/rollup-plugin-auto-inject-component/index'),
