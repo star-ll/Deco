@@ -147,10 +147,18 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			this.initStore();
 			this.initLifecycle();
 
-			callLifecycle(this, LifeCycleList.COMPONENT_WILL_MOUNT);
-			this.__updateComponent();
-			this.__mounted = true;
-			callLifecycle(this, LifeCycleList.COMPONENT_DID_MOUNT);
+			/**
+			 * Delay render component to avoid child component did not mount
+			 * when parent component did render
+			 */
+			const componentUpdateJob = createJob(() => {
+				callLifecycle(this, LifeCycleList.COMPONENT_WILL_MOUNT);
+				this.__updateComponent();
+				this.__mounted = true;
+				callLifecycle(this, LifeCycleList.COMPONENT_DID_MOUNT);
+			});
+			componentUpdateJob.id = this.uid;
+			queueJob(componentUpdateJob);
 
 			// todo: plugins
 			// const plugins = this.getPlugins?.();
@@ -366,21 +374,15 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 		attributeChangedCallback(name: string, oldValue: any, newValue: any) {
 			callLifecycle(this, LifeCycleList.ATTRIBUTE_CHANGED_CALLBACK);
 
-			if (oldValue === null && newValue === null) {
-				return;
-			}
-			if (isObjectAttribute(newValue)) {
-				// Do not need to handle object prop
-				return;
-			}
-
-			// const observedAttributes = WebComponent.observedAttributes;
-			// if (!observedAttributes.includes(name)) {
+			// if (oldValue === null && newValue === null) {
 			// 	return;
 			// }
-			// this[name] = parseElementAttribute(newValue);
+			// if (isObjectAttribute(newValue)) {
+			// 	// Do not need to handle object prop
+			// 	return;
+			// }
 
-			escapePropSet(this, name, parseElementAttribute(newValue));
+			// escapePropSet(this, name, parseElementAttribute(newValue));
 		}
 
 		connectedCallback() {

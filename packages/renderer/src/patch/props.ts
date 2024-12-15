@@ -59,10 +59,8 @@ function handleOtherProps(element: HTMLElement, propName: string, value: unknown
 		try {
 			if (propName in element) {
 				changeElemenProp(element, propName, value);
-				element.setAttribute(propName, String(value));
-			} else {
-				element.setAttribute(propName, String(value));
 			}
+			element.setAttribute(propName, String(value));
 		} catch (e) {
 			console.error(`Error setting attribute '${propName}':`, e);
 		}

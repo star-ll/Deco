@@ -16,6 +16,14 @@ export function createReactive(targetElement: any, target: unknown, options: Obs
 
 	statePool.initState(target, new Set(Object.keys(target)));
 
+	/**
+	 * Proxy only listen shallow key change
+	 * deepReactiveKeys is a map to store deep reactive keys if deep is true.
+	 * Can't change target object, because it will trigger proxy get and set,
+	 * and it will trigger infinite loop.
+	 */
+	const deepReactiveKeys = new Map<string | symbol, unknown>();
+
 	const proxyTarget = new Proxy(target, {
 		get(target, key, receiver) {
 			if (effectStack.current && effectStack.current.stateNode === targetElement) {
@@ -23,11 +31,25 @@ export function createReactive(targetElement: any, target: unknown, options: Obs
 				effect.captureSelf(target, key, effectStack.current.stateNode);
 			}
 
+			if (deep) {
+				if (deepReactiveKeys.has(key)) {
+					return deepReactiveKeys.get(key);
+				} else {
+					const value = createReactive(targetElement, Reflect.get(target, key, receiver), options);
+					deepReactiveKeys.set(key, value);
+					return value;
+				}
+			}
+
 			return Reflect.get(target, key, receiver);
 		},
 
 		set(target, key, value, receiver) {
-			Reflect.set(target, key, autoDeepReactive ? createReactive(targetElement, value) : value, receiver);
+			if (deep) {
+				deepReactiveKeys.set(key, autoDeepReactive ? createReactive(targetElement, value) : value);
+			} else {
+				Reflect.set(target, key, autoDeepReactive ? createReactive(targetElement, value) : value, receiver);
+			}
 			statePool.notify(target, key);
 			// statePool.delete(target, key);
 
@@ -35,6 +57,7 @@ export function createReactive(targetElement: any, target: unknown, options: Obs
 		},
 
 		deleteProperty(target, key) {
+			deepReactiveKeys.delete(key);
 			Reflect.deleteProperty(target, key);
 			statePool.delete(target, key);
 
@@ -43,15 +66,6 @@ export function createReactive(targetElement: any, target: unknown, options: Obs
 	});
 
 	proxyMap.set(proxyTarget, target);
-
-	if (deep) {
-		const targetKeys = Object.keys(target);
-		const targetObject = target as Record<string | symbol, unknown>;
-		targetKeys.forEach((key) => {
-			const value = targetObject[key];
-			targetObject[key] = createReactive(targetElement, value, options);
-		});
-	}
 
 	return proxyTarget;
 }
@@ -90,9 +104,12 @@ export function observe(
 				return value;
 			},
 			set(newValue: unknown) {
+				if (Object.is(newValue, value)) {
+					return;
+				}
+
 				if (isProp) {
 					if (!escapePropSealFlag) {
-						console.warn(`prop ${String(name)} can not be set`);
 						return;
 					} else {
 						escapePropSealFlag = false;
