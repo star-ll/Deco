@@ -6,16 +6,22 @@ import { patchProps } from './props';
 export const vnodeFlag = Symbol.for('decoco:vnode');
 
 interface Container extends HTMLElement {
-	[vnodeFlag]: Vnode;
+	[vnodeFlag]: Vnode | Vnode[];
 }
 
 export function render(root: any, container: Container) {
-	// console.log(root, container);
-	// const root = jsxElementToVnode(jsxElement);
-	// console.log('render', root);
-
 	if (container[vnodeFlag]) {
-		patchVnode(root, container[vnodeFlag]);
+		const oldVnodes = container[vnodeFlag] as Vnode[];
+		if (Array.isArray(root)) {
+			root.forEach((child, index) => {
+				const oldVnode = Array.isArray(oldVnodes) ? oldVnodes[index] : oldVnodes;
+				patchVnode(child, oldVnode);
+			});
+		} else if (Array.isArray(container[vnodeFlag])) {
+			patchVnode(root, container[vnodeFlag][0]);
+		} else {
+			patchVnode(root, container[vnodeFlag]);
+		}
 	} else {
 		container.innerHTML = '';
 		mountVnode(root, container);
@@ -24,7 +30,14 @@ export function render(root: any, container: Container) {
 	container[vnodeFlag] = root;
 }
 
-export function mountVnode(vnode: Vnode, container: HTMLElement) {
+export function mountVnode(vnode: Vnode | Vnode[], container: HTMLElement) {
+	if (Array.isArray(vnode)) {
+		vnode.forEach((child) => {
+			mountVnode(child, container);
+		});
+		return;
+	}
+
 	switch (vnode.type) {
 		case NodeType.ELEMENT_NODE:
 			mountElement(vnode, container);

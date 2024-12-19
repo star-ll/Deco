@@ -137,6 +137,10 @@ export function patchProps(element: HTMLElement, props: Props, oldProps: Props) 
 
 export function handleProps(element: HTMLElement, propName: string, props: Props, value: any) {
 	try {
+		if (Object.is(element[propName as keyof HTMLElement], value)) {
+			return;
+		}
+
 		switch (propName) {
 			case 'dangerouslySetInnerHTML':
 				if (typeof value === 'object' && '__html' in value && value.__html != null) {

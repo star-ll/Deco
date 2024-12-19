@@ -328,17 +328,20 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 		}
 
 		domUpdate() {
-			const vndoes = [this.render()];
+			let rootVnode = this.render();
 
 			//  style
 			if (style instanceof CSSStyleSheet) {
 				this.shadowRoot.adoptedStyleSheets = [style];
 			} else if (typeof style === 'string') {
-				vndoes.unshift(jsx('style', {}, style));
+				if (Array.isArray(rootVnode)) {
+					rootVnode.unshift(jsx('style', {}, style));
+				} else {
+					rootVnode = [jsx('style', {}, style), rootVnode];
+				}
 			}
 
-			const fragment = jsx('div', {}, ...vndoes);
-			render(fragment, this.shadowRoot);
+			render(rootVnode, this.shadowRoot);
 		}
 
 		initLifecycle() {

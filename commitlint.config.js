@@ -11,13 +11,14 @@ const typeEnum = [
 	'test', // new test code
 	'chore', // change config file etc.
 	'ci', // change ci config etc.
-	"docs" // change docs
+	'docs', // change docs
 ];
 
 export default {
 	extends: ['@commitlint/config-conventional'],
 	rules: {
 		'type-enum': [2, 'always', typeEnum],
-		"subject-case": [0]
+		'subject-case': [0],
+		'body-max-line-length': [1, 'always', 200],
 	},
 };

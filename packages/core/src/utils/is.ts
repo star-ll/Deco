@@ -6,7 +6,7 @@ export function getTypeof(value: unknown): string {
 	return Object.prototype.toString.call(value).slice(8, -1);
 }
 
-export function isObject(value: unknown): value is object {
+export function isObject<T extends object = object>(value: unknown): value is T {
 	return typeof value === 'object' && value !== null;
 }
 

@@ -5,24 +5,23 @@ import { Effect, effectStack } from './effect';
 import { warn } from '../utils/error';
 
 const proxyMap = new WeakMap<object, object>();
+const isProxy = Symbol.for('isProxy');
+
+// Define an interface that includes the symbol as a key
+interface ProxyTarget {
+	[isProxy]?: boolean;
+	[key: string | symbol]: any;
+}
 
 export function createReactive(targetElement: any, target: unknown, options: ObserverOptions = {}) {
-	const { lazy, deep, autoDeepReactive = true } = options;
+	const { deep, autoDeepReactive = true } = options;
 	const statePool = Reflect.getMetadata('statePool', targetElement as any);
 
-	if (!isObject(target)) {
+	if (!isObject<ProxyTarget>(target) || target[isProxy]) {
 		return target;
 	}
 
 	statePool.initState(target, new Set(Object.keys(target)));
-
-	/**
-	 * Proxy only listen shallow key change
-	 * deepReactiveKeys is a map to store deep reactive keys if deep is true.
-	 * Can't change target object, because it will trigger proxy get and set,
-	 * and it will trigger infinite loop.
-	 */
-	const deepReactiveKeys = new Map<string | symbol, unknown>();
 
 	const proxyTarget = new Proxy(target, {
 		get(target, key, receiver) {
@@ -31,39 +30,36 @@ export function createReactive(targetElement: any, target: unknown, options: Obs
 				effect.captureSelf(target, key, effectStack.current.stateNode);
 			}
 
-			if (deep) {
-				if (deepReactiveKeys.has(key)) {
-					return deepReactiveKeys.get(key);
-				} else {
-					const value = createReactive(targetElement, Reflect.get(target, key, receiver), options);
-					deepReactiveKeys.set(key, value);
-					return value;
-				}
+			if (key === isProxy) {
+				return true;
 			}
 
 			return Reflect.get(target, key, receiver);
 		},
 
 		set(target, key, value, receiver) {
-			if (deep) {
-				deepReactiveKeys.set(key, autoDeepReactive ? createReactive(targetElement, value) : value);
-			} else {
-				Reflect.set(target, key, autoDeepReactive ? createReactive(targetElement, value) : value, receiver);
-			}
+			Reflect.set(target, key, autoDeepReactive ? createReactive(targetElement, value) : value, receiver);
 			statePool.notify(target, key);
+			// }
 			// statePool.delete(target, key);
 
 			return true;
 		},
 
 		deleteProperty(target, key) {
-			deepReactiveKeys.delete(key);
 			Reflect.deleteProperty(target, key);
 			statePool.delete(target, key);
 
 			return true;
 		},
 	});
+
+	if (deep) {
+		for (const key of Object.keys(target)) {
+			const value = target[key as keyof typeof target];
+			(target[key as keyof typeof target] as any) = createReactive(targetElement, value, options);
+		}
+	}
 
 	proxyMap.set(proxyTarget, target);
 
@@ -87,7 +83,7 @@ export function observe(
 	options: ObserverOptions = { deep: true },
 ) {
 	let value = originValue;
-	const { lazy, deep = true, isProp, autoDeepReactive = true } = options;
+	const { deep = true, isProp, autoDeepReactive = true } = options;
 	const statePool = Reflect.getMetadata('statePool', target as any);
 
 	const isDeepReactive = (isPlainObject(value) || isArray(value)) && deep;
@@ -118,6 +114,7 @@ export function observe(
 
 				value = autoDeepReactive ? createReactive(target, newValue, options) : newValue;
 				statePool.notify(target, name);
+
 				// statePool.delete(this, name);
 
 				return true;
