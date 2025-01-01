@@ -10,7 +10,7 @@ const isProxy = Symbol.for('isProxy');
 // Define an interface that includes the symbol as a key
 interface ProxyTarget {
 	[isProxy]?: boolean;
-	[key: string | symbol]: any;
+	[key: string | number | symbol]: any;
 }
 
 export function createReactive(targetElement: any, target: unknown, options: ObserverOptions = {}) {
@@ -78,7 +78,7 @@ export function escapePropSet(target: any, prop: string, value: any) {
 
 export function observe(
 	target: any,
-	name: string | symbol,
+	name: string | number | symbol,
 	originValue: any,
 	options: ObserverOptions = { deep: true },
 ) {
@@ -125,7 +125,7 @@ export function observe(
 
 export class StatePool {
 	private isInitState: boolean = false;
-	private store: WeakMap<object, Map<string | symbol, Set<Effect>>> = new WeakMap();
+	private store: WeakMap<object, Map<string | number | symbol, Set<Effect>>> = new WeakMap();
 
 	constructor() {}
 
@@ -145,7 +145,7 @@ export class StatePool {
 		// this.isInitState = true;
 	}
 
-	set(target: object, name: string | symbol, effect?: Effect) {
+	set(target: object, name: string | number | symbol, effect?: Effect) {
 		if (proxyMap.has(target)) {
 			// target is a proxy
 			target = proxyMap.get(target)!;
@@ -168,7 +168,7 @@ export class StatePool {
 		});
 	}
 
-	delete(target: object, name: string | symbol, effect?: Effect) {
+	delete(target: object, name: string | number | symbol, effect?: Effect) {
 		const depKeyMap = this.store.get(target);
 		if (!depKeyMap) {
 			warn(`${target} has no state ${String(name)}`);
@@ -193,7 +193,7 @@ export class StatePool {
 		}
 	}
 
-	notify(target: object, name: string | symbol) {
+	notify(target: object, name: string | number | symbol) {
 		const depKeyMap = this.store.get(target) || this.store.set(target, new Map()).get(target);
 		const deps = depKeyMap!.get(name) || depKeyMap!.set(name, new Set()).get(name);
 		deps?.forEach((effect: Effect) => {

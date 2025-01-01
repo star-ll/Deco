@@ -10,7 +10,7 @@ export function isObject<T extends object = object>(value: unknown): value is T 
 	return typeof value === 'object' && value !== null;
 }
 
-export function isPlainObject<K = unknown>(value: unknown): value is { [key: string | symbol]: K } {
+export function isPlainObject<K = unknown>(value: unknown): value is { [key: string | number | symbol]: K } {
 	return getTypeof(value) === 'Object';
 }
 
