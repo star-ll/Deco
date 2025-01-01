@@ -15,4 +15,12 @@ export const forbiddenStateAndPropKey = new Set([
 	'render',
 	'__isDecocoComponent__',
 	'escapePropSet',
+
+	// jsx
+	'props',
+	'context',
+	'setState',
+	'forceUpdate',
+	'state',
+	'refs',
 ]);

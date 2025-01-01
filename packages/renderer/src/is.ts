@@ -34,3 +34,7 @@ export function isNull(value: unknown): value is null {
 export function isDefined<T>(value: unknown): value is T {
 	return !isUndefined(value) && !isNull(value);
 }
+
+export function isFunction<T = Function>(value: unknown): value is T {
+	return typeof value === 'function';
+}

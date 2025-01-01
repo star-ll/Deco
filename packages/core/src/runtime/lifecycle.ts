@@ -31,7 +31,7 @@ export function callLifecycle(target: any, lifecycle: LifeCycleList): CallLifecy
 	for (const lifecycleCallback of lifecycles) {
 		try {
 			const callbackResult = lifecycleCallback.call(target);
-			if (isPromise(callbackResult)) {
+			if (lifecycle === LifeCycleList.SHOULD_COMPONENT_UPDATE && isPromise(callbackResult)) {
 				throw new Error(`${lifecycle} callback must be sync`);
 			}
 			result.push(callbackResult);

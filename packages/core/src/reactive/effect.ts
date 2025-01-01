@@ -1,5 +1,5 @@
 import { StatePool } from './observe';
-import { DecoWebComponent } from '../decorators/Component';
+import { DecoWebComponent } from '../types/index';
 
 export type EffectOptions = {
 	value?: any;
@@ -34,7 +34,7 @@ export class Effect {
 		return this.effect(...args);
 	}
 
-	captureSelf(target: any, name: string | symbol, instance?: any) {
+	captureSelf(target: any, name: string | number | symbol, instance?: any) {
 		const statePool: StatePool = Reflect.getMetadata('statePool', instance || target);
 		statePool.set(target, name, this);
 	}
