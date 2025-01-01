@@ -1,8 +1,7 @@
-import { DecoratorMetadata } from '../types';
-import { createJob, queueJob, SchedulerJob } from '../runtime/scheduler';
+import { createJob, queueJob } from '../runtime/scheduler';
 import { Effect } from '../reactive/effect';
 import { StatePool } from '../reactive/observe';
-import { DecoWebComponent } from './Component';
+import { DecoWebComponent } from '../types/index';
 
 export interface WatchOptions {
 	once?: boolean;
@@ -26,7 +25,7 @@ export function doWatch(
 	instance: DecoWebComponent,
 	watchCallback: WatchCallback,
 	propertyCtx: any,
-	property: string | symbol,
+	property: string | number | symbol,
 	statePool: StatePool,
 	watchOptions: WatchOptions,
 ) {

@@ -1,34 +1,22 @@
-import { bindEscapePropSet, bindComponentFlag, parseElementAttribute } from '../utils/element';
+import { bindEscapePropSet, bindComponentFlag } from '../utils/element';
 import { jsx, render } from '@decoco/renderer';
-import { escapePropSet, observe, StatePool } from '../reactive/observe';
+import { observe, StatePool } from '../reactive/observe';
 import { Effect, effectStack } from '../reactive/effect';
 import { expToPath } from '../utils/share';
 import { forbiddenStateAndPropKey } from '../utils/const';
 import { callLifecycle, LifecycleCallback, LifeCycleList } from '../runtime/lifecycle';
 import { createJob, queueJob } from '../runtime/scheduler';
-import { doWatch } from './Watch';
+import { doWatch, WatchCallback } from './Watch';
 import { DecoPlugin } from '../api/plugin';
-import { isObjectAttribute, isUndefined } from '../utils/is';
+import { isDefined, isObjectAttribute, isString, isUndefined } from '../utils/is';
 import { warn } from '../utils/error';
 import { EventEmitter } from './Event';
 import { applyDiff } from 'deep-diff';
 import clone from 'rfdc';
 import { DecoratorMetaKeys } from '../enums/decorators';
 import { computed } from './Computed';
-
-export interface DecoWebComponent {
-	[K: string | symbol]: any;
-	readonly uid: number;
-
-	componentWillMountList: LifecycleCallback[];
-	componentDidMountList: LifecycleCallback[];
-	shouldComponentUpdateList: LifecycleCallback[];
-	componentDidUpdateList: LifecycleCallback[];
-	connectedCallbackList: LifecycleCallback[];
-	disconnectedCallbackList: LifecycleCallback[];
-	attributeChangedCallbackList: LifecycleCallback[];
-	adoptedCallbackList: LifecycleCallback[];
-}
+import { DecoWebComponent } from '../types/index';
+import { DecoElement } from 'src/api/instance';
 
 interface ComponentDecoratorOptions {
 	// tag name
@@ -61,7 +49,7 @@ export default function Component(tagOrOptions: string | LegacyComponentOptions,
 			tag = tagOrOptions.tag;
 		}
 
-		const observedAttributes = target.prototype.__propKeys || [];
+		const observedAttributes = target.prototype.props || [];
 
 		if (customElements.get(tag)) {
 			warn(`custom element ${tag} already exists`);
@@ -75,6 +63,10 @@ export default function Component(tagOrOptions: string | LegacyComponentOptions,
 				`Invalid tag name: ${tag}. Tag names must start with a letter and contain only letters, digits, and hyphens.`,
 			);
 		}
+
+		// displayName is used to create html element in decoco-renderer
+		target.displayName = tag;
+
 		customElements.define(String(tag), getCustomElementWrapper(target, { tag, style, observedAttributes }));
 	};
 }
@@ -84,10 +76,13 @@ type CustomElementWrapperOptions = {
 	style?: string | StyleSheet;
 	observedAttributes: string[];
 };
-function getCustomElementWrapper(target: any, { tag, style, observedAttributes }: CustomElementWrapperOptions): any {
+function getCustomElementWrapper(
+	target: typeof DecoElement,
+	{ tag, style, observedAttributes }: CustomElementWrapperOptions,
+): any {
 	return class WebComponent extends target implements DecoWebComponent {
 		uid = ++uid;
-
+		shadowRootLink: ShadowRoot;
 		__updateComponent: () => void;
 		__mounted = false;
 
@@ -105,7 +100,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 
 		constructor() {
 			super();
-			this.attachShadow({ mode: 'open' });
+			this.shadowRootLink = this.attachShadow({ mode: 'open' }); // save shadowRoot for close mode.
 
 			const componentUpdateEffect = new Effect(__updateComponent.bind(this));
 			function __updateComponent(this: WebComponent) {
@@ -130,6 +125,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 				}
 			}
 			this.__updateComponent = __updateComponent.bind(this);
+			this.forceUpdate = this.__updateComponent;
 
 			bindComponentFlag(this);
 			bindEscapePropSet(this);
@@ -226,8 +222,9 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 				return;
 			}
 			statePool.initState(this, Array.from(stateKeys));
-			Array.from(stateKeys.values()).forEach((name: any) => {
-				observe(this, name, this[name]);
+			Array.from(stateKeys.values()).forEach((name) => {
+				const propertyName = name as keyof DecoElement;
+				observe(this, propertyName, this[propertyName]);
 			});
 		}
 
@@ -244,17 +241,21 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 
 			statePool.initState(this, Array.from(propKeys));
 
-			Array.from(propKeys.keys()).forEach((name: any) => {
-				const attr = this.getAttribute(name);
-				observe(this, name, this.hasAttribute(name) && !isObjectAttribute(attr) ? attr : this[name], {
+			Array.from(propKeys.keys()).forEach((name: unknown) => {
+				if (!isString(name)) {
+					return;
+				}
+				const attr = this.getAttribute(name) as keyof DecoElement;
+				const propertyName = name as keyof DecoElement;
+				observe(this, name, this.hasAttribute(name) && !isObjectAttribute(attr) ? attr : this[propertyName], {
 					isProp: true,
 					deep: true,
 					autoDeepReactive: true,
 				});
 
 				// prop map to html attribute
-				if (!this.hasAttribute(name) && this[name] !== undefined && this[name] !== null) {
-					queueJob(createJob(() => this.setAttribute(name, this[name])));
+				if (!this.hasAttribute(name) && this[propertyName] !== undefined && this[propertyName] !== null) {
+					queueJob(createJob(() => this.setAttribute(name, this[propertyName]?.toString() || '')));
 				}
 			});
 		}
@@ -293,7 +294,10 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 			}
 
 			for (const item of watchers) {
-				const { watchKeys, watchMethodName } = item;
+				const { watchKeys, watchMethodName } = item as {
+					watchKeys: string[];
+					watchMethodName: keyof DecoElement;
+				};
 				watchKeys.forEach((watchKey: string) => {
 					const { ctx, property } = expToPath(watchKey, this) || {};
 					if (!ctx || !property) {
@@ -302,6 +306,10 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 					}
 
 					const watchCallback = this[watchMethodName];
+					if (!isDefined<WatchCallback>(watchCallback)) {
+						warn(`watchCallback ${watchMethodName} is undefined`);
+						return;
+					}
 					doWatch(this, watchCallback, ctx, property, statePool, item.options);
 				});
 			}
@@ -315,7 +323,8 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 				for (const eventName of events.keys()) {
 					const eventInit = events.get(eventName);
 					const eventEmit = new EventEmitter({ ...eventInit });
-					eventEmit.setEventTarget(this as any);
+					eventEmit.setEventTarget(this);
+					// @ts-ignore
 					this[eventName] = eventEmit;
 				}
 			}
@@ -328,11 +337,11 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 		}
 
 		domUpdate() {
-			let rootVnode = this.render();
+			let rootVnode: any = this.render();
 
 			//  style
 			if (style instanceof CSSStyleSheet) {
-				this.shadowRoot.adoptedStyleSheets = [style];
+				this.shadowRootLink.adoptedStyleSheets = [style];
 			} else if (typeof style === 'string') {
 				if (Array.isArray(rootVnode)) {
 					rootVnode.unshift(jsx('style', {}, style));
@@ -341,18 +350,22 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 				}
 			}
 
-			render(rootVnode, this.shadowRoot);
+			// TODO: fix type error
+			render(rootVnode, this.shadowRootLink as unknown as HTMLElement);
 		}
 
 		initLifecycle() {
 			this.connectedCallbackList.push(super.connectedCallback);
 			this.disconnectedCallbackList.push(super.disconnectedCallback);
-			this.attributeChangedCallbackList.push(super.attributeChangedCallback);
 			this.adoptedCallbackList.push(super.adoptedCallback);
 			this.componentWillMountList.push(super.componentWillMount);
 			this.componentDidMountList.push(super.componentDidMount);
 			this.shouldComponentUpdateList.push(super.shouldComponentUpdate);
 			this.componentDidUpdateList.push(super.componentDidUpdate);
+
+			if (isDefined<LifecycleCallback>(super.attributeChangedCallback)) {
+				this.attributeChangedCallbackList.push(super.attributeChangedCallback);
+			}
 		}
 
 		initStore() {
@@ -361,7 +374,7 @@ function getCustomElementWrapper(target: any, { tag, style, observedAttributes }
 				return;
 			}
 
-			for (const propName of stores.keys()) {
+			for (const propName of stores.keys() as (keyof DecoElement)[]) {
 				const { store, getState } = stores.get(propName);
 				const storeState = getState(store.getState());
 				const obj = clone()(storeState);

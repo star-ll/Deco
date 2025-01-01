@@ -1,5 +1,5 @@
 import { Fragment } from './const';
-import { isObject } from './is';
+import { isFunction, isObject } from './is';
 
 const isVnode = Symbol.for('decoco:isVnode');
 
@@ -57,6 +57,14 @@ export function jsxElementToVnode(element: JSX.Element | JSX.Element[] | string 
 		return vnodeList;
 	} else if (!isObject(element)) {
 		return typeof element === 'string' || typeof element === 'number' ? createTextVnode(String(element)) : [];
+	} else if (isFunction(element.type)) {
+		if (!('displayName' in element.type) || typeof element.type.displayName !== 'string') {
+			console.error(
+				new Error(`jsxElementToVnode: <${element.type}> is a component, but no displayName property.`),
+			);
+			return createTextVnode(''); // TODO: handle error element type
+		}
+		return createElementVnode(element.type.displayName, element.props);
 	} else if ((element as any)[isVnode]) {
 		return element as Vnode;
 	} else if (element.type === Fragment) {

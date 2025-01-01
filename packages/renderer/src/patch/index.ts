@@ -5,8 +5,8 @@ import { patchProps } from './props';
 
 export const vnodeFlag = Symbol.for('decoco:vnode');
 
-interface Container extends HTMLElement {
-	[vnodeFlag]: Vnode | Vnode[];
+interface Container extends Element {
+	[vnodeFlag]?: Vnode | Vnode[];
 }
 
 export function render(root: any, container: Container) {
@@ -24,7 +24,7 @@ export function render(root: any, container: Container) {
 		}
 	} else {
 		container.innerHTML = '';
-		mountVnode(root, container);
+		mountVnode(root, container as HTMLElement);
 	}
 
 	container[vnodeFlag] = root;
