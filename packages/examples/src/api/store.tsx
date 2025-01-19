@@ -1,5 +1,5 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit';
-import { DecoElement, Component, Store } from '@decoco/core';
+import { DecoElement, Component, UseStore } from '@decoco/core';
 
 const testSlice = createSlice({
 	name: 'test',
@@ -24,7 +24,7 @@ function incrementCount() {
 
 @Component('test-base-store')
 export class TestBaseStore extends DecoElement {
-	@Store(store, (state: RootState) => state.test) store!: RootState['test'];
+	@UseStore(store, (state: RootState) => state.test) store!: RootState['test'];
 
 	componentDidMount(): void {
 		incrementCount();
@@ -53,7 +53,7 @@ export class TestBaseStore extends DecoElement {
 
 @Component('test-base-store-child')
 export class TestBaseStoreChild extends DecoElement {
-	@Store(store, (state: RootState) => state.test) store!: RootState['test'];
+	@UseStore(store, (state: RootState) => state.test) store!: RootState['test'];
 
 	render(): JSX.Element | void {
 		const { dispatch } = store;
