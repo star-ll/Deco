@@ -1,6 +1,10 @@
 import { LifecycleCallback } from '../runtime/lifecycle';
 import type { StatePool } from '../reactive/observe';
 
+export type DecoPluginType = {
+	apply: (app: DecoWebComponent) => void;
+};
+
 export type ObserverOptions = {
 	deep?: boolean;
 	autoDeepReactive?: boolean; // Automatic implementation of deep reactive

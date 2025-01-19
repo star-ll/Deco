@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 
 export * from './src/decorators/index';
+export * from './src/plugins/index';
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/no-namespace

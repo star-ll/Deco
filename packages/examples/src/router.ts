@@ -43,6 +43,10 @@ const routes: { [name: string]: Route } = {
 		name: 'test-auto-inject-plugin',
 		component: () => import('./plugins/rollup-plugin-auto-inject-component/index'),
 	},
+	'/deco-plugins/global-style': {
+		name: 'test-global-style',
+		component: () => import('./deco-plugins/global-style'),
+	},
 };
 
 export default routes;
