@@ -14,6 +14,10 @@ Decoco is an efficient Web Component framework based on decorator-driven develop
 - packages/plugins: plugin module for vite.
 - packages/devtools: browser develop devtools (dveloping).
 
+## Playground
+
+[Playground](https://stackblitz.com/~/github.com/star-ll/Deco-Playground)
+
 ## Start
 
 create a decoco project
@@ -106,6 +110,7 @@ pnpm run --filter <package, e.g. core> dev
 - [x] @Computed
 - [x] lifecycle
 - [x] State Management for redux
+- [x] Plugin support
 - [ ] Hook API
 - [ ] performance optimization
 - [ ] more...
