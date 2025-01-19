@@ -1,6 +1,6 @@
 {
 	"name": "@decoco/docs",
-	"version": "0.3.5",
+	"version": "0.3.6",
 	"private": true,
 	"description": "Docs for Decoco",
 	"scripts": {
