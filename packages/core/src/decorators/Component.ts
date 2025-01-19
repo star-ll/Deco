@@ -11,12 +11,14 @@ import { DecoPlugin } from '../api/plugin';
 import { isDefined, isObjectAttribute, isString, isUndefined } from '../utils/is';
 import { warn } from '../utils/error';
 import { EventEmitter } from './Event';
-import { applyDiff } from 'deep-diff';
-import clone from 'rfdc';
+import { applyChange, diff } from 'deep-diff';
+import rfdc from 'rfdc';
 import { DecoratorMetaKeys } from '../enums/decorators';
 import { computed } from './Computed';
 import { DecoWebComponent } from '../types/index';
 import { DecoElement } from 'src/api/instance';
+
+const clone = rfdc();
 
 interface ComponentDecoratorOptions {
 	// tag name
@@ -375,14 +377,47 @@ function getCustomElementWrapper(
 			}
 
 			for (const propName of stores.keys() as (keyof DecoElement)[]) {
-				const { store, getState } = stores.get(propName);
+				const { store, getState = (state: unknown) => state } = stores.get(propName);
 				const storeState = getState(store.getState());
-				const obj = clone()(storeState);
+				const obj = clone(storeState); // redux state is immutable
 				observe(this, propName, obj);
 
 				store.subscribe(() => {
-					const currentState = getState(store.getState());
-					applyDiff(this[propName], currentState);
+					const currentState = clone(getState(store.getState()));
+
+					const target = this[propName];
+					const changes = diff(target, currentState);
+
+					{
+						/**
+						 * deep-diff can't set the length of the array when diff array,
+						 * so we need to set the length of the array to trigger the component update
+						 */
+						const arrayPaths = new Set<string | undefined>();
+						changes?.forEach((change) => {
+							if (change.kind === 'A' && change.item) {
+								arrayPaths.add(change.path?.join('.'));
+							}
+						});
+
+						changes?.forEach((change) => {
+							applyChange(target, currentState, change);
+						});
+
+						arrayPaths.values().forEach((path) => {
+							if (!path) {
+								return;
+							}
+							let v = target;
+							path.split('.').forEach((p) => {
+								v = v[p];
+							});
+							if ('length' in v) {
+								const size = v.length;
+								v.length = size;
+							}
+						});
+					}
 				});
 			}
 		}

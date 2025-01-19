@@ -56,8 +56,11 @@ export function createReactive(targetElement: any, target: unknown, options: Obs
 
 	if (deep) {
 		for (const key of Object.keys(target)) {
-			const value = target[key as keyof typeof target];
-			(target[key as keyof typeof target] as any) = createReactive(targetElement, value, options);
+			const descriptor = Object.getOwnPropertyDescriptor(target, key);
+			if (!descriptor || descriptor?.writable) {
+				const value = target[key as keyof typeof target];
+				(target[key as keyof typeof target] as any) = createReactive(targetElement, value, options);
+			}
 		}
 	}
 
@@ -70,7 +73,7 @@ export function createReactive(targetElement: any, target: unknown, options: Obs
  * change prop only method
  */
 let escapePropSealFlag = false;
-export function escapePropSet(target: any, prop: string, value: any) {
+export function escapePropSet(target: any, prop: string | symbol, value: any) {
 	escapePropSealFlag = true;
 	target[prop] = value;
 	escapePropSealFlag = false;

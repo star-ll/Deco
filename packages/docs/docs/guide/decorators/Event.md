@@ -42,6 +42,11 @@ export class EmitEvent extends DecoElement {
 | eventName | string | 事件名 |
 | data      | any | 事件数据 |
 
+## 事件冒泡
+
+默认情况下，composed和bubbles会被设置为true以便事件可以向上冒泡，这意味着子孙组件一旦发送事件，其父组件以及所有祖先节点都会收到事件，除非事件冒泡过程中通过`e.stopPropagation()`阻止事件冒泡。这一行为与传统框架不同，需要特别注意不要重复发送事件。
+
+
 # Listen
 
 ## 基本用法
