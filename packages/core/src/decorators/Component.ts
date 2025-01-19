@@ -7,8 +7,7 @@ import { forbiddenStateAndPropKey } from '../utils/const';
 import { callLifecycle, LifecycleCallback, LifeCycleList } from '../runtime/lifecycle';
 import { createJob, queueJob } from '../runtime/scheduler';
 import { doWatch, WatchCallback } from './Watch';
-import { DecoPlugin } from '../api/plugin';
-import { isDefined, isObjectAttribute, isString, isUndefined } from '../utils/is';
+import { isDefined, isObjectAttribute, isPlainObject, isString, isUndefined } from '../utils/is';
 import { warn } from '../utils/error';
 import { EventEmitter } from './Event';
 import { applyChange, diff } from 'deep-diff';
@@ -158,9 +157,15 @@ function getCustomElementWrapper(
 			componentUpdateJob.id = this.uid;
 			queueJob(componentUpdateJob);
 
-			// todo: plugins
-			// const plugins = this.getPlugins?.();
-			// console.log(plugins);
+			// plugins
+			const plugins = this.getPlugins?.();
+			plugins?.forEach((plugin) => {
+				if (!isPlainObject(plugin) || !isDefined(plugin.apply)) {
+					warn(`plugin ${plugin} is not a valid plugin. Please check the plugin is a function.`);
+				} else {
+					plugin.apply(this);
+				}
+			});
 		}
 
 		validateStateAndPropKeys() {
@@ -343,7 +348,7 @@ function getCustomElementWrapper(
 
 			//  style
 			if (style instanceof CSSStyleSheet) {
-				this.shadowRootLink.adoptedStyleSheets = [style];
+				this.shadowRootLink.adoptedStyleSheets = [...this.shadowRootLink.adoptedStyleSheets, style];
 			} else if (typeof style === 'string') {
 				if (Array.isArray(rootVnode)) {
 					rootVnode.unshift(jsx('style', {}, style));

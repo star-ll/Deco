@@ -1,8 +1,5 @@
 import { DecoBaseElement } from './base';
-
-export type DecoPluginType = {
-	apply: () => void;
-};
+import { DecoPluginType } from '../types';
 
 export class DecoPlugin extends DecoBaseElement {
 	private static plugins: DecoPluginType[] = [];
