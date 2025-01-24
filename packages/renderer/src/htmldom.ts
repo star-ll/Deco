@@ -9,7 +9,7 @@ export function createNode(vnode: Vnode, isDeep?: boolean): HTMLElement;
 export function createNode(vnode: Vnode, isDeep = false) {
 	let elm;
 	if (isElementNode(vnode)) {
-		elm = createElement(vnode.tag, vnode.props);
+		elm = createElement(vnode);
 	} else if (isTextNode(vnode)) {
 		elm = createTextNode(vnode.text);
 	} else if (isDcoumentFragmentNode(vnode)) {
@@ -39,7 +39,8 @@ export function removeNode(vnode: Vnode) {
 	return vnode.elm!.parentNode?.removeChild(vnode.elm!);
 }
 
-export function createElement(tagName: string, props: Props) {
+export function createElement(vnode: ElementVnode) {
+	const { tag: tagName, props } = vnode;
 	const elm = document.createElement(tagName);
 	patchProps(elm, props, {});
 	return elm;

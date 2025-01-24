@@ -28,7 +28,7 @@ export class DecoElement<T = DecoElementAttributes> extends DecoPlugin {
 	attributeChangedCallback?(name: string, oldValue: any, newValue: any) {}
 
 	// hooks
-	$nextTick(this: any, callback: Function) {
+	$nextTick(this: any, callback: (...args: unknown[]) => void) {
 		return nextTickApi.call(this, callback);
 	}
 
