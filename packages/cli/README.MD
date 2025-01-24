@@ -8,7 +8,7 @@ Decoco is an efficient Web Component framework based on decorator-driven develop
 
 ## Playground
 
-[Playground](https://stackblitz.com/~/github.com/star-ll/Deco-Playground)
+[Playground](https://stackblitz.com/edit/vitejs-vite-cqddjnit?file=src%2FApp.tsx)
 
 ## Document
 

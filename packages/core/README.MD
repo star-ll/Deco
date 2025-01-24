@@ -9,7 +9,7 @@ npm create decoco
 
 ## Playground
 
-[Playground](https://stackblitz.com/~/github.com/star-ll/Deco-Playground)
+[Playground](https://stackblitz.com/edit/vitejs-vite-cqddjnit?file=src%2FApp.tsx)
 
 ## Document
 
