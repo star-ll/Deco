@@ -92,7 +92,7 @@ export function patchVnode(newVnode: Vnode, oldVnode: Vnode) {
 
 	switch (oldVnode.type) {
 		case NodeType.ELEMENT_NODE:
-			patchElement(elm, oldVnode as ElementVnode, newVnode as ElementVnode);
+			patchElement(oldVnode as ElementVnode, newVnode as ElementVnode);
 			break;
 		case NodeType.TEXT_NODE:
 			patchText(oldVnode as TextVnode, newVnode as TextVnode);
@@ -105,11 +105,11 @@ export function patchVnode(newVnode: Vnode, oldVnode: Vnode) {
 	}
 }
 
-function patchElement(parentElement: HTMLElement, oldVnode: ElementVnode, newVnode: ElementVnode) {
+function patchElement(oldVnode: ElementVnode, newVnode: ElementVnode) {
 	if (oldVnode.tag !== newVnode.tag) {
 		const newElm = createElement(newVnode.tag, newVnode.props);
 		newVnode.elm = newElm;
-		addNode(oldVnode.elm!.parentElement!, newElm, oldVnode.elm!);
+		addNode(oldVnode.elm!.parentNode as HTMLElement, newElm, oldVnode.elm!);
 		removeNode(oldVnode);
 
 		patchProps(newElm, newVnode.props, {});
