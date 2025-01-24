@@ -1,6 +1,6 @@
 {
 	"name": "@decoco/renderer",
-	"version": "0.3.6",
+	"version": "0.3.7",
 	"description": "A vital component of the Decoco framework, responsible for rendering elements to the DOM",
 	"main": "dist/esm/index.js",
 	"type": "module",
