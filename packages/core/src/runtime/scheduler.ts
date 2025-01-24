@@ -83,9 +83,9 @@ if (typeof window.queueMicrotask === 'function') {
 	scheduler = (callback: typeof flushCallbacks) => setTimeout(callback, 0);
 }
 
-export function nextTick(cb?: Function) {
+export function nextTick(cb?: (...args: unknown[]) => void) {
 	if (cb) {
-		return Promise.resolve().then(() => cb);
+		return Promise.resolve().then(cb);
 	}
 
 	return Promise.resolve();

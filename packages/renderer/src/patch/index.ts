@@ -60,7 +60,7 @@ export function mountVnode(vnode: Vnode | Vnode[], container: HTMLElement) {
 }
 
 function mountElement(vnode: ElementVnode, container: HTMLElement) {
-	const elm = createElement(vnode.tag, vnode.props);
+	const elm = createElement(vnode);
 	vnode.elm = elm;
 	vnode.children.forEach((child) => {
 		mountVnode(child, elm);
@@ -107,12 +107,13 @@ export function patchVnode(newVnode: Vnode, oldVnode: Vnode) {
 
 function patchElement(oldVnode: ElementVnode, newVnode: ElementVnode) {
 	if (oldVnode.tag !== newVnode.tag) {
-		const newElm = createElement(newVnode.tag, newVnode.props);
+		const newElm = createElement(newVnode);
 		newVnode.elm = newElm;
 		addNode(oldVnode.elm!.parentNode as HTMLElement, newElm, oldVnode.elm!);
 		removeNode(oldVnode);
-
 		patchProps(newElm, newVnode.props, {});
+
+		updateChildren(newElm, newVnode.children, oldVnode.children);
 	} else {
 		const elm = (newVnode.elm = oldVnode.elm);
 		patchProps(elm as HTMLElement, newVnode.props, oldVnode.props);
