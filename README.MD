@@ -18,6 +18,10 @@ Decoco is an efficient Web Component framework based on decorator-driven develop
 
 [Playground](https://stackblitz.com/edit/vitejs-vite-cqddjnit?file=src%2FApp.tsx)
 
+## Custom Elements Everywhere
+
+The Decoco is passes all tests in [Custom Elements Everywhere](https://star-ll.github.io/custom-elements-everywhere/#decoco).
+
 ## Start
 
 create a decoco project
