@@ -107,13 +107,13 @@ export function observe(
 					return;
 				}
 
-				if (isProp) {
-					if (!escapePropSealFlag) {
-						return;
-					} else {
-						escapePropSealFlag = false;
-					}
-				}
+				// if (isProp) {
+				// 	if (!escapePropSealFlag) {
+				// 		return;
+				// 	} else {
+				// 		escapePropSealFlag = false;
+				// 	}
+				// }
 
 				value = autoDeepReactive ? createReactive(target, newValue, options) : newValue;
 				statePool.notify(target, name);

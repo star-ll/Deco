@@ -1,3 +1,4 @@
+import { ShadowRootSymbol } from 'src/decorators/Component';
 import { DecoWebComponent } from '../types';
 
 interface GlobalStylesOptions {
@@ -13,7 +14,7 @@ export function globalStylesPlugin(pluginOptions: GlobalStylesOptions) {
 			const { async = false } = options;
 			const styleSheet = new CSSStyleSheet();
 			async ? styleSheet.replace(style) : styleSheet.replaceSync(style);
-			app.shadowRootLink.adoptedStyleSheets = [...app.shadowRootLink.adoptedStyleSheets, styleSheet];
+			app[ShadowRootSymbol].adoptedStyleSheets = [...app[ShadowRootSymbol].adoptedStyleSheets, styleSheet];
 		},
 	};
 }

@@ -19,11 +19,22 @@ import { DecoElement } from 'src/api/instance';
 
 const clone = rfdc();
 
+export const ShadowRootSymbol = Symbol('ShadowRoot');
+
 interface ComponentDecoratorOptions {
-	// tag name
+	/**
+	 * tag name
+	 */
 	tag: string;
-	// style string or style sheet object
+	/**
+	 * style string or styleSheet object
+	 */
 	style: string | StyleSheet;
+	/**
+	 * shadowRoot mode
+	 * default is open
+	 */
+	shadowRootMode: 'open' | 'closed';
 }
 
 let uid = 0;
@@ -72,18 +83,17 @@ export default function Component(tagOrOptions: string | LegacyComponentOptions,
 	};
 }
 
-type CustomElementWrapperOptions = {
-	tag: string;
-	style?: string | StyleSheet;
-	observedAttributes: string[];
-};
+type CustomElementWrapperOptions = Pick<ComponentDecoratorOptions, 'tag'> &
+	Partial<Pick<ComponentDecoratorOptions, 'style' | 'shadowRootMode'>> & { observedAttributes: string[] };
+
 function getCustomElementWrapper(
 	target: typeof DecoElement,
-	{ tag, style, observedAttributes }: CustomElementWrapperOptions,
+	{ tag, style, shadowRootMode = 'open', observedAttributes }: CustomElementWrapperOptions,
 ): any {
 	return class WebComponent extends target implements DecoWebComponent {
 		uid = ++uid;
-		shadowRootLink: ShadowRoot;
+		declare [ShadowRootSymbol]: ShadowRoot;
+		
 		__updateComponent: () => void;
 		__mounted = false;
 
@@ -101,7 +111,9 @@ function getCustomElementWrapper(
 
 		constructor() {
 			super();
-			this.shadowRootLink = this.attachShadow({ mode: 'open' }); // save shadowRoot for close mode.
+
+			const shadowRoot = this.attachShadow({ mode: shadowRootMode });
+			this.bindShadowRoot(shadowRoot);
 
 			const componentUpdateEffect = new Effect(__updateComponent.bind(this));
 			function __updateComponent(this: WebComponent) {
@@ -348,7 +360,7 @@ function getCustomElementWrapper(
 
 			//  style
 			if (style instanceof CSSStyleSheet) {
-				this.shadowRootLink.adoptedStyleSheets = [...this.shadowRootLink.adoptedStyleSheets, style];
+				this[ShadowRootSymbol].adoptedStyleSheets = [...this[ShadowRootSymbol].adoptedStyleSheets, style];
 			} else if (typeof style === 'string') {
 				if (Array.isArray(rootVnode)) {
 					rootVnode.unshift(jsx('style', {}, style));
@@ -358,7 +370,7 @@ function getCustomElementWrapper(
 			}
 
 			// TODO: fix type error
-			render(rootVnode, this.shadowRootLink as unknown as HTMLElement);
+			render(rootVnode, this[ShadowRootSymbol] as unknown as HTMLElement);
 		}
 
 		initLifecycle() {
@@ -451,6 +463,15 @@ function getCustomElementWrapper(
 
 		adoptedCallback() {
 			callLifecycle(this, LifeCycleList.ADOPTED_CALLBACK);
+		}
+
+		private bindShadowRoot(shadowRoot: ShadowRoot) {
+			Object.defineProperty(this, ShadowRootSymbol, {
+				value: shadowRoot,
+				writable: false,
+				configurable: false,
+				enumerable: true,
+			});
 		}
 	};
 }

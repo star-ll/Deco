@@ -14,3 +14,4 @@ declare global {
 
 export { DecoElement } from './src/api/instance';
 export * from './src/api/global-api';
+export { ShadowRootSymbol } from './src/decorators/Component';
