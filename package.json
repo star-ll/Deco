@@ -9,7 +9,8 @@
 	"scripts": {
 		"prepare": "husky",
 		"lint": "eslint './packages/**/*.{ts,tsx}'",
-		"test": "playwright test && playwright show-report",
+		"test": "playwright test",
+		"test:html": "playwright test && playwright show-report",
 		"test:ui": "playwright test --ui"
 	},
 	"keywords": [],
