@@ -1,5 +1,6 @@
 import { LifecycleCallback } from '../runtime/lifecycle';
 import type { StatePool } from '../reactive/observe';
+import { ShadowRootSymbol } from '../decorators/Component';
 
 export type DecoPluginType = {
 	apply: (app: DecoWebComponent) => void;
@@ -22,7 +23,7 @@ export type DecoratorMetadata = {
 
 export interface DecoWebComponent {
 	readonly uid: number;
-	shadowRootLink: ShadowRoot;
+	[ShadowRootSymbol]: ShadowRoot;
 
 	componentWillMountList: LifecycleCallback[];
 	componentDidMountList: LifecycleCallback[];

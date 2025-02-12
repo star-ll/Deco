@@ -4,7 +4,17 @@ import { DecoPlugin } from './plugin';
 
 type DecoElementAttributes = JSX.IntrinsicAttributes & React.HTMLAttributes<DecoElement>;
 
-export class DecoElement<T = DecoElementAttributes> extends DecoPlugin {
+// jsx element adapter
+export type JSXElementAdapter<T = DecoElementAttributes> = {
+	props: T & DecoElementAttributes;
+	context: any;
+	setState: () => void;
+	forceUpdate: () => void;
+	state: any;
+	refs: any;
+};
+
+export class DecoElement<T = DecoElementAttributes> extends DecoPlugin implements JSXElementAdapter<T> {
 	// jsx
 	static h = h;
 	static Fragment = Fragment;
