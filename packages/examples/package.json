@@ -8,8 +8,7 @@
 	"license": "MIT",
 	"type": "module",
 	"scripts": {
-		"dev": "vite",
-		"build": "vite build"
+		"dev": "vite"
 	},
 	"dependencies": {
 		"@decoco/core": "workspace:*",
@@ -19,7 +18,6 @@
 	},
 	"devDependencies": {
 		"@decoco/rollup-plugin-auto-inject-component": "workspace:*",
-		"@decoco/rollup-plugin-dts": "workspace:*",
 		"vite": "^5.4.1"
 	}
 }
