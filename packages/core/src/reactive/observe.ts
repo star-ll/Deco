@@ -21,8 +21,6 @@ export function createReactive(targetElement: any, target: unknown, options: Obs
 		return target;
 	}
 
-	statePool.initState(target, new Set(Object.keys(target)));
-
 	const proxyTarget = new Proxy(target, {
 		get(target, key, receiver) {
 			if (effectStack.current && effectStack.current.stateNode === targetElement) {
@@ -40,9 +38,6 @@ export function createReactive(targetElement: any, target: unknown, options: Obs
 		set(target, key, value, receiver) {
 			Reflect.set(target, key, autoDeepReactive ? createReactive(targetElement, value) : value, receiver);
 			statePool.notify(target, key);
-			// }
-			// statePool.delete(target, key);
-
 			return true;
 		},
 
@@ -127,26 +122,9 @@ export function observe(
 }
 
 export class StatePool {
-	private isInitState: boolean = false;
 	private store: WeakMap<object, Map<string | number | symbol, Set<Effect>>> = new WeakMap();
 
 	constructor() {}
-
-	initState(target: object, stateKeys: Set<string>) {
-		if (this.isInitState) {
-			throw new Error('StatePool has been initialized');
-		}
-
-		const depKeyMap = this.store.get(target) || this.store.set(target, new Map()).get(target);
-		stateKeys.forEach((key) => {
-			if (depKeyMap!.has(key)) {
-				return;
-			}
-			depKeyMap!.set(key, new Set());
-		});
-
-		// this.isInitState = true;
-	}
 
 	set(target: object, name: string | number | symbol, effect?: Effect) {
 		if (proxyMap.has(target)) {
@@ -157,10 +135,18 @@ export class StatePool {
 			}
 		}
 
-		const depKeyMap = this.store.get(target) || this.store.set(target, new Map()).get(target);
-		const deps = depKeyMap!.get(name) || depKeyMap!.set(name, new Set()).get(name);
+		if (!this.store.has(target)) {
+			this.store.set(target, new Map());
+		}
+		const depKeyMap = this.store.get(target)!;
+
+		if (!depKeyMap.has(name)) {
+			depKeyMap.set(name, new Set());
+		}
+		const deps = depKeyMap.get(name)!;
+
 		if (effect) {
-			deps?.add(effect);
+			deps.add(effect);
 		}
 	}
 

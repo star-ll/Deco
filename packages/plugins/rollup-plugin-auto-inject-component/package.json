@@ -10,7 +10,7 @@
 		"rollup-plugin",
 		"decoco-plugin"
 	],
-	"author": "",
+	"author": "star-ll",
 	"license": "MIT",
 	"dependencies": {
 		"fast-glob": "^3.3.2"

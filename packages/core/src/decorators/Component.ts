@@ -240,7 +240,7 @@ function getCustomElementWrapper(
 			if (!stateKeys) {
 				return;
 			}
-			statePool.initState(this, Array.from(stateKeys));
+
 			Array.from(stateKeys.values()).forEach((name) => {
 				const propertyName = name as keyof DecoElement;
 				observe(this, propertyName, this[propertyName]);
@@ -257,8 +257,6 @@ function getCustomElementWrapper(
 			if (!propKeys) {
 				return;
 			}
-
-			statePool.initState(this, Array.from(propKeys));
 
 			Array.from(propKeys.keys()).forEach((name: unknown) => {
 				if (!isString(name)) {
