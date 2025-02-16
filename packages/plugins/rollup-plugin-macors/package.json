@@ -1,7 +1,7 @@
 {
-	"name": "@decoco/rollup-plugin-auto-inject-component",
+	"name": "@decoco/rollup-plugin-macors",
 	"version": "0.3.4",
-	"description": "Auto inject import component code for decoco project.",
+	"description": "TypeScript compile macros for decoco project.",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"type": "module",
@@ -17,6 +17,7 @@
 	"author": "star-ll",
 	"license": "MIT",
 	"dependencies": {
-		"fast-glob": "^3.3.2"
+		"ts-morph": "^25.0.1",
+		"typescript": "^5.7.3"
 	}
 }
