@@ -19,7 +19,7 @@
 	},
 	"devDependencies": {
 		"@decoco/rollup-plugin-auto-inject-component": "workspace:*",
-		"@decoco/rollup-plugin-macors": "workspace:*",
+		"@decoco/rollup-plugin-macros": "workspace:*",
 		"vite": "^5.4.1"
 	}
 }

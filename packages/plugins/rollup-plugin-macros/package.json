@@ -1,5 +1,5 @@
 {
-	"name": "@decoco/rollup-plugin-macors",
+	"name": "@decoco/rollup-plugin-macros",
 	"version": "0.3.4",
 	"description": "TypeScript compile macros for decoco project.",
 	"main": "./dist/index.js",

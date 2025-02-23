@@ -174,9 +174,9 @@ importers:
       '@decoco/rollup-plugin-auto-inject-component':
         specifier: workspace:*
         version: link:../plugins/rollup-plugin-auto-inject-component
-      '@decoco/rollup-plugin-macors':
+      '@decoco/rollup-plugin-macros':
         specifier: workspace:*
-        version: link:../plugins/rollup-plugin-macors
+        version: link:../plugins/rollup-plugin-macros
       vite:
         specifier: ^5.4.1
         version: 5.4.8(@types/node@20.16.10)
@@ -187,7 +187,7 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
 
-  packages/plugins/rollup-plugin-macors:
+  packages/plugins/rollup-plugin-macros:
     dependencies:
       ts-morph:
         specifier: ^25.0.1
