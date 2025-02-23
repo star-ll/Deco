@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite';
-import decoInjectComponent from '@decoco/rollup-plugin-auto-inject-component';
+import macros from "@decoco/rollup-plugin-macros"
+
 
 const config = defineConfig({
 	base: './',
-	plugins: [decoInjectComponent(['src/**/*.(tsx|jsx)'])],
+	plugins: [macros()],
 	build: {
 		lib: {
 			entry: './index.ts',

@@ -1,1 +1,1 @@
-import 'virtual:decoco';
+import './src/App'
