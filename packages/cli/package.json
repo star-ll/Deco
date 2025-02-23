@@ -1,6 +1,6 @@
 {
 	"name": "create-decoco",
-	"version": "0.3.8-alpha.0",
+	"version": "0.3.8",
 	"description": "Create a new Decoco project",
 	"main": "index.js",
 	"type": "module",

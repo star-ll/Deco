@@ -1,6 +1,6 @@
 {
 	"name": "@decoco/rollup-plugin-macros",
-	"version": "0.3.4",
+	"version": "0.3.8",
 	"description": "TypeScript compile macros for decoco project.",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
