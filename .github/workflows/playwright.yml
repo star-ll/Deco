@@ -15,6 +15,8 @@ jobs:
                   node-version: lts/*
             - name: Install dependencies
               run: npm install -g pnpm && pnpm install
+            - name: Build plugins
+              run: pnpm run --filter @decoco/rollup-plugin-macros build && pnpm run --filter @decoco/rollup-plugin-auto-inject-component build
             - name: Install Playwright Browsers
               run: pnpm exec playwright install --with-deps
             - name: Build Decoco
